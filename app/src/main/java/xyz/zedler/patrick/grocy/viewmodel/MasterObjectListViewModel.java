@@ -208,30 +208,26 @@ public class MasterObjectListViewModel extends BaseViewModel {
 
       // For products, also search by barcode
       if (entity.equals(GrocyApi.ENTITY.PRODUCTS) && productBarcodeHashMap != null) {
-        for (Object object : objects) {
-          Product product = (Product) object;
-          int productId = product.getId();
-          
-          // Skip if already in the list
-          if (objectIdsInList.contains(productId)) {
-            continue;
-          }
-          
-          // Check if any barcode for this product matches the search
-          boolean barcodeMatches = false;
-          for (ProductBarcode barcode : productBarcodeHashMap.values()) {
-            if (barcode.getProductIdInt() == productId) {
-              String barcodeValue = barcode.getBarcode();
-              if (barcodeValue != null && barcodeValue.toLowerCase().contains(search)) {
-                barcodeMatches = true;
+        // Search through barcodes for matches
+        for (ProductBarcode barcode : productBarcodeHashMap.values()) {
+          String barcodeValue = barcode.getBarcode();
+          if (barcodeValue != null && barcodeValue.toLowerCase().contains(search)) {
+            int productId = barcode.getProductIdInt();
+            
+            // Skip if already in the list
+            if (objectIdsInList.contains(productId)) {
+              continue;
+            }
+            
+            // Find the product with this ID and add it
+            for (Object object : objects) {
+              Product product = (Product) object;
+              if (product.getId() == productId) {
+                searchedItems.add(object);
+                objectIdsInList.add(productId);
                 break;
               }
             }
-          }
-          
-          if (barcodeMatches) {
-            searchedItems.add(object);
-            objectIdsInList.add(productId);
           }
         }
       }
