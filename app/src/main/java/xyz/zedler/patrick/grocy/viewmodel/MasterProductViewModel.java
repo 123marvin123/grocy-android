@@ -22,7 +22,11 @@ package xyz.zedler.patrick.grocy.viewmodel;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,8 +34,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.json.JSONException;
 import org.json.JSONObject;
 import xyz.zedler.patrick.grocy.Constants;
@@ -50,6 +59,7 @@ import xyz.zedler.patrick.grocy.model.ProductDetails;
 import xyz.zedler.patrick.grocy.repository.MasterProductRepository;
 import xyz.zedler.patrick.grocy.util.ArrayUtil;
 import xyz.zedler.patrick.grocy.util.NumUtil;
+import xyz.zedler.patrick.grocy.util.PictureUtil;
 import xyz.zedler.patrick.grocy.util.PrefsUtil;
 import xyz.zedler.patrick.grocy.web.NetworkQueue;
 
@@ -316,14 +326,14 @@ public class MasterProductViewModel extends BaseViewModel {
   private void uploadBarcodesIfNecessary(int productId, Runnable onFinished) {
     List<PendingProductBarcode> pendingProductBarcodes = pendingProductBarcodesLive.getValue();
     if (pendingProductBarcodes == null || pendingProductBarcodes.isEmpty() || productId < 0) {
-      onFinished.run();
+      uploadPictureIfNecessary(productId, onFinished);
       return;
     }
     NetworkQueue queue = dlHelper.newQueue(
         updated -> {
           pendingProductBarcodesLive.setValue(null);
-          onFinished.run();
-        }, error -> onFinished.run()
+          uploadPictureIfNecessary(productId, onFinished);
+        }, error -> uploadPictureIfNecessary(productId, onFinished)
     );
     for (PendingProductBarcode pendingProductBarcode : pendingProductBarcodes) {
       pendingProductBarcode.setPendingProductId(productId);
@@ -334,10 +344,118 @@ public class MasterProductViewModel extends BaseViewModel {
       ));
     }
     if (queue.getSize() == 0) {
-      onFinished.run();
+      uploadPictureIfNecessary(productId, onFinished);
       return;
     }
     queue.start();
+  }
+
+  private void uploadPictureIfNecessary(int productId, Runnable onFinished) {
+    String pictureUrl = getPictureUrl();
+    if (pictureUrl == null || pictureUrl.isEmpty() || productId < 0) {
+      onFinished.run();
+      return;
+    }
+
+    if (debug) {
+      Log.i(TAG, "uploadPictureIfNecessary: Starting automatic picture upload from " + pictureUrl);
+    }
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.execute(() -> {
+      try {
+        Bitmap bitmap = null;
+        URL url = new URL(pictureUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoInput(true);
+        connection.connect();
+        InputStream input = connection.getInputStream();
+        bitmap = BitmapFactory.decodeStream(input);
+
+        if (bitmap == null) {
+          if (debug) {
+            Log.e(TAG, "uploadPictureIfNecessary: Failed to decode bitmap from " + pictureUrl);
+          }
+          new Handler(Looper.getMainLooper()).post(() -> {
+            onFinished.run();
+            executor.shutdown();
+          });
+          return;
+        }
+
+        Bitmap scaledBitmap = PictureUtil.scaleBitmap(bitmap);
+        byte[] imageArray = PictureUtil.convertBitmapToByteArray(scaledBitmap);
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+          uploadPicture(productId, imageArray, onFinished);
+          executor.shutdown();
+        });
+      } catch (Exception e) {
+        if (debug) {
+          Log.e(TAG, "uploadPictureIfNecessary: Error processing picture: " + e);
+        }
+        new Handler(Looper.getMainLooper()).post(() -> {
+          onFinished.run();
+          executor.shutdown();
+        });
+      }
+    });
+  }
+
+  private void uploadPicture(int productId, byte[] pictureData, Runnable onFinished) {
+    if (pictureData == null) {
+      if (debug) {
+        Log.e(TAG, "uploadPicture: Picture data is null");
+      }
+      onFinished.run();
+      return;
+    }
+
+    String filename = PictureUtil.createImageFilename();
+    dlHelper.putFile(
+        grocyApi.getProductPicture(filename),
+        pictureData,
+        () -> {
+          if (debug) {
+            Log.i(TAG, "uploadPicture: Successfully uploaded picture " + filename);
+          }
+          updateProductPictureFilename(productId, filename, onFinished);
+        },
+        error -> {
+          if (debug) {
+            Log.e(TAG, "uploadPicture: Failed to upload picture: " + error);
+          }
+          onFinished.run();
+        }
+    );
+  }
+
+  private void updateProductPictureFilename(int productId, String filename, Runnable onFinished) {
+    JSONObject jsonObject = new JSONObject();
+    try {
+      jsonObject.put("picture_file_name", filename);
+      dlHelper.put(
+          grocyApi.getObject(GrocyApi.ENTITY.PRODUCTS, productId),
+          jsonObject,
+          response -> {
+            if (debug) {
+              Log.i(TAG, "updateProductPictureFilename: Successfully updated product with picture filename");
+            }
+            onFinished.run();
+          },
+          error -> {
+            if (debug) {
+              Log.e(TAG, "updateProductPictureFilename: Failed to update product: " + error);
+            }
+            onFinished.run();
+          }
+      );
+    } catch (JSONException e) {
+      if (debug) {
+        Log.e(TAG, "updateProductPictureFilename: JSON error: " + e);
+      }
+      onFinished.run();
+    }
   }
 
   public void deleteProduct(int productId) {

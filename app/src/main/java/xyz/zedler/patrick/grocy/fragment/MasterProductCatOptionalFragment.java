@@ -183,10 +183,6 @@ public class MasterProductCatOptionalFragment extends BaseFragment implements Ba
 
     if (savedInstanceState == null) {
       viewModel.loadFromDatabase(true);
-      // Download and upload picture from URL if provided
-      if (args.getPictureUrl() != null && !args.getPictureUrl().isEmpty()) {
-        viewModel.downloadAndUploadPictureFromUrl(args.getPictureUrl());
-      }
     }
 
     // UPDATE UI

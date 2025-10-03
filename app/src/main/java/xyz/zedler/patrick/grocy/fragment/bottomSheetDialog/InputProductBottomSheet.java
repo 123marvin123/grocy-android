@@ -144,33 +144,34 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
   public void proceed() {
     assert selectionLive.getValue() != null;
     String input = binding.input.getText().toString();
+
+    // Add image URL if available and setting is enabled
+    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+    boolean isImageAutofillEnabled = sharedPrefs.getBoolean(
+            SETTINGS.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES,
+            SETTINGS_DEFAULT.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES
+    );
+
+    MasterProductFragmentArgs.Builder argsBuilder =
+            new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
+            .setProductName(input);
+
+    if (isImageAutofillEnabled && productImageUrlFromOnlineSource != null) {
+      argsBuilder.setPictureUrl(productImageUrlFromOnlineSource);
+    }
+
     if (selectionLive.getValue() == 1) {
       activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
-          new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-              .setProductName(input).build().toBundle());
+          argsBuilder.build().toBundle());
     } else if (selectionLive.getValue() == 2) {
-      activity.getCurrentFragment().addBarcodeToNewProduct(input.trim());
       // Use product name from online source if available, otherwise use empty
       String productName = productNameFromOnlineSource != null ? productNameFromOnlineSource : "";
+
+        argsBuilder.setProductName(productName);
       
-      MasterProductFragmentArgs.Builder argsBuilder = new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-          .setProductName(productName);
-      
-      // Add image URL if available and setting is enabled
-      SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
-      boolean isImageAutofillEnabled = sharedPrefs.getBoolean(
-          SETTINGS.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES,
-          SETTINGS_DEFAULT.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES
-      );
-      
-      if (isImageAutofillEnabled && productImageUrlFromOnlineSource != null) {
-        argsBuilder.setPictureUrl(productImageUrlFromOnlineSource);
-      }
-      
-      activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
-          new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-              .setProductName(productName)
-              .setBarcode(input.trim()).build().toBundle());
+      activity.navUtil.navigateDeepLink(
+              R.string.deep_link_masterProductFragment,
+              argsBuilder.build().toBundle());
     } else {
       activity.getCurrentFragment().addBarcodeToExistingProduct(input.trim());
     }

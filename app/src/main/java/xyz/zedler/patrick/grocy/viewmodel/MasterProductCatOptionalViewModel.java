@@ -256,37 +256,6 @@ public class MasterProductCatOptionalViewModel extends BaseViewModel {
     );
   }
 
-  public void downloadAndUploadPictureFromUrl(String imageUrl) {
-    if (imageUrl == null || imageUrl.isEmpty()) {
-      return;
-    }
-    if (isDemoInstance()) {
-      return;
-    }
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    executor.execute(() -> {
-      try {
-        java.net.URL url = new java.net.URL(imageUrl);
-        InputStream inputStream = url.openStream();
-        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-        inputStream.close();
-        
-        if (bitmap != null) {
-          Bitmap scaledBitmap = PictureUtil.scaleBitmap(bitmap);
-          byte[] imageArray = PictureUtil.convertBitmapToByteArray(scaledBitmap);
-          new Handler(Looper.getMainLooper()).post(() -> {
-            uploadPicture(imageArray);
-            executor.shutdown();
-          });
-        } else {
-          executor.shutdown();
-        }
-      } catch (Exception e) {
-        // Silently fail if image download fails
-        executor.shutdown();
-      }
-    });
-  }
 
   public void deleteCurrentPicture(String newFilename) {
     if (isActionEdit()) {
