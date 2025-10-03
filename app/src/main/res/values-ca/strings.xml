@@ -1199,8 +1199,8 @@
   <string name="setting_transition_description">En comptes de l\'esvaït</string>
   <string name="setting_open_food_facts">Utilitza Open Food Facts i Open Beauty Facts</string>
   <string name="setting_open_food_facts_description">Obtenir informació dels codis de barres</string>
-  <string name="setting_open_food_facts_autofill_images">Emplenament automàtic d'imatges del producte</string>
-  <string name="setting_open_food_facts_autofill_images_description">Afegeix automàticament imatges d'Open Food Facts en crear nous productes</string>
+  <string name="setting_open_food_facts_autofill_images">Emplenament automàtic d\'imatges del producte</string>
+  <string name="setting_open_food_facts_autofill_images_description">Afegeix automàticament imatges d\'Open Food Facts en crear nous productes</string>
   <string name="setting_choose_barcode_scanner">Escollir escàner de codi de barres</string>
   <string name="setting_choose_barcode_scanner_description">Per a l\'escaneig del codi de barres amb la càmera</string>
   <string name="setting_use_front_cam">Utilitza la càmera frontal</string>

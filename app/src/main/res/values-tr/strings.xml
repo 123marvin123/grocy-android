@@ -1199,7 +1199,7 @@
   <string name="setting_open_food_facts">Açık Gıda Bilgileri ve Açık Güzellik Bilgileri\'ni kullanın</string>
   <string name="setting_open_food_facts_description">Barkodlardan bilgi alın</string>
   <string name="setting_open_food_facts_autofill_images">Ürün resimlerini otomatik doldur</string>
-  <string name="setting_open_food_facts_autofill_images_description">Yeni ürünler oluştururken Open Food Facts'ten otomatik olarak resim ekle</string>
+  <string name="setting_open_food_facts_autofill_images_description">Yeni ürünler oluştururken Open Food Facts\'ten otomatik olarak resim ekle</string>
   <string name="setting_choose_barcode_scanner">Barkod tarayıcıyı seçin</string>
   <string name="setting_choose_barcode_scanner_description">Kamera barkod taraması için</string>
   <string name="setting_use_front_cam">Ön kamerayı kullan</string>
