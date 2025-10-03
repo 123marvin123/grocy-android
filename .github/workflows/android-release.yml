@@ -42,7 +42,7 @@ jobs:
     
     - name: Rename release artifact
       run: |
-        mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-release.apk
+        mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-release.apk
     
     - name: Upload debug APK to release
       uses: actions/upload-release-asset@v1
