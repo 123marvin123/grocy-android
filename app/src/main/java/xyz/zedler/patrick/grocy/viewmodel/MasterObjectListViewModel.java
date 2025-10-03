@@ -49,6 +49,7 @@ import xyz.zedler.patrick.grocy.model.FilterChipLiveDataSort.SortOption;
 import xyz.zedler.patrick.grocy.model.InfoFullscreen;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
+import xyz.zedler.patrick.grocy.model.ProductBarcode;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
 import xyz.zedler.patrick.grocy.model.Store;
@@ -81,6 +82,7 @@ public class MasterObjectListViewModel extends BaseViewModel {
   private List<?> objects;
   private List<QuantityUnit> quantityUnits;
   private List<Location> locations;
+  private HashMap<String, ProductBarcode> productBarcodeHashMap;
   private HashMap<String, Userfield> userfieldHashMap = new HashMap<>();
 
   private String search;
@@ -124,6 +126,7 @@ public class MasterObjectListViewModel extends BaseViewModel {
           filterChipLiveDataProductGroup.setProductGroups(data.getProductGroups());
           this.quantityUnits = data.getQuantityUnits();
           this.locations = data.getLocations();
+          this.productBarcodeHashMap = ArrayUtil.getProductBarcodesHashMap(data.getProductBarcodes());
           break;
         case ENTITY.PRODUCT_GROUPS:
           this.objects = data.getProductGroups();
@@ -167,6 +170,7 @@ public class MasterObjectListViewModel extends BaseViewModel {
             ? QuantityUnit.class : null,
         entity.equals(ENTITY.TASK_CATEGORIES) ? TaskCategory.class : null,
         entity.equals(GrocyApi.ENTITY.PRODUCTS) ? Product.class : null,
+        entity.equals(GrocyApi.ENTITY.PRODUCTS) ? ProductBarcode.class : null,
         Userfield.class
     );
   }
@@ -199,6 +203,36 @@ public class MasterObjectListViewModel extends BaseViewModel {
         if (name.contains(search)) {
           searchedItems.add(object);
           objectIdsInList.add(ObjectUtil.getObjectId(object, entity));
+        }
+      }
+
+      // For products, also search by barcode
+      if (entity.equals(GrocyApi.ENTITY.PRODUCTS) && productBarcodeHashMap != null) {
+        for (Object object : objects) {
+          Product product = (Product) object;
+          int productId = product.getId();
+          
+          // Skip if already in the list
+          if (objectIdsInList.contains(productId)) {
+            continue;
+          }
+          
+          // Check if any barcode for this product matches the search
+          boolean barcodeMatches = false;
+          for (ProductBarcode barcode : productBarcodeHashMap.values()) {
+            if (barcode.getProductIdInt() == productId) {
+              String barcodeValue = barcode.getBarcode();
+              if (barcodeValue != null && barcodeValue.toLowerCase().contains(search)) {
+                barcodeMatches = true;
+                break;
+              }
+            }
+          }
+          
+          if (barcodeMatches) {
+            searchedItems.add(object);
+            objectIdsInList.add(productId);
+          }
         }
       }
 
