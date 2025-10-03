@@ -385,6 +385,7 @@ public class RecipeFragment extends BaseFragment implements
     if (!recipePositionsResolved.isEmpty()) {
       if (binding.recycler.getAdapter() instanceof RecipePositionResolvedAdapter) {
         ((RecipePositionResolvedAdapter) binding.recycler.getAdapter()).updateData(
+            requireContext(),
             recipe,
             recipePositionsResolved,
             viewModel.getProducts(),

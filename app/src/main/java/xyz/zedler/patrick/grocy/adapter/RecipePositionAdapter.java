@@ -61,7 +61,6 @@ public class RecipePositionAdapter extends
   private final static String TAG = RecipePositionAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LinearLayoutManager linearLayoutManager;
   private Recipe recipe;
   private final List<RecipePosition> recipePositions;
@@ -88,7 +87,6 @@ public class RecipePositionAdapter extends
       List<ShoppingListItem> shoppingListItems,
       RecipePositionsItemAdapterListener listener
   ) {
-    this.context = context;
     maxDecimalPlacesAmount = PreferenceManager.getDefaultSharedPreferences(context).getInt(
         STOCK.DECIMAL_PLACES_AMOUNT,
         SETTINGS_DEFAULT.STOCK.DECIMAL_PLACES_AMOUNT
@@ -116,7 +114,6 @@ public class RecipePositionAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -216,7 +213,7 @@ public class RecipePositionAdapter extends
     }
 
     if (product != null) {
-      holder.binding.ingredient.setText(context.getString(
+      holder.binding.ingredient.setText(holder.itemView.getContext().getString(
           R.string.title_ingredient_with_amount,
           amountString,
           pluralUtil.getQuantityUnitPlural(quantityUnit, amountRecipeUnit),
@@ -227,6 +224,7 @@ public class RecipePositionAdapter extends
     }
 
     // FULFILLMENT
+    Context context = holder.itemView.getContext();
     StockItem stockItem = stockItemHashMap.get(recipePosition.getProductId());
     if (recipePosition.isNotCheckStockFulfillment() || stockItemHashMap.isEmpty()) {
       holder.binding.fulfillment.setVisibility(View.GONE);
@@ -307,7 +305,7 @@ public class RecipePositionAdapter extends
 
     // CONTAINER
     holder.binding.linearRecipePositionContainer.setBackground(
-        ViewUtil.getRippleBgListItemSurface(context)
+        ViewUtil.getRippleBgListItemSurface(holder.itemView.getContext())
     );
     holder.binding.linearRecipePositionContainer.setOnClickListener(
         view -> listener.onItemRowClicked(recipePosition, position)

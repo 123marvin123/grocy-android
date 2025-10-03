@@ -52,7 +52,6 @@ public class RecipeEditIngredientListEntryAdapter extends
   private final static String TAG = RecipeEditIngredientListEntryAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LinearLayoutManager linearLayoutManager;
   private final ArrayList<RecipePosition> recipePositions;
   private final ArrayList<Product> products;
@@ -68,7 +67,6 @@ public class RecipeEditIngredientListEntryAdapter extends
       LinearLayoutManager linearLayoutManager,
       RecipeEditIngredientListEntryAdapterListener listener
   ) {
-    this.context = context;
     this.linearLayoutManager = linearLayoutManager;
     this.recipePositions = new ArrayList<>();
     this.products = new ArrayList<>();
@@ -85,7 +83,6 @@ public class RecipeEditIngredientListEntryAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -129,6 +126,7 @@ public class RecipeEditIngredientListEntryAdapter extends
 
     holder.binding.title.setText(product.getName());
 
+    Context context = holder.itemView.getContext();
     if (quantityUnit != null && (recipePosition.getVariableAmount() == null
         || recipePosition.getVariableAmount().isEmpty())) {
       double amount = recipePosition.getAmount();

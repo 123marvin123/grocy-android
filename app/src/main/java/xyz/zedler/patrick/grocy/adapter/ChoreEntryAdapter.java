@@ -49,7 +49,6 @@ public class ChoreEntryAdapter extends
   private final static String TAG = ChoreEntryAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LinearLayoutManager linearLayoutManager;
   private final ArrayList<ChoreEntry> choreEntries;
   private final HashMap<Integer, Chore> choreHashMap;
@@ -64,7 +63,6 @@ public class ChoreEntryAdapter extends
       LinearLayoutManager linearLayoutManager,
       ChoreEntryAdapterListener listener
   ) {
-    this.context = context;
     this.linearLayoutManager = linearLayoutManager;
     this.choreEntries = new ArrayList<>();
     this.choreHashMap = new HashMap<>();
@@ -76,7 +74,6 @@ public class ChoreEntryAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -146,6 +143,7 @@ public class ChoreEntryAdapter extends
     }
 
     if (colorDays) {
+      Context context = holder.itemView.getContext();
       holder.binding.days.setTypeface(
           ResourcesCompat.getFont(context, R.font.jost_medium)
       );
@@ -161,6 +159,7 @@ public class ChoreEntryAdapter extends
       holder.binding.days.setTextColor(color);
       holder.binding.daysHuman.setTextColor(color);
     } else {
+      Context context = holder.itemView.getContext();
       holder.binding.days.setTypeface(
           ResourcesCompat.getFont(context, R.font.jost_book)
       );

@@ -37,7 +37,6 @@ public class HtmlView extends LinearLayout {
   private static final String TAG = HtmlView.class.getSimpleName();
 
   private ViewHtmlBinding binding;
-  private Context context;
 
   public HtmlView(Context context) {
     super(context);
@@ -50,7 +49,6 @@ public class HtmlView extends LinearLayout {
   }
 
   private void init(Context context) {
-    this.context = context;
     binding = ViewHtmlBinding.inflate(
         LayoutInflater.from(context), this, true
     );
@@ -63,7 +61,6 @@ public class HtmlView extends LinearLayout {
     binding = null;
   }
 
-  @SuppressLint("ClickableViewAccessibility")
   public void setHtml(String html) {
     if (html != null) {
       html = html.replaceAll("</?font[^>]*>", ""); // remove font
@@ -86,8 +83,8 @@ public class HtmlView extends LinearLayout {
   }
 
   private String getFormattedHtml(String html) {
-    int textColor = ResUtil.getColor(context, R.attr.colorOnSurface);
-    int linkColor = ResUtil.getColor(context, R.attr.colorPrimary);
+    int textColor = ResUtil.getColor(getContext(), R.attr.colorOnSurface);
+    int linkColor = ResUtil.getColor(getContext(), R.attr.colorPrimary);
     return  "<!DOCTYPE html><html><head><meta charset='UTF-8'><style type='text/css'>"
         + "@font-face{font-family: Jost; src: url('fonts/jost_400_book.otf')}"
         + "body{font-family: Jost;color:#" + String.format("%06X", (0xFFFFFF & textColor)) + ";}"
