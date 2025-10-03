@@ -1250,6 +1250,8 @@
   <string name="setting_language_not_available">Anglais si la traduction n\'est pas disponible</string>
   <string name="setting_open_food_facts">Utilisez Open Food Facts</string>
   <string name="setting_open_food_facts_description">Obtenir des informations à partir des codes-barres</string>
+  <string name="setting_open_food_facts_autofill_images">Remplissage automatique des images de produits</string>
+  <string name="setting_open_food_facts_autofill_images_description">Ajouter automatiquement les images d'Open Food Facts lors de la création de nouveaux produits</string>
   <string name="setting_choose_barcode_scanner">Choisissez un lecteur de codes-barres</string>
   <string name="setting_choose_barcode_scanner_description">Pour scanner les codes-barres avec l\'appareil photo</string>
   <string name="setting_use_front_cam">Utiliser la caméra frontale</string>

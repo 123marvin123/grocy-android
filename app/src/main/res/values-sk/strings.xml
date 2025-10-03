@@ -948,6 +948,8 @@
   <string name="setting_transition_description">Namiesto prelínania</string>
   <string name="setting_open_food_facts">Používať Open Food Facts</string>
   <string name="setting_open_food_facts_description">Získavať informácie z čiarových kódov</string>
+  <string name="setting_open_food_facts_autofill_images">Automatické vypĺňanie obrázkov produktov</string>
+  <string name="setting_open_food_facts_autofill_images_description">Automaticky pridať obrázky z Open Food Facts pri vytváraní nových produktov</string>
   <string name="setting_choose_barcode_scanner">Zvoliť snímač čiarových kódov</string>
   <string name="setting_choose_barcode_scanner_description">Na snímanie čiarových kódov fotoaparátom</string>
   <string name="setting_use_front_cam">Použiť predný fotoaparát</string>

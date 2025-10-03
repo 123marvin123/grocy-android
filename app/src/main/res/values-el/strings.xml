@@ -1198,6 +1198,8 @@
   <string name="setting_language_not_available">Δεν είναι διαθέσιμη για τη συσκευή σας</string>
   <string name="setting_open_food_facts">Open Food Facts</string>
   <string name="setting_open_food_facts_description">Εμφάνιση γεγονότων τροφίμων από Open Food Facts</string>
+  <string name="setting_open_food_facts_autofill_images">Αυτόματη συμπλήρωση εικόνων προϊόντων</string>
+  <string name="setting_open_food_facts_autofill_images_description">Αυτόματη προσθήκη εικόνων από το Open Food Facts κατά τη δημιουργία νέων προϊόντων</string>
   <string name="setting_choose_barcode_scanner">Επιλογή σαρωτή barcode</string>
   <string name="setting_choose_barcode_scanner_description">Εσωτερικός είναι ο σαρωτής της εφαρμογής, εξωτερικός είναι μια εφαρμογή τρίτου</string>
   <string name="setting_use_front_cam">Χρήση μπροστινής κάμερας</string>

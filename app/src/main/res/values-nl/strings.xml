@@ -1076,6 +1076,8 @@ Bezoek ons op GitHub om te leren hoe u kunt helpen Grocy Android beschikbaar te 
   <string name="setting_transition_description">In plaats van vervagen</string>
   <string name="setting_open_food_facts">Open Food Facts gebruiken</string>
   <string name="setting_open_food_facts_description">Info van streepjescode gebruiken</string>
+  <string name="setting_open_food_facts_autofill_images">Productafbeeldingen automatisch invullen</string>
+  <string name="setting_open_food_facts_autofill_images_description">Voeg automatisch afbeeldingen toe van Open Food Facts bij het aanmaken van nieuwe producten</string>
   <string name="setting_choose_barcode_scanner">Kies barcodescanner</string>
   <string name="setting_choose_barcode_scanner_description">Voor het scannen van camera barcodes</string>
   <string name="setting_use_front_cam">Gebruik selfie-camera</string>

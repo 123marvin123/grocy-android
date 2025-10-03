@@ -1306,6 +1306,8 @@ Po zaškrtnutí nebude brán zřetel na množství produktu v nákupním seznamu
   <string name="setting_language_not_available">Angličtina – pokud není k dispozici překlad</string>
   <string name="setting_open_food_facts">Použij Open Food Facts</string>
   <string name="setting_open_food_facts_description">Získat informace z čárových kódů</string>
+  <string name="setting_open_food_facts_autofill_images">Automatické vyplňování obrázků produktů</string>
+  <string name="setting_open_food_facts_autofill_images_description">Automaticky přidat obrázky z Open Food Facts při vytváření nových produktů</string>
   <string name="setting_choose_barcode_scanner">Vyberte skener čárových kódů</string>
   <string name="setting_choose_barcode_scanner_description">Pro kameru jako skener čárových kódů</string>
   <string name="setting_use_front_cam">Použij přední kameru</string>

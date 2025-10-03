@@ -1000,6 +1000,8 @@
   <string name="setting_transition_description">במקום עמעום</string>
   <string name="setting_open_food_facts">להשתמש ב־Open Food Facts</string>
   <string name="setting_open_food_facts_description">קבלת מידע מברקודים</string>
+  <string name="setting_open_food_facts_autofill_images">מילוי אוטומטי של תמונות מוצר</string>
+  <string name="setting_open_food_facts_autofill_images_description">הוסף אוטומטית תמונות מ-Open Food Facts בעת יצירת מוצרים חדשים</string>
   <string name="setting_choose_barcode_scanner">נא לבחור סורק ברקודים</string>
   <string name="setting_choose_barcode_scanner_description">לסריקת ברקודים עם המצלמה</string>
   <string name="setting_use_front_cam">להשתמש במצלמה הקדמית</string>

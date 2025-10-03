@@ -920,6 +920,8 @@
   <string name="setting_transition_description">取代淡出效果</string>
   <string name="setting_open_food_facts">使用\"Open Food Facts\"和\"Open Beauty Facts\"</string>
   <string name="setting_open_food_facts_description">由條碼獲得資訊</string>
+  <string name="setting_open_food_facts_autofill_images">自動填入產品圖片</string>
+  <string name="setting_open_food_facts_autofill_images_description">在建立新產品時自動新增來自 Open Food Facts 的圖片</string>
   <string name="setting_choose_barcode_scanner">選擇條碼掃描器</string>
   <string name="setting_choose_barcode_scanner_description">用於相機條碼掃描</string>
   <string name="setting_use_front_cam">使用前鏡頭</string>
