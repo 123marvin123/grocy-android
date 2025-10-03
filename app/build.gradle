@@ -47,8 +47,18 @@ android {
         variant.resValue "string", "versionName", variant.versionName
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.debug
             postprocessing {
                 removeUnusedCode true
                 removeUnusedResources true
