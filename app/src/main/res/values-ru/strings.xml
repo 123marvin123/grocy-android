@@ -1148,6 +1148,8 @@
   <string name="setting_transition_description">Вместо исчезания</string>
   <string name="setting_open_food_facts">Использовать Open Food Facts</string>
   <string name="setting_open_food_facts_description">Получать данные со штрихкодов</string>
+  <string name="setting_open_food_facts_autofill_images">Автозаполнение изображений продуктов</string>
+  <string name="setting_open_food_facts_autofill_images_description">Автоматически добавлять изображения из Open Food Facts при создании новых продуктов</string>
   <string name="setting_choose_barcode_scanner">Выберите сканер штрихкода</string>
   <string name="setting_choose_barcode_scanner_description">Для сканирования штрихкода камерой</string>
   <string name="setting_use_front_cam">Использовать фронтальную камеру</string>

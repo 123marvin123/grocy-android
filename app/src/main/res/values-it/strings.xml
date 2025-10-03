@@ -1229,6 +1229,8 @@ Se nel file ripristinato sono presenti dati errati, l\'app potrebbe non funziona
   <string name="setting_transition_description">Invece di quella a scomparsa</string>
   <string name="setting_open_food_facts">Usa Open Food Facts</string>
   <string name="setting_open_food_facts_description">Informazioni dal codice a barre</string>
+  <string name="setting_open_food_facts_autofill_images">Compila automaticamente immagini prodotto</string>
+  <string name="setting_open_food_facts_autofill_images_description">Aggiungi automaticamente immagini da Open Food Facts durante la creazione di nuovi prodotti</string>
   <string name="setting_choose_barcode_scanner">Scegli scanner di codice a barre</string>
   <string name="setting_choose_barcode_scanner_description">Per lo scan del codice a barre</string>
   <string name="setting_use_front_cam">Usa la telecamera frontale</string>

@@ -1147,6 +1147,8 @@
   <string name="setting_transition_description">代替淡出效果</string>
   <string name="setting_open_food_facts">获取Open Food Facts和Open Beauty Facts数据库数据</string>
   <string name="setting_open_food_facts_description">通过条形码获取信息</string>
+  <string name="setting_open_food_facts_autofill_images">自动填充产品图片</string>
+  <string name="setting_open_food_facts_autofill_images_description">在创建新产品时自动添加来自 Open Food Facts 的图片</string>
   <string name="setting_choose_barcode_scanner">选择条码扫描器</string>
   <string name="setting_choose_barcode_scanner_description">用于摄像头扫描条码</string>
   <string name="setting_use_front_cam">使用前置摄像头</string>

@@ -1250,6 +1250,8 @@
   <string name="setting_language_not_available">Inglês, se a tradução não estiver disponível</string>
   <string name="setting_open_food_facts">Usar Open Food Facts e Open Beauty Facts</string>
   <string name="setting_open_food_facts_description">Obter info dos códigos de barras</string>
+  <string name="setting_open_food_facts_autofill_images">Preencher automaticamente imagens de produtos</string>
+  <string name="setting_open_food_facts_autofill_images_description">Adicionar automaticamente imagens do Open Food Facts ao criar novos produtos</string>
   <string name="setting_choose_barcode_scanner">Escolha o leitor de código de barras</string>
   <string name="setting_choose_barcode_scanner_description">Para leitura de código de barras da câmera</string>
   <string name="setting_use_front_cam">Usar câmera frontal</string>

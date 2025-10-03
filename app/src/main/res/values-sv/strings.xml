@@ -997,6 +997,8 @@
   <string name="setting_language_system">Använda systemets inställning</string>
   <string name="setting_open_food_facts">Använd Open Food Facts</string>
   <string name="setting_open_food_facts_description">Hämta information från streckkoder</string>
+  <string name="setting_open_food_facts_autofill_images">Fyll i produktbilder automatiskt</string>
+  <string name="setting_open_food_facts_autofill_images_description">Lägg automatiskt till bilder från Open Food Facts när du skapar nya produkter</string>
   <string name="setting_choose_barcode_scanner">Välj streckkods läsare</string>
   <string name="setting_choose_barcode_scanner_description">För kamera streckkods inläsning</string>
   <string name="setting_use_front_cam">Använd främre kamera</string>

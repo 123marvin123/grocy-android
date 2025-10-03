@@ -1102,6 +1102,8 @@
   <string name="setting_transition_description">Hääbumise asemel</string>
   <string name="setting_open_food_facts">Kasuta Open Food Factsi ja Open Beauty Factsi</string>
   <string name="setting_open_food_facts_description">Saa andmeid triipkoodidelt</string>
+  <string name="setting_open_food_facts_autofill_images">Täida tootepildid automaatselt</string>
+  <string name="setting_open_food_facts_autofill_images_description">Lisa uute toodete loomisel automaatselt pildid Open Food Factsist</string>
   <string name="setting_choose_barcode_scanner">Vali triipkoodi skanner</string>
   <string name="setting_choose_barcode_scanner_description">Kaamera triipkoodi skaneerimise jaoks</string>
   <string name="setting_use_front_cam">Kasuta esikaamerat</string>

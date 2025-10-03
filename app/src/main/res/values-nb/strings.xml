@@ -1199,6 +1199,8 @@
   <string name="setting_transition_description">Istedenfor nedtoning</string>
   <string name="setting_open_food_facts">Bruk Open Food Facts</string>
   <string name="setting_open_food_facts_description">Hent informasjon fra strekkoder</string>
+  <string name="setting_open_food_facts_autofill_images">Autofyll produktbilder</string>
+  <string name="setting_open_food_facts_autofill_images_description">Legg til bilder automatisk fra Open Food Facts når du oppretter nye produkter</string>
   <string name="setting_choose_barcode_scanner">Velg strekkode-skanner</string>
   <string name="setting_choose_barcode_scanner_description">For strekkodeskanning med kamera</string>
   <string name="setting_use_front_cam">Bruk frontkamera</string>

@@ -1316,6 +1316,8 @@ https://github.com/patzly/grocy-android</string>
   <string name="setting_language_not_available">Nie dostępne</string>
   <string name="setting_open_food_facts">Użyj Open Food Facts</string>
   <string name="setting_open_food_facts_description">Zbierz informacje z kodów kreskowych</string>
+  <string name="setting_open_food_facts_autofill_images">Automatyczne wypełnianie zdjęć produktów</string>
+  <string name="setting_open_food_facts_autofill_images_description">Automatycznie dodawaj zdjęcia z Open Food Facts podczas tworzenia nowych produktów</string>
   <string name="setting_choose_barcode_scanner">Wybierz skaner kodów kreskowych</string>
   <string name="setting_choose_barcode_scanner_description">Do skanowania kodów kreskowych przy użyciu aparatu</string>
   <string name="setting_use_front_cam">Użyj przedniego aparatu</string>

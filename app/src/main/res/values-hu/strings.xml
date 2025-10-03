@@ -1195,6 +1195,8 @@
   <string name="setting_transition_description">Ahelyett, hogy elhalványodna</string>
   <string name="setting_open_food_facts">Open Food Facts használata</string>
   <string name="setting_open_food_facts_description">Információ a vonalkódok alapján</string>
+  <string name="setting_open_food_facts_autofill_images">Termékképek automatikus kitöltése</string>
+  <string name="setting_open_food_facts_autofill_images_description">Képek automatikus hozzáadása az Open Food Facts-ből új termékek létrehozásakor</string>
   <string name="setting_choose_barcode_scanner">Vonalkódolvasó kiválasztása</string>
   <string name="setting_choose_barcode_scanner_description">Beépített kamera használatával</string>
   <string name="setting_use_front_cam">Előlapi kamera használata</string>

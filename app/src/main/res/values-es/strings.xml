@@ -1281,6 +1281,8 @@ El certificado del servidor debe ser firmado por una autoridad confiable de cert
   <string name="setting_language_not_available">Inglés si la traducción no está disponible</string>
   <string name="setting_open_food_facts">Usar Open Food Facts</string>
   <string name="setting_open_food_facts_description">Obtener información de códigos de barra</string>
+  <string name="setting_open_food_facts_autofill_images">Autocompletar imágenes de productos</string>
+  <string name="setting_open_food_facts_autofill_images_description">Agregar automáticamente imágenes de Open Food Facts al crear nuevos productos</string>
   <string name="setting_choose_barcode_scanner">Elige un Lector de códigos de barras</string>
   <string name="setting_choose_barcode_scanner_description">Para escanear códigos de barras desde la cámara</string>
   <string name="setting_use_front_cam">Utilizar cámara frontal</string>
