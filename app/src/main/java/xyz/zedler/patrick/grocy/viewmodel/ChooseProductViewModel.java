@@ -71,6 +71,7 @@ public class ChooseProductViewModel extends BaseViewModel {
   private final boolean forbidCreateProductInitial;
   private final boolean pendingProductsActive;
   private String nameFromOnlineSource;
+  private String pictureUrlFromOnlineSource;
   private final boolean debug;
 
   public ChooseProductViewModel(
@@ -220,6 +221,7 @@ public class ChooseProductViewModel extends BaseViewModel {
           product -> {
             productNameLive.setValue(product.getLocalizedProductName(getApplication()));
             nameFromOnlineSource = product.getLocalizedProductName(getApplication());
+            pictureUrlFromOnlineSource = product.getImageUrl();
             offHelpText.setValue(getString(R.string.msg_product_name_off));
           },
           error -> OpenBeautyFactsProduct.getOpenBeautyFactsProduct(
@@ -230,6 +232,7 @@ public class ChooseProductViewModel extends BaseViewModel {
                 if (productName != null && !productName.isEmpty()) {
                   productNameLive.setValue(productName);
                   nameFromOnlineSource = productName;
+                  pictureUrlFromOnlineSource = product.getImageUrl();
                   offHelpText.setValue(getString(R.string.msg_product_name_obf));
                 } else {
                   offHelpText.setValue(getString(R.string.msg_product_name_lookup_empty));
@@ -308,6 +311,10 @@ public class ChooseProductViewModel extends BaseViewModel {
 
   public boolean isPendingProductsActive() {
     return pendingProductsActive;
+  }
+
+  public String getPictureUrlFromOnlineSource() {
+    return pictureUrlFromOnlineSource;
   }
 
   @NonNull
