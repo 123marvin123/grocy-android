@@ -50,7 +50,6 @@ public class HtmlCardView extends LinearLayout {
   private static final String TAG = HtmlCardView.class.getSimpleName();
 
   private ViewHtmlCardBinding binding;
-  private Context context;
   private String html;
   private AlertDialog dialog;
   private String title;
@@ -66,7 +65,6 @@ public class HtmlCardView extends LinearLayout {
   }
 
   private void init(Context context) {
-    this.context = context;
     binding = ViewHtmlCardBinding.inflate(
         LayoutInflater.from(context), this, true
     );
@@ -82,7 +80,7 @@ public class HtmlCardView extends LinearLayout {
   }
 
   public void setDialogTitle(@StringRes int titleResId) {
-    title = context.getString(titleResId);
+    title = getContext().getString(titleResId);
   }
 
   @SuppressLint("ClickableViewAccessibility")
@@ -116,8 +114,8 @@ public class HtmlCardView extends LinearLayout {
               MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
           );
           int height = binding.webview.getMeasuredHeight();
-          int maxHeight = UiUtil.dpToPx(context, 80);
-          int padding = UiUtil.dpToPx(context, 8);
+          int maxHeight = UiUtil.dpToPx(getContext(), 80);
+          int padding = UiUtil.dpToPx(getContext(), 8);
           boolean isStartEndParagraph = HtmlCardView.this.html.matches("^<p>.*</p>$");
           LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
               LinearLayout.LayoutParams.MATCH_PARENT, Math.min(height, maxHeight)
@@ -140,13 +138,13 @@ public class HtmlCardView extends LinearLayout {
   }
 
   public void showHtmlDialog() {
-    FrameLayout frameLayout = new FrameLayout(context);
+    FrameLayout frameLayout = new FrameLayout(getContext());
     frameLayout.setLayoutParams(
         new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
     );
-    WebView webView = new WebView(context);
+    WebView webView = new WebView(getContext());
     webView.getSettings().setJavaScriptEnabled(false);
     webView.getSettings().setDomStorageEnabled(false);
     webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -161,15 +159,15 @@ public class HtmlCardView extends LinearLayout {
         FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT
     );
     layoutParams.setMargins(
-        UiUtil.dpToPx(context, 17),
-        UiUtil.dpToPx(context, 10),
-        UiUtil.dpToPx(context, 17),
+        UiUtil.dpToPx(getContext(), 17),
+        UiUtil.dpToPx(getContext(), 10),
+        UiUtil.dpToPx(getContext(), 17),
         0
     );
     webView.setLayoutParams(layoutParams);
     frameLayout.addView(webView);
 
-    dialog = new MaterialAlertDialogBuilder(context)
+    dialog = new MaterialAlertDialogBuilder(getContext())
         .setTitle(title)
         .setView(frameLayout)
         .setPositiveButton(R.string.action_close, (dialog, which) -> {})
@@ -179,9 +177,9 @@ public class HtmlCardView extends LinearLayout {
 
   private String getFormattedHtml(String html, boolean useOnSurfaceVariant) {
     int textColor = ResUtil.getColor(
-        context, useOnSurfaceVariant ? R.attr.colorOnSurfaceVariant : R.attr.colorOnSurface
+        getContext(), useOnSurfaceVariant ? R.attr.colorOnSurfaceVariant : R.attr.colorOnSurface
     );
-    int linkColor = ResUtil.getColor(context, R.attr.colorPrimary);
+    int linkColor = ResUtil.getColor(getContext(), R.attr.colorPrimary);
     return  "<!DOCTYPE html><html><head><meta charset='UTF-8'><style type='text/css'>"
         + "@font-face{font-family: Jost; src: url('fonts/jost_400_book.otf')}"
         + "body{font-family: Jost;color:#" + String.format("%06X", (0xFFFFFF & textColor)) + ";}"

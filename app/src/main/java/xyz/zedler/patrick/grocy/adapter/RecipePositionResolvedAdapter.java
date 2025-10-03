@@ -67,7 +67,6 @@ public class RecipePositionResolvedAdapter extends
   private final static String TAG = RecipePositionResolvedAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LinearLayoutManager linearLayoutManager;
   private Recipe recipe;
   private final List<GroupedListItem> groupedListItems;
@@ -95,7 +94,6 @@ public class RecipePositionResolvedAdapter extends
       List<String> activeFields,
       RecipePositionsItemAdapterListener listener
   ) {
-    this.context = context;
     SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
     maxDecimalPlacesAmount = sharedPrefs.getInt(
         STOCK.DECIMAL_PLACES_AMOUNT,
@@ -125,7 +123,6 @@ public class RecipePositionResolvedAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   static ArrayList<GroupedListItem> getGroupedListItems(
@@ -290,7 +287,7 @@ public class RecipePositionResolvedAdapter extends
     }
 
     if (product != null) {
-      holder.binding.ingredient.setText(context.getString(
+      holder.binding.ingredient.setText(holder.itemView.getContext().getString(
           R.string.title_ingredient_with_amount,
           amountString,
           pluralUtil.getQuantityUnitPlural(quantityUnit, amountRecipeUnit),
@@ -311,6 +308,7 @@ public class RecipePositionResolvedAdapter extends
         double stockAmount = conversion != null
             ? recipePosition.getStockAmount() * conversion.getFactor()
             : recipePosition.getStockAmount();
+        Context context = holder.itemView.getContext();
         holder.binding.fulfilled.setText(
             context.getString(
                 R.string.msg_recipes_enough_in_stock_amount,
@@ -337,6 +335,7 @@ public class RecipePositionResolvedAdapter extends
             ? recipePosition.getAmountOnShoppingList() * conversion.getFactor()
             : recipePosition.getAmountOnShoppingList();
 
+        Context context = holder.itemView.getContext();
         holder.binding.fulfilled.setText(R.string.msg_recipes_not_enough);
         holder.binding.imageFulfillment.setImageDrawable(ResourcesCompat.getDrawable(
             context.getResources(),
@@ -370,6 +369,7 @@ public class RecipePositionResolvedAdapter extends
     }
 
     // CALORIES & PRICE
+    Context context = holder.itemView.getContext();
     holder.binding.flexboxLayout.removeAllViews();
     Chip chipCalories = createChip(
         context,
@@ -437,6 +437,7 @@ public class RecipePositionResolvedAdapter extends
   }
 
   public void updateData(
+      Context context,
       Recipe recipe,
       List<RecipePositionResolved> newList,
       List<Product> newProducts,
