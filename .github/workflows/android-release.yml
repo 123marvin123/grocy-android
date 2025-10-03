@@ -1,0 +1,65 @@
+name: Android release build
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up JDK 19
+      uses: actions/setup-java@v3
+      with:
+        java-version: '19'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Build debug APK
+      run: ./gradlew assembleDebug
+    
+    - name: Build release APK
+      run: ./gradlew assembleRelease
+    
+    - name: Get release info
+      id: release_info
+      run: |
+        echo "tag_name=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+        echo "release_name=${{ github.event.release.name }}" >> $GITHUB_OUTPUT
+    
+    - name: Rename debug artifact
+      run: |
+        mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-debug.apk
+    
+    - name: Rename release artifact
+      run: |
+        mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-release.apk
+    
+    - name: Upload debug APK to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: app/build/outputs/apk/debug/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-debug.apk
+        asset_name: Grocy-Android-${{ steps.release_info.outputs.tag_name }}-debug.apk
+        asset_content_type: application/vnd.android.package-archive
+    
+    - name: Upload release APK to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: app/build/outputs/apk/release/Grocy-Android-${{ steps.release_info.outputs.tag_name }}-release.apk
+        asset_name: Grocy-Android-${{ steps.release_info.outputs.tag_name }}-release.apk
+        asset_content_type: application/vnd.android.package-archive
