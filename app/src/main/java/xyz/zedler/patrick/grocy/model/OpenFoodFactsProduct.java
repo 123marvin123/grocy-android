@@ -80,6 +80,22 @@ public class OpenFoodFactsProduct {
     return name.isEmpty() ? this.productName : name;
   }
 
+  @Nullable
+  public String getImageUrl() {
+    if (productJson == null) {
+      return null;
+    }
+    // Try to get the front image URL
+    String imageUrl = productJson.optString("image_url");
+    if (imageUrl == null || imageUrl.isEmpty()) {
+      imageUrl = productJson.optString("image_front_url");
+    }
+    if (imageUrl == null || imageUrl.isEmpty()) {
+      imageUrl = productJson.optString("image_front_small_url");
+    }
+    return (imageUrl == null || imageUrl.isEmpty()) ? null : imageUrl;
+  }
+
   public double getEnergy100g() {
     if (nutriments == null) {
       return 0;

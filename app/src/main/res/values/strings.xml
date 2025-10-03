@@ -1213,6 +1213,8 @@
   <string name="setting_language_not_available">English if translation is not available</string>
   <string name="setting_open_food_facts">Use Open Food Facts and Open Beauty Facts</string>
   <string name="setting_open_food_facts_description">Get info from barcodes</string>
+  <string name="setting_open_food_facts_autofill_images">Autofill product images</string>
+  <string name="setting_open_food_facts_autofill_images_description">Automatically add images from Open Food Facts when creating new products</string>
   <string name="setting_choose_barcode_scanner">Choose barcode scanner</string>
   <string name="setting_choose_barcode_scanner_description">For camera barcode scanning</string>
   <string name="setting_use_front_cam">Use front camera</string>

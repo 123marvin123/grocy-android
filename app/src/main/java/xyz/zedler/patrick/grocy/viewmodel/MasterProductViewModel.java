@@ -179,6 +179,11 @@ public class MasterProductViewModel extends BaseViewModel {
     return formData.fillProduct(formData.getProductLive().getValue());
   }
 
+  @Nullable
+  public String getPictureUrl() {
+    return args.getPictureUrl();
+  }
+
   public void loadFromDatabase(boolean downloadAfterLoading) {
     repository.loadFromDatabase(data -> {
       this.products = data.getProducts();

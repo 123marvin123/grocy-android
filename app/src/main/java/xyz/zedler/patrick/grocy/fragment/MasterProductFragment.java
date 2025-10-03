@@ -114,6 +114,7 @@ public class MasterProductFragment extends BaseFragment {
         v -> activity.navUtil.navigate(MasterProductFragmentDirections
             .actionMasterProductFragmentToMasterProductCatOptionalFragment(viewModel.getAction())
             .setProduct(viewModel.getFilledProduct())
+            .setPictureUrl(viewModel.getPictureUrl())
             .setForceSaveWithClose(viewModel.isForceSaveWithClose())));
     binding.categoryLocation.setOnClickListener(
         v -> activity.navUtil.navigate(MasterProductFragmentDirections

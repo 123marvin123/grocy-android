@@ -291,6 +291,18 @@ public class SettingsViewModel extends BaseViewModel {
         .putBoolean(Constants.SETTINGS.BEHAVIOR.FOOD_FACTS, enabled).apply();
   }
 
+  public boolean getUseOpenFoodFactsAutofillImagesEnabled() {
+    return sharedPrefs.getBoolean(
+        BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES,
+        SETTINGS_DEFAULT.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES
+    );
+  }
+
+  public void setUseOpenFoodFactsAutofillImagesEnabled(boolean enabled) {
+    sharedPrefs.edit()
+        .putBoolean(Constants.SETTINGS.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES, enabled).apply();
+  }
+
   public boolean getShowMainMenuButtonEnabled() {
     return sharedPrefs.getBoolean(
         BEHAVIOR.SHOW_MAIN_MENU_BUTTON,
