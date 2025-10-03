@@ -168,7 +168,9 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
       }
       
       activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
-          argsBuilder.build().toBundle());
+          new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
+              .setProductName(productName)
+              .setBarcode(input.trim()).build().toBundle());
     } else {
       activity.getCurrentFragment().addBarcodeToExistingProduct(input.trim());
     }

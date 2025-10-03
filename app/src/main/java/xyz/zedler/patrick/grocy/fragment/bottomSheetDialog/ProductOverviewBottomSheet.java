@@ -135,6 +135,9 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
       productDetails = args.getProductDetails();
       product = productDetails.getProduct();
       stockItem = new StockItem(productDetails);
+      quantityUnitStock = args.getQuantityUnitStock();
+      quantityUnitPurchase = args.getQuantityUnitPurchase();
+      location = args.getLocation();
     } else if (args.getStockItem() != null) {
       stockItem = args.getStockItem();
       quantityUnitStock = args.getQuantityUnitStock();
@@ -308,18 +311,20 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
       dismiss();
     });
     // tooltips
-    ViewUtil.setTooltipText(
-        binding.buttonConsume,
-        activity.getString(
-            R.string.action_consume_one, quantityUnitStock.getName(), product.getName()
-        )
-    );
-    ViewUtil.setTooltipText(
-        binding.buttonOpen,
-        activity.getString(
-            R.string.action_open_one, quantityUnitStock.getName(), product.getName()
-        )
-    );
+    if (quantityUnitStock != null) {
+      ViewUtil.setTooltipText(
+          binding.buttonConsume,
+          activity.getString(
+              R.string.action_consume_one, quantityUnitStock.getName(), product.getName()
+          )
+      );
+      ViewUtil.setTooltipText(
+          binding.buttonOpen,
+          activity.getString(
+              R.string.action_open_one, quantityUnitStock.getName(), product.getName()
+          )
+      );
+    }
 
     // LOAD DETAILS
 
@@ -468,12 +473,13 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
               : null
       );
 
-      boolean quantityUnitsAreNotEqual = quantityUnitStock.getId() != quantityUnitPurchase.getId();
+      boolean quantityUnitsAreNotEqual = quantityUnitStock != null && quantityUnitPurchase != null
+          && quantityUnitStock.getId() != quantityUnitPurchase.getId();
 
       // LAST PRICE
       String lastPrice = productDetails.getLastPrice();
       if (NumUtil.isStringDouble(lastPrice) && isFeatureEnabled(
-          Constants.PREF.FEATURE_STOCK_PRICE_TRACKING)) {
+          Constants.PREF.FEATURE_STOCK_PRICE_TRACKING) && quantityUnitPurchase != null) {
         binding.itemLastPrice.setText(
             activity.getString(R.string.property_last_price),
             activity.getString(
@@ -483,7 +489,7 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
                     + " " + sharedPrefs.getString(Constants.PREF.CURRENCY, ""),
                 quantityUnitPurchase.getName()
             ),
-            quantityUnitsAreNotEqual ? activity.getString(
+            quantityUnitsAreNotEqual && quantityUnitStock != null ? activity.getString(
                 R.string.property_price_unit_insert,
                 NumUtil.trimPrice(NumUtil.toDouble(lastPrice), decimalPlacesPriceDisplay)
                     + " " + sharedPrefs.getString(Constants.PREF.CURRENCY, ""),
@@ -495,7 +501,7 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
       // LAST PRICE
       String averagePrice = productDetails.getAvgPrice();
       if (NumUtil.isStringDouble(averagePrice) && isFeatureEnabled(
-          Constants.PREF.FEATURE_STOCK_PRICE_TRACKING)) {
+          Constants.PREF.FEATURE_STOCK_PRICE_TRACKING) && quantityUnitPurchase != null) {
         binding.itemAveragePrice.setText(
             activity.getString(R.string.property_price_average),
             activity.getString(
@@ -505,7 +511,7 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
                     + " " + sharedPrefs.getString(Constants.PREF.CURRENCY, ""),
                 quantityUnitPurchase.getName()
             ),
-            quantityUnitsAreNotEqual ? activity.getString(
+            quantityUnitsAreNotEqual && quantityUnitStock != null ? activity.getString(
                 R.string.property_price_unit_insert,
                 NumUtil.trimPrice(NumUtil.toDouble(averagePrice), decimalPlacesPriceDisplay)
                     + " " + sharedPrefs.getString(Constants.PREF.CURRENCY, ""),

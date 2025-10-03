@@ -67,7 +67,6 @@ public class RecipeEntryAdapter extends
   private final static String TAG = RecipeEntryAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LayoutManager layoutManager;
   private final ArrayList<Recipe> recipes;
   private final ArrayList<RecipeFulfillment> recipeFulfillments;
@@ -87,7 +86,6 @@ public class RecipeEntryAdapter extends
       LayoutManager layoutManager,
       RecipesItemAdapterListener listener
   ) {
-    this.context = context;
     this.layoutManager = layoutManager;
     this.recipes = new ArrayList<>();
     this.recipeFulfillments = new ArrayList<>();
@@ -107,7 +105,6 @@ public class RecipeEntryAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -190,6 +187,7 @@ public class RecipeEntryAdapter extends
 
     title.setText(recipe.getName());
 
+    Context context = viewHolder.itemView.getContext();
     ChipUtil chipUtil = new ChipUtil(context);
     chips.removeAllViews();
 

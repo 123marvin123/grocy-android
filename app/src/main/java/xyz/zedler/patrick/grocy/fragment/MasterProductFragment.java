@@ -177,6 +177,9 @@ public class MasterProductFragment extends BaseFragment {
               Integer.parseInt(args.getPendingProductId())
           );
         }
+        if (args.getBarcode() != null) {
+          setForPreviousDestination(ARGUMENT.BARCODE, args.getBarcode());
+        }
       } else if (event.getType() == Event.BOTTOM_SHEET) {
         BottomSheetEvent bottomSheetEvent = (BottomSheetEvent) event;
         activity.showBottomSheet(bottomSheetEvent.getBottomSheet(), event.getBundle());

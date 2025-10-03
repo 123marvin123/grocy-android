@@ -50,7 +50,6 @@ public class TaskEntryAdapter extends
   private final static String TAG = TaskEntryAdapter.class.getSimpleName();
   private final static boolean DEBUG = false;
 
-  private Context context;
   private final LinearLayoutManager linearLayoutManager;
   private final ArrayList<Task> tasks;
   private final HashMap<Integer, TaskCategory> taskCategoriesHashMap;
@@ -64,7 +63,6 @@ public class TaskEntryAdapter extends
       LinearLayoutManager linearLayoutManager,
       TasksItemAdapterListener listener
   ) {
-    this.context = context;
     this.linearLayoutManager = linearLayoutManager;
     this.tasks = new ArrayList<>();
     this.taskCategoriesHashMap = new HashMap<>();
@@ -75,7 +73,6 @@ public class TaskEntryAdapter extends
   @Override
   public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
     super.onDetachedFromRecyclerView(recyclerView);
-    this.context = null;
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -140,6 +137,7 @@ public class TaskEntryAdapter extends
     }
 
     if (days != null && !task.isDone()) {
+      Context context = holder.itemView.getContext();
       holder.binding.days.setVisibility(View.VISIBLE);
       holder.binding.days.setText(new DateUtil(context).getHumanForDaysFromNow(date));
       if (days <= 5) {
@@ -150,6 +148,7 @@ public class TaskEntryAdapter extends
     }
 
     if (colorDays) {
+      Context context = holder.itemView.getContext();
       holder.binding.days.setTypeface(
           ResourcesCompat.getFont(context, R.font.jost_medium)
       );
@@ -164,6 +163,7 @@ public class TaskEntryAdapter extends
       }
       holder.binding.days.setTextColor(color);
     } else {
+      Context context = holder.itemView.getContext();
       holder.binding.days.setTypeface(
           ResourcesCompat.getFont(context, R.font.jost_book)
       );

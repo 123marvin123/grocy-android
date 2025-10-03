@@ -29,6 +29,7 @@ import java.util.List;
 import xyz.zedler.patrick.grocy.database.AppDatabase;
 import xyz.zedler.patrick.grocy.model.Location;
 import xyz.zedler.patrick.grocy.model.Product;
+import xyz.zedler.patrick.grocy.model.ProductBarcode;
 import xyz.zedler.patrick.grocy.model.ProductGroup;
 import xyz.zedler.patrick.grocy.model.QuantityUnit;
 import xyz.zedler.patrick.grocy.model.Store;
@@ -56,6 +57,7 @@ public class MasterObjectListRepository {
     private final List<QuantityUnit> quantityUnits;
     private final List<TaskCategory> taskCategories;
     private final List<Userfield> userfields;
+    private final List<ProductBarcode> productBarcodes;
 
     public MasterObjectData(
         List<Product> products,
@@ -64,7 +66,8 @@ public class MasterObjectListRepository {
         List<Location> locations,
         List<QuantityUnit> quantityUnits,
         List<TaskCategory> taskCategories,
-        List<Userfield> userfields
+        List<Userfield> userfields,
+        List<ProductBarcode> productBarcodes
     ) {
       this.products = products;
       this.productGroups = productGroups;
@@ -73,6 +76,7 @@ public class MasterObjectListRepository {
       this.quantityUnits = quantityUnits;
       this.taskCategories = taskCategories;
       this.userfields = userfields;
+      this.productBarcodes = productBarcodes;
     }
 
     public List<Product> getProducts() {
@@ -102,6 +106,10 @@ public class MasterObjectListRepository {
     public List<Userfield> getUserfields() {
       return userfields;
     }
+
+    public List<ProductBarcode> getProductBarcodes() {
+      return productBarcodes;
+    }
   }
 
   public void loadFromDatabase(DataListener onSuccess, Consumer<Throwable> onError) {
@@ -114,6 +122,7 @@ public class MasterObjectListRepository {
             appDatabase.quantityUnitDao().getQuantityUnits(),
             appDatabase.taskCategoryDao().getTaskCategories(),
             appDatabase.userfieldDao().getUserfields(),
+            appDatabase.productBarcodeDao().getProductBarcodes(),
             MasterObjectData::new
         )
         .subscribeOn(Schedulers.io())
