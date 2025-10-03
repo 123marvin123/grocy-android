@@ -20,6 +20,7 @@
 
 package xyz.zedler.patrick.grocy.fragment.bottomSheetDialog;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +28,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 import xyz.zedler.patrick.grocy.Constants;
+import xyz.zedler.patrick.grocy.Constants.SETTINGS;
+import xyz.zedler.patrick.grocy.Constants.SETTINGS_DEFAULT;
 import xyz.zedler.patrick.grocy.R;
 import xyz.zedler.patrick.grocy.activity.MainActivity;
 import xyz.zedler.patrick.grocy.databinding.FragmentBottomsheetInputProductBinding;
 import xyz.zedler.patrick.grocy.fragment.MasterProductFragmentArgs;
+import xyz.zedler.patrick.grocy.helper.DownloadHelper;
+import xyz.zedler.patrick.grocy.model.OpenBeautyFactsProduct;
+import xyz.zedler.patrick.grocy.model.OpenFoodFactsProduct;
 import xyz.zedler.patrick.grocy.util.UiUtil;
 
 public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
@@ -42,6 +49,7 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
   private FragmentBottomsheetInputProductBinding binding;
 
   private MutableLiveData<Integer> selectionLive;
+  private String productNameFromOnlineSource;
 
   @Override
   public View onCreateView(
@@ -78,6 +86,50 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
       }
     }
     selectionLive = new MutableLiveData<>(stringOnlyContainsNumbers ? 3 : 1);
+
+    // Query OpenFoodFacts/OpenBeautyFacts if input is a barcode
+    if (stringOnlyContainsNumbers) {
+      queryProductNameFromOnlineSources(input.trim());
+    }
+  }
+
+  private void queryProductNameFromOnlineSources(String barcode) {
+    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(
+        requireContext()
+    );
+    boolean isOpenFoodFactsEnabled = sharedPrefs.getBoolean(
+        SETTINGS.BEHAVIOR.FOOD_FACTS,
+        SETTINGS_DEFAULT.BEHAVIOR.FOOD_FACTS
+    );
+
+    if (!isOpenFoodFactsEnabled) {
+      return;
+    }
+
+    DownloadHelper dlHelper = new DownloadHelper(activity, TAG);
+    OpenFoodFactsProduct.getOpenFoodFactsProduct(
+        dlHelper,
+        barcode,
+        product -> {
+          String productName = product.getLocalizedProductName(activity.getApplication());
+          if (productName != null && !productName.isEmpty()) {
+            productNameFromOnlineSource = productName;
+          }
+        },
+        error -> OpenBeautyFactsProduct.getOpenBeautyFactsProduct(
+            dlHelper,
+            barcode,
+            product -> {
+              String productName = product.getLocalizedProductName(activity.getApplication());
+              if (productName != null && !productName.isEmpty()) {
+                productNameFromOnlineSource = productName;
+              }
+            },
+            error1 -> {
+              // No product name found from online sources, continue without it
+            }
+        )
+    );
   }
 
   public void proceed() {
@@ -89,9 +141,11 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
               .setProductName(input).build().toBundle());
     } else if (selectionLive.getValue() == 2) {
       activity.getCurrentFragment().addBarcodeToNewProduct(input.trim());
+      // Use product name from online source if available, otherwise use empty
+      String productName = productNameFromOnlineSource != null ? productNameFromOnlineSource : "";
       activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
           new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-              .build().toBundle());
+              .setProductName(productName).build().toBundle());
     } else {
       activity.getCurrentFragment().addBarcodeToExistingProduct(input.trim());
     }
