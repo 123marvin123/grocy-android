@@ -219,9 +219,11 @@ public class ChooseProductFragment extends BaseFragment
   }
 
   public void createNewProduct() {
+    String barcode = ChooseProductFragmentArgs.fromBundle(requireArguments()).getBarcode();
     navigateDeepLinkHorizontally(R.string.deep_link_masterProductFragment,
         new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
             .setProductName(viewModel.getProductNameLive().getValue())
+            .setBarcode(barcode)
             .build().toBundle());
   }
 
