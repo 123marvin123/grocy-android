@@ -135,6 +135,9 @@ public class ProductOverviewBottomSheet extends BaseBottomSheetDialogFragment {
       productDetails = args.getProductDetails();
       product = productDetails.getProduct();
       stockItem = new StockItem(productDetails);
+      quantityUnitStock = args.getQuantityUnitStock();
+      quantityUnitPurchase = args.getQuantityUnitPurchase();
+      location = args.getLocation();
     } else if (args.getStockItem() != null) {
       stockItem = args.getStockItem();
       quantityUnitStock = args.getQuantityUnitStock();
