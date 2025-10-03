@@ -774,6 +774,11 @@
         app:nullable="true"
         android:defaultValue="@null" />
       <argument
+        android:name="pictureUrl"
+        app:argType="string"
+        app:nullable="true"
+        android:defaultValue="@null" />
+      <argument
         android:name="pendingProductId"
         app:argType="string"
         app:nullable="true"
@@ -797,6 +802,11 @@
       <argument
         android:name="action"
         app:argType="string" />
+      <argument
+        android:name="pictureUrl"
+        app:argType="string"
+        app:nullable="true"
+        android:defaultValue="@null" />
       <argument
         android:name="forceSaveWithClose"
         app:argType="boolean"

@@ -402,6 +402,37 @@
 
           </LinearLayout>
 
+          <LinearLayout
+            style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable.More"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{v -> switchOpenFoodFactsAutofillImages.setChecked(!switchOpenFoodFactsAutofillImages.isChecked())}">
+
+            <ImageView
+              android:id="@+id/image_open_food_facts_autofill_images"
+              style="@style/Widget.Grocy.ImageView.ListItem.Icon"
+              android:src="@drawable/ic_round_image"
+              tools:ignore="ContentDescription" />
+
+            <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox.Stretch">
+
+              <TextView
+                style="@style/Widget.Grocy.TextView.ListItem.Title"
+                android:text="@string/setting_open_food_facts_autofill_images" />
+
+              <TextView
+                style="@style/Widget.Grocy.TextView.ListItem.Description"
+                android:text="@string/setting_open_food_facts_autofill_images_description" />
+
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+              android:id="@+id/switch_open_food_facts_autofill_images"
+              style="@style/Widget.Grocy.Switch"
+              android:checked="@={viewModel.useOpenFoodFactsAutofillImagesEnabled}"/>
+
+          </LinearLayout>
+
           <TextView
             style="@style/Widget.Grocy.TextView.Category"
             android:text="@string/category_other_behavior" />

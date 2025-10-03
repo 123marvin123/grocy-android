@@ -50,6 +50,7 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
 
   private MutableLiveData<Integer> selectionLive;
   private String productNameFromOnlineSource;
+  private String productImageUrlFromOnlineSource;
 
   @Override
   public View onCreateView(
@@ -115,6 +116,10 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
           if (productName != null && !productName.isEmpty()) {
             productNameFromOnlineSource = productName;
           }
+          String imageUrl = product.getImageUrl();
+          if (imageUrl != null && !imageUrl.isEmpty()) {
+            productImageUrlFromOnlineSource = imageUrl;
+          }
         },
         error -> OpenBeautyFactsProduct.getOpenBeautyFactsProduct(
             dlHelper,
@@ -123,6 +128,10 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
               String productName = product.getLocalizedProductName(activity.getApplication());
               if (productName != null && !productName.isEmpty()) {
                 productNameFromOnlineSource = productName;
+              }
+              String imageUrl = product.getImageUrl();
+              if (imageUrl != null && !imageUrl.isEmpty()) {
+                productImageUrlFromOnlineSource = imageUrl;
               }
             },
             error1 -> {
@@ -143,9 +152,23 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
       activity.getCurrentFragment().addBarcodeToNewProduct(input.trim());
       // Use product name from online source if available, otherwise use empty
       String productName = productNameFromOnlineSource != null ? productNameFromOnlineSource : "";
+      
+      MasterProductFragmentArgs.Builder argsBuilder = new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
+          .setProductName(productName);
+      
+      // Add image URL if available and setting is enabled
+      SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+      boolean isImageAutofillEnabled = sharedPrefs.getBoolean(
+          SETTINGS.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES,
+          SETTINGS_DEFAULT.BEHAVIOR.FOOD_FACTS_AUTOFILL_IMAGES
+      );
+      
+      if (isImageAutofillEnabled && productImageUrlFromOnlineSource != null) {
+        argsBuilder.setPictureUrl(productImageUrlFromOnlineSource);
+      }
+      
       activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
-          new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-              .setProductName(productName).build().toBundle());
+          argsBuilder.build().toBundle());
     } else {
       activity.getCurrentFragment().addBarcodeToExistingProduct(input.trim());
     }

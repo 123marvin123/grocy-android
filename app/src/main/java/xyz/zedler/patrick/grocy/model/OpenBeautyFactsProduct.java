@@ -23,6 +23,7 @@ package xyz.zedler.patrick.grocy.model;
 import android.app.Application;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -74,6 +75,22 @@ public class OpenBeautyFactsProduct {
       name = productJson.optString("product_name_" + language);
     }
     return name.isEmpty() ? this.productName : name;
+  }
+
+  @Nullable
+  public String getImageUrl() {
+    if (productJson == null) {
+      return null;
+    }
+    // Try to get the front image URL
+    String imageUrl = productJson.optString("image_url");
+    if (imageUrl == null || imageUrl.isEmpty()) {
+      imageUrl = productJson.optString("image_front_url");
+    }
+    if (imageUrl == null || imageUrl.isEmpty()) {
+      imageUrl = productJson.optString("image_front_small_url");
+    }
+    return (imageUrl == null || imageUrl.isEmpty()) ? null : imageUrl;
   }
 
   @NonNull
