@@ -61,7 +61,6 @@ public class HtmlView extends LinearLayout {
     binding = null;
   }
 
-  @SuppressLint("ClickableViewAccessibility")
   public void setHtml(String html) {
     if (html != null) {
       html = html.replaceAll("</?font[^>]*>", ""); // remove font
