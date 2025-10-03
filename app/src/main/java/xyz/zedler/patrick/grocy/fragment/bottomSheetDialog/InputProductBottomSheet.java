@@ -149,12 +149,12 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
           new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
               .setProductName(input).build().toBundle());
     } else if (selectionLive.getValue() == 2) {
-      activity.getCurrentFragment().addBarcodeToNewProduct(input.trim());
       // Use product name from online source if available, otherwise use empty
       String productName = productNameFromOnlineSource != null ? productNameFromOnlineSource : "";
       
       MasterProductFragmentArgs.Builder argsBuilder = new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-          .setProductName(productName);
+          .setProductName(productName)
+          .setBarcode(input.trim());
       
       // Add image URL if available and setting is enabled
       SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
@@ -168,9 +168,7 @@ public class InputProductBottomSheet extends BaseBottomSheetDialogFragment {
       }
       
       activity.navUtil.navigateDeepLink(R.string.deep_link_masterProductFragment,
-          new MasterProductFragmentArgs.Builder(Constants.ACTION.CREATE)
-              .setProductName(productName)
-              .setBarcode(input.trim()).build().toBundle());
+          argsBuilder.build().toBundle());
     } else {
       activity.getCurrentFragment().addBarcodeToExistingProduct(input.trim());
     }
