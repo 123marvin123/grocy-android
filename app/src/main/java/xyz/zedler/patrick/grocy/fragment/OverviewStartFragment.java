@@ -248,6 +248,7 @@ public class OverviewStartFragment extends BaseFragment {
     if (clickUtil.isDisabled()) {
       return;
     }
+
     activity.showBottomSheet(new xyz.zedler.patrick.grocy.fragment.bottomSheetDialog.GeminiChatBottomSheet());
   }
 
