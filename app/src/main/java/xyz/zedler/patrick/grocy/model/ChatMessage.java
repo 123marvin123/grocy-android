@@ -22,7 +22,7 @@ package xyz.zedler.patrick.grocy.model;
 
 public class ChatMessage {
   
-  private final String message;
+  private String message;
   private final boolean isUser;
   
   public ChatMessage(String message, boolean isUser) {
@@ -33,7 +33,11 @@ public class ChatMessage {
   public String getMessage() {
     return message;
   }
-  
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
   public boolean isUser() {
     return isUser;
   }

@@ -108,6 +108,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     notifyItemInserted(messages.size() - 1);
   }
 
+  public void updateLastMessage(String newText) {
+    if (!messages.isEmpty()) {
+      int lastIndex = messages.size() - 1;
+      messages.get(lastIndex).setMessage(newText);
+      notifyItemChanged(lastIndex);
+    }
+  }
+
   static class MessageViewHolder extends RecyclerView.ViewHolder {
     MaterialCardView cardMessage;
     TextView textSender;

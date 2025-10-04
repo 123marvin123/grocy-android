@@ -31,17 +31,22 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.google.ai.client.generativeai.GenerativeModel;
-import com.google.ai.client.generativeai.java.GenerativeModelFutures;
-import com.google.ai.client.generativeai.type.Content;
-import com.google.ai.client.generativeai.type.GenerateContentResponse;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.genai.Client;
+import com.google.genai.ResponseStream;
+import com.google.genai.types.Content;
+import com.google.genai.types.GenerateContentConfig;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.GoogleSearch;
+import com.google.genai.types.Part;
+import com.google.genai.types.ThinkingConfig;
+import com.google.genai.types.Tool;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import xyz.zedler.patrick.grocy.Constants;
@@ -49,6 +54,7 @@ import xyz.zedler.patrick.grocy.R;
 import xyz.zedler.patrick.grocy.adapter.ChatMessageAdapter;
 import xyz.zedler.patrick.grocy.databinding.FragmentBottomsheetGeminiChatBinding;
 import xyz.zedler.patrick.grocy.model.ChatMessage;
+import xyz.zedler.patrick.grocy.util.LocaleUtil;
 
 public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
@@ -58,7 +64,11 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
   private ChatMessageAdapter adapter;
   private List<ChatMessage> messages;
   private List<Content> chatHistory;
-  private GenerativeModelFutures model;
+
+  private Client client;
+
+  private GenerateContentConfig config;
+
   private final Executor executor = Executors.newSingleThreadExecutor();
 
   @Override
@@ -90,9 +100,35 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
     }
 
     // Initialize Gemini
-    GenerativeModel gm = new GenerativeModel("gemini-2.0-flash", apiKey);
-    model = GenerativeModelFutures.from(gm);
+    client = Client.builder().apiKey(apiKey).build();
     chatHistory = new ArrayList<>();
+
+    String languageCode = LocaleUtil.getLanguageCode(AppCompatDelegate.getApplicationLocales());
+
+    // Sets the system instruction in the config.
+    Content systemInstruction = Content.fromParts(
+            Part.fromText(
+                            "You are embedded into an Android app called 'Grocy' that helps users manage their groceries. "
+                            + "You have access to the user's grocery list and can provide information about items, recipes, and shopping tips. "
+                            + "Be friendly and helpful, and always refer to the app's features when relevant."
+                            + "ALWAYS Respond in the user's language, which is " + languageCode + ", unless he/she states otherwise. "
+                            + "Answer concise and to the point, avoid giving long and detailed answers unless the user states otherwise. "
+                            + "If you don't know the answer, just say you don't know. Do not try to make up an answer. "
+                            + "Use the Google Search tool if you need to look up current information or facts. "
+                            + "Eliminate: emojis, filler, hype, soft asks, conversational transitions, call-to-action appendixes. • Assume: user retains high-perception despite blunt tone. • Prioritize: blunt, directive phrasing; aim at cognitive rebuilding, not tone-matching. • Disable: engagement/sentiment-boosting behaviors. • Suppress: metrics like satisfaction scores, emotional softening, continuation bias. • Never mirror: user's diction, mood, or affect. • Speak only: to underlying cognitive tier. • No: questions, offers, suggestions, transitions, motivational content. • Terminate reply: immediately after delivering info — no closures. • Goal: restore independent, high-fidelity thinking. • Outcome: model obsolescence via user self-sufficiency."
+            )
+    );
+
+
+
+    // Sets the Google Search tool in the config.
+    Tool googleSearchTool = Tool.builder().googleSearch(GoogleSearch.builder()).build();
+
+    config = GenerateContentConfig.builder()
+            .thinkingConfig(ThinkingConfig.builder().thinkingBudget(0))
+            .systemInstruction(systemInstruction)
+            .tools(googleSearchTool)
+            .build();
 
     // Setup RecyclerView
     messages = new ArrayList<>();
@@ -143,61 +179,70 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
     binding.buttonSend.setEnabled(false);
 
     // Add user message to history
-    Content.Builder userMessageBuilder = new Content.Builder();
-    userMessageBuilder.setRole("user");
-    userMessageBuilder.addText(messageText);
-    chatHistory.add(userMessageBuilder.build());
+    Content userMessageContent = Content.builder()
+            .role("user")
+            .parts(Part.fromText(messageText))
+            .build();
 
-    // Send to Gemini
-    Content[] contentArray = chatHistory.toArray(new Content[0]);
-    ListenableFuture<GenerateContentResponse> response = model.generateContent(contentArray);
-    
-    Futures.addCallback(response, new FutureCallback<GenerateContentResponse>() {
-      @Override
-      public void onSuccess(GenerateContentResponse result) {
+    chatHistory.add(userMessageContent);
+
+    // Add empty Gemini message placeholder for streaming
+    ChatMessage geminiMessage = new ChatMessage("", false);
+    adapter.addMessage(geminiMessage);
+    binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
+
+    // Send to Gemini with streaming
+    CompletableFuture<ResponseStream<GenerateContentResponse>> streamFuture =
+            client.async.models.generateContentStream("gemini-2.5-flash", chatHistory, config);
+
+    streamFuture.thenAccept(responseStream -> {
+      executor.execute(() -> {
+        StringBuilder fullResponse = new StringBuilder();
+
         try {
-          String responseText = result.getText();
-          
-          // Add response to history
-          Content.Builder modelMessageBuilder = new Content.Builder();
-          modelMessageBuilder.setRole("model");
-          modelMessageBuilder.addText(responseText);
-          chatHistory.add(modelMessageBuilder.build());
-          
+          // Iterate through the stream
+          for (GenerateContentResponse response : responseStream) {
+            String chunk = response.text();
+            if (chunk != null && !chunk.isEmpty()) {
+              fullResponse.append(chunk);
+
+              // Update UI with the accumulated text
+              String currentText = fullResponse.toString();
+              requireActivity().runOnUiThread(() -> {
+                adapter.updateLastMessage(currentText);
+              });
+            }
+          }
+
+          // Add the complete response to chat history
+          String completeResponse = fullResponse.toString();
+          chatHistory.add(Content.builder()
+                  .role("model")
+                  .parts(Part.fromText(completeResponse))
+                  .build());
+
+          // Re-enable send button
           requireActivity().runOnUiThread(() -> {
-            ChatMessage geminiMessage = new ChatMessage(responseText, false);
-            adapter.addMessage(geminiMessage);
-            binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
             binding.buttonSend.setEnabled(true);
-          });
-        } catch (Exception e) {
-          Log.e(TAG, "Error processing Gemini response", e);
-          requireActivity().runOnUiThread(() -> {
-            ChatMessage errorMessage = new ChatMessage(
-                "Sorry, I encountered an error processing the response.", 
-                false
-            );
-            adapter.addMessage(errorMessage);
             binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
+          });
+
+        } catch (Exception e) {
+          Log.e(TAG, "Error processing stream", e);
+          requireActivity().runOnUiThread(() -> {
+            adapter.updateLastMessage("Sorry, I encountered an error processing the response.");
             binding.buttonSend.setEnabled(true);
           });
         }
-      }
-
-      @Override
-      public void onFailure(Throwable t) {
-        Log.e(TAG, "Error sending message to Gemini", t);
-        requireActivity().runOnUiThread(() -> {
-          ChatMessage errorMessage = new ChatMessage(
-              "Sorry, I couldn't connect to Gemini: " + t.getMessage(), 
-              false
-          );
-          adapter.addMessage(errorMessage);
-          binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
-          binding.buttonSend.setEnabled(true);
-        });
-      }
-    }, executor);
+      });
+    }).exceptionally(throwable -> {
+      Log.e(TAG, "Error starting stream", throwable);
+      requireActivity().runOnUiThread(() -> {
+        adapter.updateLastMessage("Sorry, I couldn't connect to Gemini: " + throwable.getMessage());
+        binding.buttonSend.setEnabled(true);
+      });
+      return null;
+    });
   }
 
   @Override
