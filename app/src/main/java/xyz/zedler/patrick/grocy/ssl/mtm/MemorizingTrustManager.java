@@ -463,6 +463,8 @@ public class MemorizingTrustManager implements X509TrustManager {
     final PendingIntent call;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       call = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      call = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     } else {
       call = PendingIntent.getActivity(context, 0, intent, 0);
     }

@@ -61,3 +61,10 @@
 # Only has effected these pre-KitKat two compatibility classes
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
 -dontwarn org.apache.harmony.xnet.provider.jsse.SSLParametersImpl
+
+# Suppress warnings for missing Java Beans classes (not available on Android)
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
+
+# Suppress warnings for CommonMark GFM extension classes
+-dontwarn org.commonmark.ext.gfm.strikethrough.Strikethrough
