@@ -35,6 +35,8 @@ public final class Constants {
     public final static String HOME_ASSISTANT_LONG_LIVED_TOKEN = "home_assistant_long_lived_token";
     public final static String HOME_ASSISTANT_INGRESS_SESSION_KEY = "home_assistant_ingress_session_key";
     public final static String HOME_ASSISTANT_INGRESS_SESSION_KEY_TIME = "home_assistant_ingress_session_key_time";
+    public final static String GEMINI_API_KEY = "gemini_api_key";
+    public final static String GEMINI_ENABLED = "gemini_enabled";
     public final static String CURRENCY = "currency";
     public final static String ENERGY_UNIT = "energy_unit";
     public final static String ENERGY_UNIT_DEFAULT = "kcal";
