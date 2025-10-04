@@ -1191,8 +1191,6 @@
   <string name="setting_language_info">Köszönet az önkéntes fordítóknak a Transifexen!\nKeress fel minket a Githubon, ahol megtudhatod, hogyan segíthetsz elérhetővé tenni az alkalmazást a saját nyelveden.</string>
   <string name="setting_language_system">Rendszerbeállítás</string>
   <string name="setting_language_not_available">Angol, ha a fordítás nem áll rendelkezésre</string>
-  <string name="setting_transition">Használjon csúszó átmenetet a beállítási oldalak között</string>
-  <string name="setting_transition_description">Ahelyett, hogy elhalványodna</string>
   <string name="setting_open_food_facts">Open Food Facts használata</string>
   <string name="setting_open_food_facts_description">Információ a vonalkódok alapján</string>
   <string name="setting_open_food_facts_autofill_images">Termékképek automatikus kitöltése</string>
@@ -1301,5 +1299,54 @@
     <item quantity="other">%1$d házimunka elvégzése esedékes.</item>
   </plurals>
   <string name="notification_chores_content">A halogatás haszontalan. A lista megnyitásához koppints a gombra.</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Csevegés a Geminivel</string>
+  <string name="hint_ask_gemini">Kérdezd meg a Geminit az élelmiszereidről…</string>
+  <string name="action_open_gemini_chat">Csevegés a Google Geminivel</string>
+  <string name="msg_gemini_welcome">Helló! Gemini vagyok. Segíthetek információkkal az élelmiszereidről. Mit szeretnél tudni?</string>
+  <string name="error_gemini_not_enabled">A Gemini nincs engedélyezve. Kérjük, konfiguráld a beállításokban.</string>
+  <string name="error_gemini_no_api_key">A Gemini API kulcs nincs konfigurálva. Kérjük, add hozzá a beállításokban.</string>
+  <string name="error_gemini_failed">Nem sikerült kommunikálni a Geminivel</string>
+  <string name="setting_gemini_enabled">Gemini csevegés engedélyezése</string>
+  <string name="setting_gemini_enabled_description">Google Gemini AI-val történő csevegés engedélyezése az élelmiszereidről</string>
+  <string name="setting_gemini_api_key">Gemini API kulcs</string>
+  <string name="setting_gemini_api_key_description">A Google Gemini API kulcsod (lásd https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Add meg a személyes Gemini API kulcsodat</string>
+  <string name="sender_you">Te</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Gemini csevegés használata</string>
+  <string name="setting_gemini_switch_description">Lehetővé teszi a csevegést a Geminivel a termékeidről, receptjeidről és feladataidról.</string>
+  <string name="error_userfield_type_not_supported">A felhasználói mező típusa jelenleg nem támogatott</string>
+
+  <string name="ikm_select_cert">Válassz ügyfél-tanúsítványt</string>
+  <string name="ikm_client_cert">A szerver ügyfél-tanúsítványt kért. Kérlek, válaszd ki, melyik tanúsítványt szeretnéd használni.</string>
+  <string name="ikm_client_cert_notification">Válassz ügyfél-tanúsítványt ehhez:</string>
+  <string name="ikm_decision_file">Fájlból</string>
+  <string name="ikm_decision_keychain">Az eszköz kulcskezelőjéből</string>
+  <string name="ikm_notification">Válassz ügyfél-tanúsítványt</string>
+  <string name="ikm_load_app_keystore">Hiba az alkalmazás kulcstárolójának betöltésekor</string>
+  <string name="ikm_store_aliasMapping">Hiba a kulcslánc álnevek tárolása közben</string>
+  <string name="ikm_remove_keys">Csatlakozási hiba: eltávolított kulcsok ehhez:</string>
+  <string name="ikm_remove_all_keys">Minden csatlakozási kulcs eltávolítva</string>
+  <string name="ikm_add_from_keystore">Hiba a megadott kulcstároló olvasásakor</string>
+  <string name="ikm_add_from_keystore_alias">Hiba a kulcsok betöltésekor:</string>
+  <string name="ikm_keychain">Kulcslánc hiba; tárolt álnév eltávolítása</string>
+  <string name="ikm_select_keystore">Válassz kulcstároló fájlt</string>
+
+  <string name="mtm_security_risk">Figyelmeztetés: Lehetséges biztonsági kockázat</string>
+  <string name="mtm_trust_anchor">A szerver tanúsítványát nem ismert hitelesítésszolgáltató írta alá.</string>
+  <string name="mtm_cert_expired">A szerver tanúsítványa lejárt.</string>
+  <string name="mtm_hostname_mismatch">A szerver nem tudott hitelesíteni mint \&quot;%s\&quot;.</string>
+  <string name="mtm_trust_certificate">Megbízol ebben a tanúsítványban? A felsorolt összes név ellenőrzéséhez használni fogják.</string>
+  <string name="mtm_accept_servername">Elfogadod az eltérő szervernevet?</string>
+  <string name="mtm_cert_details">Tanúsítvány részletei:</string>
+  <string name="mtm_valid_for">Tanúsítvány érvényes:</string>
+  <string name="mtm_decision_always">Mindig</string>
+  <string name="mtm_decision_once">Egyszer</string>
+  <string name="mtm_notification_channel">Biztonság</string>
+  <string name="mtm_notification">Tanúsítvány ellenőrzése</string>
+  <string name="mtm_error_keystore">Kivétel a kulcstároló fájlból való betöltésekor</string>
 
   </resources>

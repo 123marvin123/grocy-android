@@ -1167,4 +1167,88 @@ Bezoek ons op GitHub om te leren hoe u kunt helpen Grocy Android beschikbaar te 
   <string name="setting_notification_time_description">Wanneer een controle is gedaan</string>
   <string name="setting_keep_screen_on_recipes_description">Tijdens het bekijken van een recept</string>
 
+  <!-- Critical missing strings -->
+  <string name="action_open_server">Gebruik serverinterface</string>
+  <string name="action_track_chore_execution">Voer nu karwei uit</string>
+  <string name="action_track_next_chore_schedule">Volg volgend karwei schema</string>
+  <string name="error_api_qr_code">Geen QR-code met Grocy API-referenties</string>
+  <string name="error_auto_sync_disabled">Automatische synchronisatie is uitgeschakeld</string>
+  <string name="error_clipboard_no_image">Klembord bevat geen afbeelding of kan niet worden gelezen</string>
+  <string name="error_empty_chores_sub">Ga naar stamgegevens en maak er een aan</string>
+  <string name="error_empty_unit_conversions">Geen hoeveelheidseenheid conversies</string>
+  <string name="error_invalid_base_servings">Porties ongeldig</string>
+  <string name="error_no_children">Het geselecteerde product heeft geen onderproducten</string>
+  <string name="error_not_grocy_instance">Geen geldige Grocy-instantie</string>
+  <string name="error_open_product_not_supported">Product markeren als open wordt niet ondersteund voor dit product</string>
+  <string name="error_permission">Geen toestemming voor deze actie</string>
+  <string name="error_permission_notification">Meldingstoestemming is vereist voor herinneringen</string>
+  <string name="error_picture_uploads_forbidden">Om veiligheidsredenen is het uploaden van afbeeldingen alleen toegestaan op zelf gehoste servers. Je gebruikt momenteel de demo-instantie.</string>
+  <string name="error_pictures_size_exceeds_limit">Er zijn ingesloten afbeeldingen in product- of receptbeschrijvingen op je server, die de parsinglimiet van deze app overschrijden. Verwijder afbeeldingen van hoge kwaliteit en groot formaat uit je beschrijvingen, dit zal ook het laden van gegevens versnellen.</string>
+  <string name="error_userfield_type_not_supported">Gebruikersveldtype wordt momenteel niet ondersteund</string>
+
+  <plurals name="msg_due_tasks_long">
+    <item quantity="one">%1$d binnenkort (alle hieronder)</item>
+    <item quantity="other">%1$d binnenkort (alle hieronder)</item>
+  </plurals>
+  <plurals name="msg_due_tasks_short">
+    <item quantity="one">%1$d binnenkort</item>
+    <item quantity="other">%1$d binnenkort</item>
+  </plurals>
+  <plurals name="notification_chores_due_title">
+    <item quantity="one">%1$d karwei moet worden gedaan.</item>
+    <item quantity="other">%1$d karweitjes moeten worden gedaan.</item>
+  </plurals>
+  <plurals name="notification_stock_not_fresh_title">
+    <item quantity="one">%1$d product in je voorraad is niet meer vers.</item>
+    <item quantity="other">%1$d producten in je voorraad zijn niet meer vers.</item>
+  </plurals>
+
+  <string name="ikm_select_cert">Selecteer clientcertificaat</string>
+  <string name="ikm_client_cert">Server heeft een clientcertificaat aangevraagd. Selecteer welk certificaat je wilt gebruiken.</string>
+  <string name="ikm_client_cert_notification">Selecteer clientcertificaat voor</string>
+  <string name="ikm_decision_file">Van bestand</string>
+  <string name="ikm_decision_keychain">Van apparaatsleutelbeheerder</string>
+  <string name="ikm_notification">Selecteer clientcertificaat</string>
+  <string name="ikm_load_app_keystore">Fout bij laden van app-sleutelopslag</string>
+  <string name="ikm_store_aliasMapping">Fout bij opslaan van sleutelkettingaliassen</string>
+  <string name="ikm_remove_keys">Verbindingsfout: verwijderde sleutels voor</string>
+  <string name="ikm_remove_all_keys">Alle verbindingssleutels verwijderd</string>
+  <string name="ikm_add_from_keystore">Fout bij lezen van opgegeven sleutelopslag</string>
+  <string name="ikm_add_from_keystore_alias">Fout bij laden van sleutels:</string>
+  <string name="ikm_keychain">Sleutelkettingfout; opgeslagen alias wordt verwijderd</string>
+  <string name="ikm_select_keystore">Selecteer sleutelopslagbestand</string>
+
+  <string name="mtm_security_risk">Waarschuwing: mogelijk beveiligingsrisico</string>
+  <string name="mtm_trust_anchor">Het servercertificaat is niet ondertekend door een bekende certificeringsinstantie.</string>
+  <string name="mtm_cert_expired">Het servercertificaat is verlopen.</string>
+  <string name="mtm_hostname_mismatch">Server kon niet authenticeren als \&quot;%s\&quot;.</string>
+  <string name="mtm_trust_certificate">Vertrouw je dit certificaat? Het zal worden gebruikt om alle vermelde namen te verifiëren.</string>
+  <string name="mtm_accept_servername">Niet-overeenkomende servernaam accepteren?</string>
+  <string name="mtm_cert_details">Certificaatdetails:</string>
+  <string name="mtm_valid_for">Certificaat geldig voor:</string>
+  <string name="mtm_decision_always">Altijd</string>
+  <string name="mtm_decision_once">Eenmalig</string>
+  <string name="mtm_notification_channel">Beveiliging</string>
+  <string name="mtm_notification">Certificaatverificatie</string>
+  <string name="mtm_error_keystore">Uitzondering bij laden van sleutelopslag uit bestand</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chat met Gemini</string>
+  <string name="hint_ask_gemini">Vraag Gemini over je boodschappen…</string>
+  <string name="action_open_gemini_chat">Chat met Google Gemini</string>
+  <string name="msg_gemini_welcome">Hallo! Ik ben Gemini. Ik kan je helpen met informatie over je boodschappen. Wat wil je weten?</string>
+  <string name="error_gemini_not_enabled">Gemini is niet ingeschakeld. Configureer het in de instellingen.</string>
+  <string name="error_gemini_no_api_key">Gemini API-sleutel niet geconfigureerd. Voeg deze toe in de instellingen.</string>
+  <string name="error_gemini_failed">Communicatie met Gemini mislukt</string>
+  <string name="setting_gemini_enabled">Gemini-chat inschakelen</string>
+  <string name="setting_gemini_enabled_description">Sta chatten met Google Gemini AI toe over je boodschappen</string>
+  <string name="setting_gemini_api_key">Gemini API-sleutel</string>
+  <string name="setting_gemini_api_key_description">Je Google Gemini API-sleutel (zie https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Voer je persoonlijke Gemini API-sleutel in</string>
+  <string name="sender_you">Jij</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Gemini-chat gebruiken</string>
+  <string name="setting_gemini_switch_description">Maakt chatten met Gemini mogelijk over je producten, recepten en taken.</string>
+
   </resources>

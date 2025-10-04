@@ -1338,4 +1338,63 @@ Se nel file ripristinato sono presenti dati errati, l\'app potrebbe non funziona
   </plurals>
   <string name="notification_chores_content">Procastinare è inutile. Tocca per aprire la lista.</string>
 
+  <string name="action_auto_sync">Sincronizzazione automatica</string>
+  <string name="action_configure_sections">Configura sezioni</string>
+  <string name="action_open_server">Usa interfaccia server</string>
+  <string name="error_auto_sync_disabled">La sincronizzazione automatica è disabilitata</string>
+  <string name="error_open_product_not_supported">Segnare il prodotto come aperto non è supportato per questo prodotto</string>
+  
+  <plurals name="msg_due_tasks_long">
+    <item quantity="one">%1$d in scadenza (tutti sotto)</item>
+    <item quantity="other">%1$d in scadenza (tutti sotto)</item>
+  </plurals>
+
+  <string name="ikm_select_cert">Seleziona certificato client</string>
+  <string name="ikm_client_cert">Il server ha richiesto un certificato client. Seleziona quale certificato desideri utilizzare.</string>
+  <string name="ikm_client_cert_notification">Seleziona certificato client per</string>
+  <string name="ikm_decision_file">Da file</string>
+  <string name="ikm_decision_keychain">Dal gestore chiavi del dispositivo</string>
+  <string name="ikm_notification">Seleziona certificato client</string>
+  <string name="ikm_load_app_keystore">Errore nel caricamento del keystore dell\'app</string>
+  <string name="ikm_store_aliasMapping">Errore nella memorizzazione degli alias del portachiavi</string>
+  <string name="ikm_remove_keys">Errore di connessione: chiavi rimosse per</string>
+  <string name="ikm_remove_all_keys">Rimosse tutte le chiavi di connessione</string>
+  <string name="ikm_add_from_keystore">Errore nella lettura del keystore specificato</string>
+  <string name="ikm_add_from_keystore_alias">Errore nel caricamento delle chiavi:</string>
+  <string name="ikm_keychain">Errore KeyChain; rimozione dell\'alias memorizzato</string>
+  <string name="ikm_select_keystore">Seleziona file keystore</string>
+
+  <string name="mtm_security_risk">Attenzione: potenziale rischio di sicurezza</string>
+  <string name="mtm_trust_anchor">Il certificato del server non è firmato da un\'autorità di certificazione nota.</string>
+  <string name="mtm_cert_expired">Il certificato del server è scaduto.</string>
+  <string name="mtm_hostname_mismatch">Il server non ha potuto autenticarsi come \&quot;%s\&quot;.</string>
+  <string name="mtm_trust_certificate">Hai fiducia in questo certificato? Sarà utilizzato per verificare tutti i nomi elencati.</string>
+  <string name="mtm_accept_servername">Accettare nome server non corrispondente?</string>
+  <string name="mtm_cert_details">Dettagli certificato:</string>
+  <string name="mtm_valid_for">Certificato valido per:</string>
+  <string name="mtm_decision_always">Sempre</string>
+  <string name="mtm_decision_once">Una volta</string>
+  <string name="mtm_notification_channel">Sicurezza</string>
+  <string name="mtm_notification">Verifica certificato</string>
+  <string name="mtm_error_keystore">Eccezione nel caricamento del keystore da file</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chat con Gemini</string>
+  <string name="hint_ask_gemini">Chiedi a Gemini informazioni sulla tua spesa…</string>
+  <string name="action_open_gemini_chat">Chatta con Google Gemini</string>
+  <string name="msg_gemini_welcome">Ciao! Sono Gemini. Posso aiutarti con informazioni sulla tua spesa. Cosa vorresti sapere?</string>
+  <string name="error_gemini_not_enabled">Gemini non è abilitato. Configuralo nelle impostazioni.</string>
+  <string name="error_gemini_no_api_key">Chiave API Gemini non configurata. Aggiungila nelle impostazioni.</string>
+  <string name="error_gemini_failed">Impossibile comunicare con Gemini</string>
+  <string name="setting_gemini_enabled">Abilita chat Gemini</string>
+  <string name="setting_gemini_enabled_description">Consenti di chattare con Google Gemini AI sulla tua spesa</string>
+  <string name="setting_gemini_api_key">Chiave API Gemini</string>
+  <string name="setting_gemini_api_key_description">La tua chiave API Google Gemini (vedi https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Inserisci la tua chiave API Gemini personale</string>
+  <string name="sender_you">Tu</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Usa Chat Gemini</string>
+  <string name="setting_gemini_switch_description">Consente di chattare con Gemini sui tuoi prodotti, ricette e attività.</string>
+
   </resources>

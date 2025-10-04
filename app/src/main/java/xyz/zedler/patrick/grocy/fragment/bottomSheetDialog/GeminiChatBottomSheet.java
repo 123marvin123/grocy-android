@@ -157,7 +157,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         // Add initial welcome message
         adapter.addMessage(new ChatMessage(
-                "Hello! I'm Gemini. I can help you with information about your groceries. What would you like to know?",
+                getString(R.string.msg_gemini_welcome),
                 false
         ));
 
@@ -175,6 +175,8 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         // Setup toolbar
         binding.toolbarGemini.setNavigationOnClickListener(v -> dismiss());
         binding.toolbarGemini.setNavigationIcon(R.drawable.ic_round_close);
+
+        binding.editMessage.requestFocus();
     }
 
     private void sendMessage() {

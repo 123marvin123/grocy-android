@@ -1456,4 +1456,23 @@ https://github.com/patzly/grocy-android</string>
   <string name="mtm_notification">Weryfikacja Certyfikatu</string>
   <string name="mtm_error_keystore">Wyjątek podczas wczytywania magazynu kluczy z pliku</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Czat z Gemini</string>
+  <string name="hint_ask_gemini">Zapytaj Gemini o swoje artykuły spożywcze…</string>
+  <string name="action_open_gemini_chat">Czatuj z Google Gemini</string>
+  <string name="msg_gemini_welcome">Cześć! Jestem Gemini. Mogę pomóc Ci w uzyskaniu informacji o Twoich artykułach spożywczych. Co chciałbyś wiedzieć?</string>
+  <string name="error_gemini_not_enabled">Gemini nie jest włączone. Skonfiguruj to w ustawieniach.</string>
+  <string name="error_gemini_no_api_key">Klucz API Gemini nie jest skonfigurowany. Dodaj go w ustawieniach.</string>
+  <string name="error_gemini_failed">Nie udało się połączyć z Gemini</string>
+  <string name="setting_gemini_enabled">Włącz czat Gemini</string>
+  <string name="setting_gemini_enabled_description">Zezwól na czat z Google Gemini AI o swoich artykułach spożywczych</string>
+  <string name="setting_gemini_api_key">Klucz API Gemini</string>
+  <string name="setting_gemini_api_key_description">Twój klucz API Google Gemini (zobacz https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Wprowadź swój osobisty klucz API Gemini</string>
+  <string name="sender_you">Ty</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Użyj czatu Gemini</string>
+  <string name="setting_gemini_switch_description">Umożliwia czat z Gemini o swoich produktach, przepisach i zadaniach.</string>
+
 </resources>

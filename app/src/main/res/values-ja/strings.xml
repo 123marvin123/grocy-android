@@ -1280,4 +1280,23 @@
   <string name="mtm_notification">証明書の検証</string>
   <string name="mtm_error_keystore">ファイルからkey storeを読み込む際の例外</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Geminiとチャット</string>
+  <string name="hint_ask_gemini">Geminiに食料品について質問…</string>
+  <string name="action_open_gemini_chat">Google Geminiとチャット</string>
+  <string name="msg_gemini_welcome">こんにちは！私はGeminiです。食料品に関する情報をお手伝いできます。何を知りたいですか？</string>
+  <string name="error_gemini_not_enabled">Geminiが有効になっていません。設定で構成してください。</string>
+  <string name="error_gemini_no_api_key">Gemini APIキーが設定されていません。設定で追加してください。</string>
+  <string name="error_gemini_failed">Geminiとの通信に失敗しました</string>
+  <string name="setting_gemini_enabled">Geminiチャットを有効にする</string>
+  <string name="setting_gemini_enabled_description">Google Gemini AIと食料品についてチャットできるようにする</string>
+  <string name="setting_gemini_api_key">Gemini APIキー</string>
+  <string name="setting_gemini_api_key_description">あなたのGoogle Gemini APIキー（https://aistudio.google.com/api-keysを参照）</string>
+  <string name="hint_gemini_api_key">個人のGemini APIキーを入力してください</string>
+  <string name="sender_you">あなた</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Geminiチャットを使用</string>
+  <string name="setting_gemini_switch_description">製品、レシピ、タスクについてGeminiとチャットできるようにします。</string>
+
 </resources>

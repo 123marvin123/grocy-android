@@ -1388,4 +1388,23 @@
   <string name="mtm_notification">Vérification du certificat</string>
   <string name="mtm_error_keystore">Exception lors du chargement du magasin de clés à partir du fichier</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Discuter avec Gemini</string>
+  <string name="hint_ask_gemini">Interrogez Gemini sur vos produits alimentaires…</string>
+  <string name="action_open_gemini_chat">Discuter avec Google Gemini</string>
+  <string name="msg_gemini_welcome">Bonjour ! Je suis Gemini. Je peux vous aider avec des informations sur vos produits alimentaires. Que voudriez-vous savoir ?</string>
+  <string name="error_gemini_not_enabled">Gemini n\'est pas activé. Veuillez le configurer dans les paramètres.</string>
+  <string name="error_gemini_no_api_key">La clé API Gemini n\'est pas configurée. Veuillez l\'ajouter dans les paramètres.</string>
+  <string name="error_gemini_failed">Échec de la communication avec Gemini</string>
+  <string name="setting_gemini_enabled">Activer le chat Gemini</string>
+  <string name="setting_gemini_enabled_description">Permettre de discuter avec Google Gemini AI à propos de vos produits alimentaires</string>
+  <string name="setting_gemini_api_key">Clé API Gemini</string>
+  <string name="setting_gemini_api_key_description">Votre clé API Google Gemini (voir https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Entrez votre clé API Gemini personnelle</string>
+  <string name="sender_you">Vous</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Utiliser le chat Gemini</string>
+  <string name="setting_gemini_switch_description">Permet de discuter avec Gemini à propos de vos produits, recettes et tâches.</string>
+
 </resources>

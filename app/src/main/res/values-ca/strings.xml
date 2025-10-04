@@ -1306,4 +1306,52 @@
   </plurals>
   <string name="notification_chores_content">Procrastinar és inútil. Toca per obrir la llista.</string>
 
+  <string name="ikm_select_cert">Selecciona el certificat del client</string>
+  <string name="ikm_client_cert">El servidor ha sol·licitat un certificat de client. Selecciona quin certificat vols utilitzar.</string>
+  <string name="ikm_client_cert_notification">Selecciona el certificat del client per a</string>
+  <string name="ikm_decision_file">Des del fitxer</string>
+  <string name="ikm_decision_keychain">Des del gestor de claus del dispositiu</string>
+  <string name="ikm_notification">Selecciona el certificat del client</string>
+  <string name="ikm_load_app_keystore">Error en carregar el magatzem de claus de l\'aplicació</string>
+  <string name="ikm_store_aliasMapping">Error en desar els àlies del magatzem de claus</string>
+  <string name="ikm_remove_keys">Error de connexió: s\'han eliminat les claus per a</string>
+  <string name="ikm_remove_all_keys">S\'han eliminat totes les claus de connexió</string>
+  <string name="ikm_add_from_keystore">Error en llegir el magatzem de claus especificat</string>
+  <string name="ikm_add_from_keystore_alias">Error en carregar les claus:</string>
+  <string name="ikm_keychain">Error del magatzem de claus; s\'està eliminant l\'àlies emmagatzemat</string>
+  <string name="ikm_select_keystore">Selecciona el fitxer del magatzem de claus</string>
+
+  <string name="mtm_security_risk">Avís: Risc de seguretat potencial</string>
+  <string name="mtm_trust_anchor">El certificat del servidor no està signat per una autoritat de certificació coneguda.</string>
+  <string name="mtm_cert_expired">El certificat del servidor ha caducat.</string>
+  <string name="mtm_hostname_mismatch">El servidor no s\'ha pogut autenticar com a \&quot;%s\&quot;.</string>
+  <string name="mtm_trust_certificate">Confies en aquest certificat? S\'utilitzarà per verificar tots els noms llistats.</string>
+  <string name="mtm_accept_servername">Acceptar el nom del servidor que no coincideix?</string>
+  <string name="mtm_cert_details">Detalls del certificat:</string>
+  <string name="mtm_valid_for">Certificat vàlid per a:</string>
+  <string name="mtm_decision_always">Sempre</string>
+  <string name="mtm_decision_once">Una vegada</string>
+  <string name="mtm_notification_channel">Seguretat</string>
+  <string name="mtm_notification">Verificació del certificat</string>
+  <string name="mtm_error_keystore">Excepció en carregar el magatzem de claus des del fitxer</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Xat amb Gemini</string>
+  <string name="hint_ask_gemini">Pregunta a Gemini sobre els teus queviures…</string>
+  <string name="action_open_gemini_chat">Xatejar amb Google Gemini</string>
+  <string name="msg_gemini_welcome">Hola! Sóc Gemini. Puc ajudar-te amb informació sobre els teus queviures. Què t\'agradaria saber?</string>
+  <string name="error_gemini_not_enabled">Gemini no està habilitat. Configura\'l a la configuració.</string>
+  <string name="error_gemini_no_api_key">La clau API de Gemini no està configurada. Afegeix-la a la configuració.</string>
+  <string name="error_gemini_failed">No s\'ha pogut comunicar amb Gemini</string>
+  <string name="setting_gemini_enabled">Habilita el xat de Gemini</string>
+  <string name="setting_gemini_enabled_description">Permet xatejar amb Google Gemini AI sobre els teus queviures</string>
+  <string name="setting_gemini_api_key">Clau API de Gemini</string>
+  <string name="setting_gemini_api_key_description">La teva clau API de Google Gemini (vegeu https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Introdueix la teva clau API personal de Gemini</string>
+  <string name="sender_you">Tu</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Utilitza el xat de Gemini</string>
+  <string name="setting_gemini_switch_description">Permet xatejar amb Gemini sobre els teus productes, receptes i tasques.</string>
+
   </resources>

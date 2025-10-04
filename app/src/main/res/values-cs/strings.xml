@@ -1446,4 +1446,23 @@ Po zaškrtnutí nebude brán zřetel na množství produktu v nákupním seznamu
   <string name="mtm_notification">Ověření certifikátu</string>
   <string name="mtm_error_keystore">Chyba při čtení certifikátu ze souboru</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chat s Gemini</string>
+  <string name="hint_ask_gemini">Zeptejte se Gemini na vaše potraviny…</string>
+  <string name="action_open_gemini_chat">Chatovat s Google Gemini</string>
+  <string name="msg_gemini_welcome">Ahoj! Jsem Gemini. Mohu vám pomoci s informacemi o vašich potravinách. Co byste rádi věděli?</string>
+  <string name="error_gemini_not_enabled">Gemini není povoleno. Nakonfigurujte ho prosím v nastavení.</string>
+  <string name="error_gemini_no_api_key">API klíč Gemini není nakonfigurován. Přidejte ho prosím v nastavení.</string>
+  <string name="error_gemini_failed">Komunikace s Gemini selhala</string>
+  <string name="setting_gemini_enabled">Povolit chat s Gemini</string>
+  <string name="setting_gemini_enabled_description">Povolit chatování s Google Gemini AI o vašich potravinách</string>
+  <string name="setting_gemini_api_key">API klíč Gemini</string>
+  <string name="setting_gemini_api_key_description">Váš Google Gemini API klíč (viz https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Zadejte svůj osobní API klíč Gemini</string>
+  <string name="sender_you">Vy</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Použít Gemini Chat</string>
+  <string name="setting_gemini_switch_description">Umožňuje chatovat s Gemini o vašich produktech, receptech a úkolech.</string>
+
 </resources>
