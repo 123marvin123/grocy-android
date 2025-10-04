@@ -145,4 +145,9 @@ dependencies {
     // Google Gemini AI for chat integration
     implementation libs.gemini
     implementation libs.guava
+    // Markwon for rendering Markdown in chat messages
+    implementation libs.markwon.core
+    implementation libs.markwon.linkify
+    implementation libs.markwon.ext.tables
+    implementation libs.markwon.html
 }

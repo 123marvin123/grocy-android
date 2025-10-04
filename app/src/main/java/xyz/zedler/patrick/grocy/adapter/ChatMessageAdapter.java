@@ -20,6 +20,8 @@
 
 package xyz.zedler.patrick.grocy.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,9 +29,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import io.noties.markwon.Markwon;
+import io.noties.markwon.ext.tables.TablePlugin;
+import io.noties.markwon.html.HtmlPlugin;
+import io.noties.markwon.linkify.LinkifyPlugin;
 import java.util.List;
 import xyz.zedler.patrick.grocy.R;
 import xyz.zedler.patrick.grocy.model.ChatMessage;
@@ -38,10 +46,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
   private final List<ChatMessage> messages;
   private final Context context;
+  private final Markwon markwon;
 
   public ChatMessageAdapter(Context context, List<ChatMessage> messages) {
     this.context = context;
     this.messages = messages;
+    // Initialize Markwon with linkify, table and HTML support
+    this.markwon = Markwon.builder(context)
+        .usePlugin(LinkifyPlugin.create())
+        .usePlugin(TablePlugin.create(context))
+        .usePlugin(HtmlPlugin.create())
+        .build();
   }
 
   @NonNull
@@ -55,15 +70,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
   @Override
   public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
     ChatMessage message = messages.get(position);
-    holder.textMessage.setText(message.getMessage());
-    
+    // Use Markwon to render markdown text
+    markwon.setMarkdown(holder.textMessage, message.getMessage());
+
     if (message.isUser()) {
       holder.textSender.setText(R.string.sender_you);
+      holder.buttonCopy.setVisibility(View.GONE);
       LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.cardMessage.getLayoutParams();
       params.gravity = Gravity.END;
       holder.cardMessage.setLayoutParams(params);
     } else {
       holder.textSender.setText(R.string.sender_gemini);
+      holder.buttonCopy.setVisibility(View.VISIBLE);
+
+      // Set up copy button click listener
+      holder.buttonCopy.setOnClickListener(v -> {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Gemini Message", message.getMessage());
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(context, R.string.msg_copied_clipboard, Toast.LENGTH_SHORT).show();
+      });
+
       LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.cardMessage.getLayoutParams();
       params.gravity = Gravity.START;
       holder.cardMessage.setLayoutParams(params);
@@ -84,12 +112,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     MaterialCardView cardMessage;
     TextView textSender;
     TextView textMessage;
+    MaterialButton buttonCopy;
 
     MessageViewHolder(@NonNull View itemView) {
       super(itemView);
       cardMessage = itemView.findViewById(R.id.card_message);
       textSender = itemView.findViewById(R.id.text_sender);
       textMessage = itemView.findViewById(R.id.text_message);
+      buttonCopy = itemView.findViewById(R.id.button_copy);
     }
   }
 }
