@@ -628,6 +628,13 @@ public class OverviewStartViewModel extends BaseViewModel {
     );
   }
 
+  public boolean getGeminiEnabled() {
+    return sharedPrefs.getBoolean(
+        Constants.SETTINGS.GEMINI.ENABLED,
+        Constants.SETTINGS_DEFAULT.GEMINI.ENABLED
+    );
+  }
+
   public boolean getOverviewFabInfoShown() {
     return sharedPrefs.getBoolean(PREF.OVERVIEW_FAB_INFO_SHOWN, false);
   }

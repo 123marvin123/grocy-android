@@ -230,6 +230,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:onClick="@{() -> fragment.openGeminiChat()}"
+                  android:visibility="@{viewModel.geminiEnabled ? View.VISIBLE : View.GONE}"
                 app:clickUtil="@{clickUtil}">
 
                 <LinearLayout

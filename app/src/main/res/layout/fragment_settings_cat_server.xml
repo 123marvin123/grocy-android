@@ -195,67 +195,6 @@
 
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-              style="@style/Widget.Grocy.Divider.Small" />
-
-            <TextView
-              style="@style/Widget.Grocy.TextView.Category"
-              android:text="Google Gemini AI" />
-
-            <LinearLayout
-              style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable.More"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-
-              <ImageView
-                style="@style/Widget.Grocy.ImageView.ListItem.Icon"
-                tools:ignore="ContentDescription"
-                android:src="@drawable/ic_round_live_help" />
-
-              <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox">
-
-                <TextView
-                  style="@style/Widget.Grocy.TextView.ListItem.Title"
-                  android:text="@string/setting_gemini_enabled" />
-
-                <TextView
-                  style="@style/Widget.Grocy.TextView.ListItem.Description"
-                  android:text="@string/setting_gemini_enabled_description" />
-
-              </LinearLayout>
-
-              <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_gemini_enabled"
-                style="@style/Widget.Grocy.Switch" />
-
-            </LinearLayout>
-
-            <LinearLayout
-              style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:onClick="@{v -> fragment.showGeminiApiKeyDialog()}"
-              app:clickUtil="@{clickUtil}">
-
-              <ImageView
-                style="@style/Widget.Grocy.ImageView.ListItem.Icon"
-                tools:ignore="ContentDescription"
-                android:src="@drawable/ic_round_translate" />
-
-              <LinearLayout style="@style/Widget.Grocy.LinearLayout.ListItem.TextBox.Stretch">
-
-                <TextView
-                  style="@style/Widget.Grocy.TextView.ListItem.Title"
-                  android:text="@string/setting_gemini_api_key" />
-
-                <TextView
-                  style="@style/Widget.Grocy.TextView.ListItem.Description"
-                  android:text="@string/setting_gemini_api_key_description" />
-
-              </LinearLayout>
-
-            </LinearLayout>
-
             <LinearLayout
               style="@style/Widget.Grocy.LinearLayout.ListItem.TwoLine.Clickable"
               android:visibility="@{viewModel.serverUrl != null ? View.VISIBLE : View.GONE}"

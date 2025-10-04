@@ -1408,9 +1408,12 @@
   <string name="setting_gemini_enabled">Enable Gemini chat</string>
   <string name="setting_gemini_enabled_description">Allow chatting with Google Gemini AI about your groceries</string>
   <string name="setting_gemini_api_key">Gemini API key</string>
-  <string name="setting_gemini_api_key_description">Your Google Gemini API key</string>
-  <string name="hint_gemini_api_key">Enter your Gemini API key</string>
+  <string name="setting_gemini_api_key_description">Your Google Gemini API key (see https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Enter your personal Gemini API key</string>
   <string name="sender_you">You</string>
   <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Use Gemini Chat</string>
+  <string name="setting_gemini_switch_description">Allows chatting with Gemini about your products, recipes and chores.</string>
 
 </resources>

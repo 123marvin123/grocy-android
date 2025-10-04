@@ -74,8 +74,8 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
     SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
     
     // Check if Gemini is enabled and API key is set
-    boolean geminiEnabled = sharedPrefs.getBoolean(Constants.PREF.GEMINI_ENABLED, false);
-    String apiKey = sharedPrefs.getString(Constants.PREF.GEMINI_API_KEY, "");
+    boolean geminiEnabled = sharedPrefs.getBoolean(Constants.SETTINGS.GEMINI.ENABLED, false);
+    String apiKey = sharedPrefs.getString(Constants.SETTINGS.GEMINI.API_KEY, "");
     
     if (!geminiEnabled) {
       Toast.makeText(requireContext(), R.string.error_gemini_not_enabled, Toast.LENGTH_LONG).show();
@@ -90,7 +90,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
     }
 
     // Initialize Gemini
-    GenerativeModel gm = new GenerativeModel("gemini-1.5-flash", apiKey);
+    GenerativeModel gm = new GenerativeModel("gemini-2.0-flash", apiKey);
     model = GenerativeModelFutures.from(gm);
     chatHistory = new ArrayList<>();
 

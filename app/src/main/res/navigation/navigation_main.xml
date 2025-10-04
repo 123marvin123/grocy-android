@@ -520,6 +520,9 @@
         android:id="@+id/action_settingsFragment_to_settingsCatBehaviorFragment"
         app:destination="@id/settingsCatBehaviorFragment" />
       <action
+          android:id="@+id/action_settingsFragment_to_settingsCatGeminiFragment"
+          app:destination="@id/settingsCatGeminiFragment" />
+      <action
         android:id="@+id/action_settingsFragment_to_settingsCatScannerFragment"
         app:destination="@id/settingsCatScannerFragment" />
       <action
@@ -571,6 +574,15 @@
       <deepLink
         android:id="@+id/deepLink12"
         app:uri="@string/deep_link_settingsCatBehaviorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsCatGeminiFragment"
+        android:name="xyz.zedler.patrick.grocy.fragment.SettingsCatGeminiFragment"
+        android:label="SettingsCatGeminiFragment"
+        tools:layout="@layout/fragment_settings_cat_gemini">
+      <deepLink
+          android:id="@+id/deepLink20"
+          app:uri="@string/deep_link_settingsCatGeminiFragment" />
     </fragment>
     <fragment
       android:id="@+id/settingsCatScannerFragment"
