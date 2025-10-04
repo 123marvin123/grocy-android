@@ -1038,6 +1038,25 @@
   <string name="setting_notification_time_description">Kedy je vykonaná kontrola</string>
   <string name="setting_keep_screen_on_recipes_description">Pri prezeraní receptu</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Čet s Gemini</string>
+  <string name="hint_ask_gemini">Opýtajte sa Gemini na vaše potraviny…</string>
+  <string name="action_open_gemini_chat">Čet s Google Gemini</string>
+  <string name="msg_gemini_welcome">Ahoj! Som Gemini. Môžem vám pomôcť s informáciami o vašich potravinách. Čo by ste chceli vedieť?</string>
+  <string name="error_gemini_not_enabled">Gemini nie je povolený. Nakonfigurujte ho v nastaveniach.</string>
+  <string name="error_gemini_no_api_key">Kľúč API Gemini nie je nakonfigurovaný. Pridajte ho v nastaveniach.</string>
+  <string name="error_gemini_failed">Nepodarilo sa komunikovať s Gemini</string>
+  <string name="setting_gemini_enabled">Povoliť čet s Gemini</string>
+  <string name="setting_gemini_enabled_description">Povoliť čet s Google Gemini AI o vašich potravinách</string>
+  <string name="setting_gemini_api_key">Kľúč API Gemini</string>
+  <string name="setting_gemini_api_key_description">Váš kľúč API Google Gemini (pozri https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Zadajte svoj osobný kľúč API Gemini</string>
+  <string name="sender_you">Vy</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini AI</string>
+  <string name="setting_gemini_switch">Povoliť čet s Gemini</string>
+  <string name="setting_gemini_switch_description">Čet s Google Gemini AI o vašich potravinách</string>
+
   <!-- This is the URL of the demo instance on grocy.info . Replace 'en' with the abbreviation of the translation language. If your language is not available as demo language, take 'en'.
   Examples: 'de' for German; 'fr' for French -->
 </resources>

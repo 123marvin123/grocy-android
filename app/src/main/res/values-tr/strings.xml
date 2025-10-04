@@ -1334,4 +1334,23 @@
   <string name="mtm_notification">Sertifika Doğrulaması</string>
   <string name="mtm_error_keystore">Anahtar deposunu dosyadan yüklemeyle ilgili istisna</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Gemini ile Sohbet</string>
+  <string name="hint_ask_gemini">Gemini\'ye bakkaliye ürünleriniz hakkında sorun…</string>
+  <string name="action_open_gemini_chat">Google Gemini ile Sohbet Et</string>
+  <string name="msg_gemini_welcome">Merhaba! Ben Gemini. Bakkaliye ürünlerinizle ilgili bilgiler konusunda size yardımcı olabilirim. Ne öğrenmek istersiniz?</string>
+  <string name="error_gemini_not_enabled">Gemini etkin değil. Lütfen ayarlardan yapılandırın.</string>
+  <string name="error_gemini_no_api_key">Gemini API anahtarı yapılandırılmamış. Lütfen ayarlara ekleyin.</string>
+  <string name="error_gemini_failed">Gemini ile iletişim başarısız oldu</string>
+  <string name="setting_gemini_enabled">Gemini sohbetini etkinleştir</string>
+  <string name="setting_gemini_enabled_description">Bakkaliye ürünleriniz hakkında Google Gemini AI ile sohbet etmeye izin ver</string>
+  <string name="setting_gemini_api_key">Gemini API anahtarı</string>
+  <string name="setting_gemini_api_key_description">Google Gemini API anahtarınız (bkz. https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Kişisel Gemini API anahtarınızı girin</string>
+  <string name="sender_you">Siz</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Gemini Sohbetini Kullan</string>
+  <string name="setting_gemini_switch_description">Ürünleriniz, tarifleriniz ve görevleriniz hakkında Gemini ile sohbet etmenizi sağlar.</string>
+
 </resources>

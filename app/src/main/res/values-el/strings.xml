@@ -1334,4 +1334,23 @@
   <string name="mtm_notification">Ειδοποίηση</string>
   <string name="mtm_error_keystore">Σφάλμα keystore</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Συνομιλία με το Gemini</string>
+  <string name="hint_ask_gemini">Ρωτήστε το Gemini για τα παντοπωλικά σας…</string>
+  <string name="action_open_gemini_chat">Συνομιλία με το Google Gemini</string>
+  <string name="msg_gemini_welcome">Γεια σας! Είμαι το Gemini. Μπορώ να σας βοηθήσω με πληροφορίες σχετικά με τα παντοπωλικά σας. Τι θα θέλατε να μάθετε;</string>
+  <string name="error_gemini_not_enabled">Το Gemini δεν είναι ενεργοποιημένο. Παρακαλώ διαμορφώστε το στις ρυθμίσεις.</string>
+  <string name="error_gemini_no_api_key">Το κλειδί API του Gemini δεν έχει διαμορφωθεί. Παρακαλώ προσθέστε το στις ρυθμίσεις.</string>
+  <string name="error_gemini_failed">Αποτυχία επικοινωνίας με το Gemini</string>
+  <string name="setting_gemini_enabled">Ενεργοποίηση συνομιλίας Gemini</string>
+  <string name="setting_gemini_enabled_description">Επιτρέψτε τη συνομιλία με το Google Gemini AI για τα παντοπωλικά σας</string>
+  <string name="setting_gemini_api_key">Κλειδί API Gemini</string>
+  <string name="setting_gemini_api_key_description">Το κλειδί Google Gemini API σας (δείτε https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Εισαγάγετε το προσωπικό σας κλειδί API Gemini</string>
+  <string name="sender_you">Εσείς</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Χρήση Συνομιλίας Gemini</string>
+  <string name="setting_gemini_switch_description">Επιτρέπει τη συνομιλία με το Gemini για τα προϊόντα, τις συνταγές και τις εργασίες σας.</string>
+
 </resources>

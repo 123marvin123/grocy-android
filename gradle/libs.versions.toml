@@ -26,6 +26,9 @@ zxing-core = "3.3.0"
 zxing-android-embedded = "4.3.0"
 desugar = "2.1.5"
 exifinterface = "1.4.0"
+gemini = "1.20.0"
+guava = "33.3.1-android"
+markwon = "4.6.2"
 
 [libraries]
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -69,6 +72,13 @@ zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", ve
 # prevents bug https://github.com/patzly/grocy-android/issues/425
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 exifinterface = { module = "androidx.exifinterface:exifinterface", version.ref = "exifinterface" }
+# Google Gemini AI SDK for chat integration
+gemini = { module = "com.google.genai:google-genai", version.ref = "gemini" }
+# Markwon for rendering Markdown in TextViews
+markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
+markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
+markwon-ext-tables = { module = "io.noties.markwon:ext-tables", version.ref = "markwon" }
+markwon-html = { module = "io.noties.markwon:html", version.ref = "markwon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

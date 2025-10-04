@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Grocy Android.
+  ~
+  ~ Grocy Android is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Grocy Android is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Grocy Android. If not, see http://www.gnu.org/licenses/.
+  ~
+  ~ Copyright (c) 2020-2024 by Patrick Zedler and Dominic Zedler
+  ~ Copyright (c) 2024-2025 by Patrick Zedler
+  -->
+
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:padding="8dp">
+
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/card_message"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    style="@style/Widget.Material3.CardView.Filled">
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="12dp">
+
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+          android:id="@+id/text_sender"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:textStyle="bold"
+          android:textSize="12sp"
+          android:layout_marginBottom="4dp" />
+      </LinearLayout>
+
+      <TextView
+        android:id="@+id/text_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textIsSelectable="true" />
+
+      <com.google.android.material.button.MaterialButton
+          android:id="@+id/button_copy"
+          style="@style/Widget.Material3.Button.IconButton"
+          android:layout_width="32dp"
+          android:layout_height="32dp"
+            android:layout_gravity="end"
+          android:visibility="gone"
+          app:icon="@drawable/ic_round_content_copy"
+          app:iconSize="18dp"
+          app:iconPadding="0dp"
+          android:insetTop="0dp"
+          android:insetBottom="0dp"
+          android:padding="0dp" />
+
+    </LinearLayout>
+
+  </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

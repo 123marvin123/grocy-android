@@ -1093,4 +1093,228 @@
   <string name="notification_stock_content">יש לצרוך בימים הקרובים כדי לסייע בצמצום השלכת מזון. הרשימה תיפתח בנגיעה.</string>
   <string name="notification_chores_content">אין טעם בדחיינות. הרשימה תיפתח בנגיעה.</string>
 
+  <string name="action_open_server">השתמש בממשק השרת</string>
+  <string name="date_timespan">%1$s - %2$s</string>
+  <string name="error_pictures_size_exceeds_limit">יש תמונות מוטמעות בתיאורי מוצרים או מתכונים בשרת שלך, החורגות ממגבלת הניתוח של אפליקציה זו. אנא הסר תמונות באיכות גבוהה ובגודל גדול מהתיאורים שלך, זה גם יאיץ את טעינת הנתונים.</string>
+
+  <!-- Plurals for stock overview -->
+  <plurals name="description_overview_stock_due_soon">
+    <item quantity="one">מוצר אחד יפוג בתוך %2$d הימים הקרובים.</item>
+    <item quantity="two">%1$d מוצרים יפוגו בתוך %2$d הימים הקרובים.</item>
+    <item quantity="many">%1$d מוצרים יפוגו בתוך %2$d הימים הקרובים.</item>
+    <item quantity="other">%1$d מוצרים יפוגו בתוך %2$d הימים הקרובים.</item>
+  </plurals>
+  <plurals name="description_overview_stock_expired">
+    <item quantity="one">מוצר אחד פג תוקף.</item>
+    <item quantity="two">%1$d מוצרים פג תוקפם.</item>
+    <item quantity="many">%1$d מוצרים פג תוקפם.</item>
+    <item quantity="other">%1$d מוצרים פג תוקפם.</item>
+  </plurals>
+  <plurals name="description_overview_stock_overdue">
+    <item quantity="one">מוצר אחד עבר תאריך תפוגה.</item>
+    <item quantity="two">%1$d מוצרים עברו תאריך תפוגה.</item>
+    <item quantity="many">%1$d מוצרים עברו תאריך תפוגה.</item>
+    <item quantity="other">%1$d מוצרים עברו תאריך תפוגה.</item>
+  </plurals>
+  <plurals name="description_overview_stock_missing">
+    <item quantity="one">מוצר אחד מתחת לכמות המלאי המינימלית.</item>
+    <item quantity="two">%1$d מוצרים מתחת לכמות המלאי המינימלית.</item>
+    <item quantity="many">%1$d מוצרים מתחת לכמות המלאי המינימלית.</item>
+    <item quantity="other">%1$d מוצרים מתחת לכמות המלאי המינימלית.</item>
+  </plurals>
+  <plurals name="description_overview_tasks">
+    <item quantity="one">משימה אחת לביצוע.</item>
+    <item quantity="two">%1$d משימות לביצוע.</item>
+    <item quantity="many">%1$d משימות לביצוע.</item>
+    <item quantity="other">%1$d משימות לביצוע.</item>
+  </plurals>
+  <plurals name="description_overview_chores_due_soon">
+    <item quantity="one">משימת בית אחת תגיע למועד תוך %2$d הימים הקרובים.</item>
+    <item quantity="two">%1$d משימות בית יגיעו למועד תוך %2$d הימים הקרובים.</item>
+    <item quantity="many">%1$d משימות בית יגיעו למועד תוך %2$d הימים הקרובים.</item>
+    <item quantity="other">%1$d משימות בית יגיעו למועד תוך %2$d הימים הקרובים.</item>
+  </plurals>
+  <plurals name="description_overview_chores_overdue">
+    <item quantity="one">משימת בית אחת באיחור.</item>
+    <item quantity="two">%1$d משימות בית באיחור.</item>
+    <item quantity="many">%1$d משימות בית באיחור.</item>
+    <item quantity="other">%1$d משימות בית באיחור.</item>
+  </plurals>
+  <plurals name="description_overview_chores_due_today">
+    <item quantity="one">משימת בית אחת צריכה להתבצע היום.</item>
+    <item quantity="two">%1$d משימות בית צריכות להתבצע היום.</item>
+    <item quantity="many">%1$d משימות בית צריכות להתבצע היום.</item>
+    <item quantity="other">%1$d משימות בית צריכות להתבצע היום.</item>
+  </plurals>
+  <plurals name="description_overview_chores_assigned">
+    <item quantity="one">משימת בית אחת מוקצית לך.</item>
+    <item quantity="two">%1$d משימות בית מוקצות לך.</item>
+    <item quantity="many">%1$d משימות בית מוקצות לך.</item>
+    <item quantity="other">%1$d משימות בית מוקצות לך.</item>
+  </plurals>
+  <plurals name="description_overview_recipes">
+    <item quantity="one">יש לך מתכון אחד.</item>
+    <item quantity="two">יש לך %1$d מתכונים.</item>
+    <item quantity="many">יש לך %1$d מתכונים.</item>
+    <item quantity="other">יש לך %1$d מתכונים.</item>
+  </plurals>
+  <plurals name="error_max_decimal_places">
+    <item quantity="one">מקסימום %1$s ספרה עשרונית</item>
+    <item quantity="two">מקסימום %1$s ספרות עשרוניות</item>
+    <item quantity="many">מקסימום %1$s ספרות עשרוניות</item>
+    <item quantity="other">מקסימום %1$s ספרות עשרוניות</item>
+  </plurals>
+
+  <!-- More critical plurals -->
+  <plurals name="msg_assigned_tasks">
+    <item quantity="one">%1$d מוקצית</item>
+    <item quantity="two">%1$d מוקצות</item>
+    <item quantity="many">%1$d מוקצות</item>
+    <item quantity="other">%1$d מוקצות</item>
+  </plurals>
+  <plurals name="msg_done_items">
+    <item quantity="one">%1$d בוצע</item>
+    <item quantity="two">%1$d בוצעו</item>
+    <item quantity="many">%1$d בוצעו</item>
+    <item quantity="other">%1$d בוצעו</item>
+  </plurals>
+  <plurals name="msg_done_tasks">
+    <item quantity="one">%1$d בוצעה</item>
+    <item quantity="two">%1$d בוצעו</item>
+    <item quantity="many">%1$d בוצעו</item>
+    <item quantity="other">%1$d בוצעו</item>
+  </plurals>
+  <plurals name="msg_due_products">
+    <item quantity="one">%1$d יפוג בקרוב</item>
+    <item quantity="two">%1$d יפוגו בקרוב</item>
+    <item quantity="many">%1$d יפוגו בקרוב</item>
+    <item quantity="other">%1$d יפוגו בקרוב</item>
+  </plurals>
+  <plurals name="msg_due_tasks">
+    <item quantity="one">%1$d בקרוב</item>
+    <item quantity="two">%1$d בקרוב</item>
+    <item quantity="many">%1$d בקרוב</item>
+    <item quantity="other">%1$d בקרוב</item>
+  </plurals>
+  <plurals name="msg_due_tasks_long">
+    <item quantity="one">%1$d במועד (הכל למטה)</item>
+    <item quantity="two">%1$d במועד (הכל למטה)</item>
+    <item quantity="many">%1$d במועד (הכל למטה)</item>
+    <item quantity="other">%1$d במועד (הכל למטה)</item>
+  </plurals>
+  <plurals name="msg_due_tasks_short">
+    <item quantity="one">%1$d במועד</item>
+    <item quantity="two">%1$d במועד</item>
+    <item quantity="many">%1$d במועד</item>
+    <item quantity="other">%1$d במועד</item>
+  </plurals>
+  <plurals name="msg_due_today_tasks">
+    <item quantity="one">%1$d להיום</item>
+    <item quantity="two">%1$d להיום</item>
+    <item quantity="many">%1$d להיום</item>
+    <item quantity="other">%1$d להיום</item>
+  </plurals>
+  <plurals name="msg_expired_products">
+    <item quantity="one">%1$d פג תוקף</item>
+    <item quantity="two">%1$d פג תוקף</item>
+    <item quantity="many">%1$d פג תוקף</item>
+    <item quantity="other">%1$d פג תוקף</item>
+  </plurals>
+  <plurals name="msg_missing_products">
+    <item quantity="one">%1$d מתחת למלאי מינימלי</item>
+    <item quantity="two">%1$d מתחת למלאי מינימלי</item>
+    <item quantity="many">%1$d מתחת למלאי מינימלי</item>
+    <item quantity="other">%1$d מתחת למלאי מינימלי</item>
+  </plurals>
+  <plurals name="msg_not_done_tasks">
+    <item quantity="one">%1$d לא בוצעה</item>
+    <item quantity="two">%1$d לא בוצעו</item>
+    <item quantity="many">%1$d לא בוצעו</item>
+    <item quantity="other">%1$d לא בוצעו</item>
+  </plurals>
+  <plurals name="msg_not_fresh_products_long">
+    <item quantity="one">%1$d לא טרי (הכל למטה)</item>
+    <item quantity="two">%1$d לא טריים (הכל למטה)</item>
+    <item quantity="many">%1$d לא טריים (הכל למטה)</item>
+    <item quantity="other">%1$d לא טריים (הכל למטה)</item>
+  </plurals>
+  <plurals name="msg_overdue_products">
+    <item quantity="one">%1$d באיחור</item>
+    <item quantity="two">%1$d באיחור</item>
+    <item quantity="many">%1$d באיחור</item>
+    <item quantity="other">%1$d באיחור</item>
+  </plurals>
+  <plurals name="msg_overdue_tasks">
+    <item quantity="one">%1$d באיחור</item>
+    <item quantity="two">%1$d באיחור</item>
+    <item quantity="many">%1$d באיחור</item>
+    <item quantity="other">%1$d באיחור</item>
+  </plurals>
+  <plurals name="msg_recipes_ingredients_missing_but_on_shopping_list">
+    <item quantity="one">מרכיב אחד חסר אך כבר ברשימת הקניות</item>
+    <item quantity="two">%1$d מרכיבים חסרים אך כבר ברשימת הקניות</item>
+    <item quantity="many">%1$d מרכיבים חסרים אך כבר ברשימת הקניות</item>
+    <item quantity="other">%1$d מרכיבים חסרים אך כבר ברשימת הקניות</item>
+  </plurals>
+  <plurals name="msg_undone_items">
+    <item quantity="one">%1$d לא בוצע</item>
+    <item quantity="two">%1$d לא בוצעו</item>
+    <item quantity="many">%1$d לא בוצעו</item>
+    <item quantity="other">%1$d לא בוצעו</item>
+  </plurals>
+  <plurals name="notification_chores_due_title">
+    <item quantity="one">משימת בית אחת צריכה להתבצע.</item>
+    <item quantity="two">%1$d משימות בית צריכות להתבצע.</item>
+    <item quantity="many">%1$d משימות בית צריכות להתבצע.</item>
+    <item quantity="other">%1$d משימות בית צריכות להתבצע.</item>
+  </plurals>
+
+  <string name="ikm_select_cert">בחר אישור לקוח</string>
+  <string name="ikm_client_cert">השרת ביקש אישור לקוח. אנא בחר איזה אישור ברצונך להשתמש.</string>
+  <string name="ikm_client_cert_notification">בחר אישור לקוח עבור</string>
+  <string name="ikm_decision_file">מקובץ</string>
+  <string name="ikm_decision_keychain">ממנהל המפתחות של המכשיר</string>
+  <string name="ikm_notification">בחר אישור לקוח</string>
+  <string name="ikm_load_app_keystore">שגיאה בטעינת מאגר המפתחות של האפליקציה</string>
+  <string name="ikm_store_aliasMapping">שגיאה בשמירת כינויי שרשרת המפתחות</string>
+  <string name="ikm_remove_keys">שגיאת חיבור: הוסרו מפתחות עבור</string>
+  <string name="ikm_remove_all_keys">הוסרו כל מפתחות החיבור</string>
+  <string name="ikm_add_from_keystore">שגיאה בקריאת מאגר המפתחות שצוין</string>
+  <string name="ikm_add_from_keystore_alias">שגיאה בטעינת מפתחות:</string>
+  <string name="ikm_keychain">שגיאת שרשרת מפתחות; מסיר כינוי שמור</string>
+  <string name="ikm_select_keystore">בחר קובץ מאגר מפתחות</string>
+
+  <string name="mtm_security_risk">אזהרה: סיכון אבטחה אפשרי</string>
+  <string name="mtm_trust_anchor">אישור השרת אינו חתום על ידי רשות אישורים ידועה.</string>
+  <string name="mtm_cert_expired">אישור השרת פג תוקף.</string>
+  <string name="mtm_hostname_mismatch">השרת לא הצליח להזדהות בשם \&quot;%s\&quot;.</string>
+  <string name="mtm_trust_certificate">האם אתה סומך על אישור זה? הוא ישמש לאימות כל השמות המפורטים.</string>
+  <string name="mtm_accept_servername">האם לקבל שם שרת שאינו תואם?</string>
+  <string name="mtm_cert_details">פרטי אישור:</string>
+  <string name="mtm_valid_for">אישור תקף עבור:</string>
+  <string name="mtm_decision_always">תמיד</string>
+  <string name="mtm_decision_once">פעם אחת</string>
+  <string name="mtm_notification_channel">אבטחה</string>
+  <string name="mtm_notification">אימות אישור</string>
+  <string name="mtm_error_keystore">חריגה בטעינת מאגר מפתחות מקובץ</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">שיחה עם Gemini</string>
+  <string name="hint_ask_gemini">שאל את Gemini על המצרכים שלך…</string>
+  <string name="action_open_gemini_chat">שוחח עם Google Gemini</string>
+  <string name="msg_gemini_welcome">שלום! אני Gemini. אני יכול לעזור לך עם מידע על המצרכים שלך. מה תרצה לדעת?</string>
+  <string name="error_gemini_not_enabled">Gemini אינו מופעל. אנא הגדר אותו בהגדרות.</string>
+  <string name="error_gemini_no_api_key">מפתח API של Gemini לא מוגדר. אנא הוסף אותו בהגדרות.</string>
+  <string name="error_gemini_failed">נכשל בתקשורת עם Gemini</string>
+  <string name="setting_gemini_enabled">הפעל שיחה עם Gemini</string>
+  <string name="setting_gemini_enabled_description">אפשר שיחה עם Google Gemini AI על המצרכים שלך</string>
+  <string name="setting_gemini_api_key">מפתח API של Gemini</string>
+  <string name="setting_gemini_api_key_description">מפתח Google Gemini API שלך (ראה https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">הזן את מפתח API האישי שלך של Gemini</string>
+  <string name="sender_you">אתה</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">השתמש בשיחת Gemini</string>
+  <string name="setting_gemini_switch_description">מאפשר שיחה עם Gemini על המוצרים, המתכונים והמשימות שלך.</string>
+
   </resources>

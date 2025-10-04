@@ -274,6 +274,30 @@ public class SettingsViewModel extends BaseViewModel {
     );
   }
 
+  public boolean getGeminiEnabled() {
+    return sharedPrefs.getBoolean(
+            Constants.SETTINGS.GEMINI.ENABLED,
+            Constants.SETTINGS_DEFAULT.GEMINI.ENABLED
+    );
+  }
+
+  public void setGeminiEnabled(boolean enabled) {
+    sharedPrefs.edit()
+            .putBoolean(Constants.SETTINGS.GEMINI.ENABLED, enabled).apply();
+  }
+
+  public String getGeminiApiKey() {
+    return sharedPrefs
+            .getString(
+                    Constants.SETTINGS.GEMINI.API_KEY,
+                    Constants.SETTINGS_DEFAULT.GEMINI.API_KEY);
+
+  }
+
+  public void setGeminiApiKey(String apiKey) {
+     sharedPrefs.edit().putString(Constants.SETTINGS.GEMINI.API_KEY, apiKey).apply();
+  }
+
   public void setBeginnerModeEnabled(boolean enabled) {
     sharedPrefs.edit()
         .putBoolean(Constants.SETTINGS.BEHAVIOR.BEGINNER_MODE, enabled).apply();
@@ -975,6 +999,15 @@ public class SettingsViewModel extends BaseViewModel {
     bundle.putInt(Constants.ARGUMENT.NUMBER, getMessageDuration());
     bundle.putString(Constants.ARGUMENT.HINT, getString(R.string.property_seconds));
     bundle.putString(ARGUMENT.TYPE, BEHAVIOR.MESSAGE_DURATION);
+    showBottomSheet(new InputBottomSheet(), bundle);
+  }
+
+  public void showGeminiApiKeyBottomSheet() {
+    Bundle bundle = new Bundle();
+    bundle.putString(Constants.ARGUMENT.TEXT, getGeminiApiKey());
+    bundle.putString(ARGUMENT.TYPE, Constants.SETTINGS.GEMINI.API_KEY);
+    bundle.putString(ARGUMENT.TITLE, getString(R.string.setting_gemini_api_key));
+    bundle.putString(ARGUMENT.HINT, getString(R.string.hint_gemini_api_key));
     showBottomSheet(new InputBottomSheet(), bundle);
   }
 

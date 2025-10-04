@@ -1252,4 +1252,52 @@
   </plurals>
   <string name="notification_chores_content">拖延症又犯了，点击看看应该做什么</string>
 
+  <string name="ikm_select_cert">选择客户端证书</string>
+  <string name="ikm_client_cert">服务器请求了客户端证书。请选择要使用的证书。</string>
+  <string name="ikm_client_cert_notification">选择客户端证书以用于</string>
+  <string name="ikm_decision_file">从文件</string>
+  <string name="ikm_decision_keychain">从设备密钥管理器</string>
+  <string name="ikm_notification">选择客户端证书</string>
+  <string name="ikm_load_app_keystore">加载应用密钥库时出错</string>
+  <string name="ikm_store_aliasMapping">存储密钥链别名时出错</string>
+  <string name="ikm_remove_keys">连接错误：已删除的密钥用于</string>
+  <string name="ikm_remove_all_keys">已删除所有连接密钥</string>
+  <string name="ikm_add_from_keystore">读取指定的密钥库时出错</string>
+  <string name="ikm_add_from_keystore_alias">加载密钥时出错：</string>
+  <string name="ikm_keychain">密钥链错误；删除存储的别名</string>
+  <string name="ikm_select_keystore">选择密钥库文件</string>
+
+  <string name="mtm_security_risk">警告：潜在的安全风险</string>
+  <string name="mtm_trust_anchor">服务器证书未由已知证书颁发机构签名。</string>
+  <string name="mtm_cert_expired">服务器证书已过期。</string>
+  <string name="mtm_hostname_mismatch">服务器无法验证为 \&quot;%s\&quot;。</string>
+  <string name="mtm_trust_certificate">你信任此证书吗？它将用于验证所有列出的名称。</string>
+  <string name="mtm_accept_servername">接受不匹配的服务器名称？</string>
+  <string name="mtm_cert_details">证书详细信息：</string>
+  <string name="mtm_valid_for">证书有效期：</string>
+  <string name="mtm_decision_always">始终</string>
+  <string name="mtm_decision_once">一次</string>
+  <string name="mtm_notification_channel">安全</string>
+  <string name="mtm_notification">证书验证</string>
+  <string name="mtm_error_keystore">从文件加载密钥库时出现异常</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">与 Gemini 聊天</string>
+  <string name="hint_ask_gemini">向 Gemini 询问有关您的杂货…</string>
+  <string name="action_open_gemini_chat">与 Google Gemini 聊天</string>
+  <string name="msg_gemini_welcome">您好！我是 Gemini。我可以帮助您获取有关杂货的信息。您想知道什么？</string>
+  <string name="error_gemini_not_enabled">Gemini 未启用。请在设置中配置。</string>
+  <string name="error_gemini_no_api_key">Gemini API 密钥未配置。请在设置中添加。</string>
+  <string name="error_gemini_failed">与 Gemini 通信失败</string>
+  <string name="setting_gemini_enabled">启用 Gemini 聊天</string>
+  <string name="setting_gemini_enabled_description">允许与 Google Gemini AI 聊天有关您的杂货</string>
+  <string name="setting_gemini_api_key">Gemini API 密钥</string>
+  <string name="setting_gemini_api_key_description">您的 Google Gemini API 密钥（参见 https://aistudio.google.com/api-keys）</string>
+  <string name="hint_gemini_api_key">输入您的个人 Gemini API 密钥</string>
+  <string name="sender_you">您</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">使用 Gemini 聊天</string>
+  <string name="setting_gemini_switch_description">允许与 Gemini 聊天有关您的产品、食谱和任务。</string>
+
   </resources>

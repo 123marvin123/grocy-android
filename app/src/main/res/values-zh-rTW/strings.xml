@@ -1004,4 +1004,23 @@
   <string name="setting_notification_time_description">在檢查完成時</string>
   <string name="setting_keep_screen_on_recipes_description">查看食譜時</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">與 Gemini 聊天</string>
+  <string name="hint_ask_gemini">向 Gemini 詢問有關您的雜貨…</string>
+  <string name="action_open_gemini_chat">與 Google Gemini 聊天</string>
+  <string name="msg_gemini_welcome">您好！我是 Gemini。我可以幫助您獲取有關雜貨的資訊。您想知道什麼？</string>
+  <string name="error_gemini_not_enabled">Gemini 未啟用。請在設定中配置。</string>
+  <string name="error_gemini_no_api_key">Gemini API 金鑰未配置。請在設定中新增。</string>
+  <string name="error_gemini_failed">與 Gemini 通訊失敗</string>
+  <string name="setting_gemini_enabled">啟用 Gemini 聊天</string>
+  <string name="setting_gemini_enabled_description">允許與 Google Gemini AI 聊天有關您的雜貨</string>
+  <string name="setting_gemini_api_key">Gemini API 金鑰</string>
+  <string name="setting_gemini_api_key_description">您的 Google Gemini API 金鑰（請參閱 https://aistudio.google.com/api-keys）</string>
+  <string name="hint_gemini_api_key">輸入您的個人 Gemini API 金鑰</string>
+  <string name="sender_you">您</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini AI</string>
+  <string name="setting_gemini_switch">啟用 Gemini 聊天</string>
+  <string name="setting_gemini_switch_description">與 Google Gemini AI 聊天有關您的雜貨</string>
+
   </resources>

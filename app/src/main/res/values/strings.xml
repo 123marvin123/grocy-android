@@ -1398,4 +1398,23 @@
   <string name="mtm_notification">Certificate Verification</string>
   <string name="mtm_error_keystore">Exception on loading key store from file</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chat with Gemini</string>
+  <string name="hint_ask_gemini">Ask Gemini about your groceries…</string>
+  <string name="action_open_gemini_chat">Chat with Google Gemini</string>
+  <string name="msg_gemini_welcome">Hello! I\'m Gemini. I can help you with information about your groceries. What would you like to know?</string>
+  <string name="error_gemini_not_enabled">Gemini is not enabled. Please configure it in settings.</string>
+  <string name="error_gemini_no_api_key">Gemini API key not configured. Please add it in settings.</string>
+  <string name="error_gemini_failed">Failed to communicate with Gemini</string>
+  <string name="setting_gemini_enabled">Enable Gemini chat</string>
+  <string name="setting_gemini_enabled_description">Allow chatting with Google Gemini AI about your groceries</string>
+  <string name="setting_gemini_api_key">Gemini API key</string>
+  <string name="setting_gemini_api_key_description">Your Google Gemini API key (see https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Enter your personal Gemini API key</string>
+  <string name="sender_you">You</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Use Gemini Chat</string>
+  <string name="setting_gemini_switch_description">Allows chatting with Gemini about your products, recipes and chores.</string>
+
 </resources>

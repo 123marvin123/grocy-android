@@ -244,6 +244,14 @@ public class OverviewStartFragment extends BaseFragment {
     }
   }
 
+  public void openGeminiChat() {
+    if (clickUtil.isDisabled()) {
+      return;
+    }
+
+    activity.showBottomSheet(new xyz.zedler.patrick.grocy.fragment.bottomSheetDialog.GeminiChatBottomSheet());
+  }
+
   private boolean showFabInfoDialogIfAppropriate() {
     if (viewModel.getOverviewFabInfoShown()) {
       return false;

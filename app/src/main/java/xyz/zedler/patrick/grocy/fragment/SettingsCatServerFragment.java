@@ -58,6 +58,7 @@ public class SettingsCatServerFragment extends BaseFragment {
   private MainActivity activity;
   private SettingsViewModel viewModel;
   private AlertDialog dialogRestart, dialogLogout;
+  private ClickUtil clickUtil;
 
   @Override
   public View onCreateView(
@@ -83,7 +84,8 @@ public class SettingsCatServerFragment extends BaseFragment {
     binding.setFragment(this);
     binding.setViewModel(viewModel);
     binding.setSharedPrefs(PreferenceManager.getDefaultSharedPreferences(activity));
-    binding.setClickUtil(new ClickUtil());
+    clickUtil = new ClickUtil();
+    binding.setClickUtil(clickUtil);
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
     SystemBarBehavior systemBarBehavior = new SystemBarBehavior(activity);

@@ -1388,4 +1388,23 @@
   <string name="mtm_notification">Verificação de Certificado</string>
   <string name="mtm_error_keystore">Exceção ao carregar o keystore do arquivo</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chat com Gemini</string>
+  <string name="hint_ask_gemini">Pergunte ao Gemini sobre seus mantimentos…</string>
+  <string name="action_open_gemini_chat">Conversar com Google Gemini</string>
+  <string name="msg_gemini_welcome">Olá! Eu sou o Gemini. Posso ajudá-lo com informações sobre seus mantimentos. O que você gostaria de saber?</string>
+  <string name="error_gemini_not_enabled">Gemini não está ativado. Por favor, configure nas configurações.</string>
+  <string name="error_gemini_no_api_key">Chave API do Gemini não configurada. Por favor, adicione nas configurações.</string>
+  <string name="error_gemini_failed">Falha ao se comunicar com Gemini</string>
+  <string name="setting_gemini_enabled">Ativar chat do Gemini</string>
+  <string name="setting_gemini_enabled_description">Permitir conversar com Google Gemini AI sobre seus mantimentos</string>
+  <string name="setting_gemini_api_key">Chave API do Gemini</string>
+  <string name="setting_gemini_api_key_description">Sua chave API do Google Gemini (veja https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Digite sua chave API pessoal do Gemini</string>
+  <string name="sender_you">Você</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini</string>
+  <string name="setting_gemini_switch">Usar Chat do Gemini</string>
+  <string name="setting_gemini_switch_description">Permite conversar com Gemini sobre seus produtos, receitas e tarefas.</string>
+
 </resources>

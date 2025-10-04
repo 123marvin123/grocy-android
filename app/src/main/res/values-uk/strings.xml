@@ -985,6 +985,25 @@
   <string name="setting_proxy_port_description">Номер порту вашого проксі</string>
   <string name="setting_synchronized">Наведений нижче параметр синхронізується із сервером.</string>
   <string name="settings_synchronized">Ці параметри синхронізуються із сервером.</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Чат з Gemini</string>
+  <string name="hint_ask_gemini">Запитайте Gemini про ваші продукти…</string>
+  <string name="action_open_gemini_chat">Чат з Google Gemini</string>
+  <string name="msg_gemini_welcome">Привіт! Я Gemini. Я можу допомогти вам з інформацією про ваші продукти. Що б ви хотіли дізнатися?</string>
+  <string name="error_gemini_not_enabled">Gemini не ввімкнено. Будь ласка, налаштуйте його в параметрах.</string>
+  <string name="error_gemini_no_api_key">Ключ API Gemini не налаштовано. Будь ласка, додайте його в параметрах.</string>
+  <string name="error_gemini_failed">Не вдалося зв\'язатися з Gemini</string>
+  <string name="setting_gemini_enabled">Увімкнути чат Gemini</string>
+  <string name="setting_gemini_enabled_description">Дозволити спілкування з Google Gemini AI про ваші продукти</string>
+  <string name="setting_gemini_api_key">Ключ API Gemini</string>
+  <string name="setting_gemini_api_key_description">Ваш ключ API Google Gemini (див. https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Введіть свій особистий ключ API Gemini</string>
+  <string name="sender_you">Ви</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini AI</string>
+  <string name="setting_gemini_switch">Увімкнути чат Gemini</string>
+  <string name="setting_gemini_switch_description">Спілкування з Google Gemini AI про ваші продукти</string>
   <!-- This is the URL of the demo instance on grocy.info . Replace 'en' with the abbreviation of the translation language. If your language is not available as demo language, take 'en'.
   Examples: 'de' for German; 'fr' for French -->
 </resources>

@@ -35,6 +35,7 @@ public final class Constants {
     public final static String HOME_ASSISTANT_LONG_LIVED_TOKEN = "home_assistant_long_lived_token";
     public final static String HOME_ASSISTANT_INGRESS_SESSION_KEY = "home_assistant_ingress_session_key";
     public final static String HOME_ASSISTANT_INGRESS_SESSION_KEY_TIME = "home_assistant_ingress_session_key_time";
+
     public final static String CURRENCY = "currency";
     public final static String ENERGY_UNIT = "energy_unit";
     public final static String ENERGY_UNIT_DEFAULT = "kcal";
@@ -180,6 +181,11 @@ public final class Constants {
       public final static String MESSAGE_DURATION = "message_duration";
     }
 
+    public final static class GEMINI {
+        public final static String ENABLED = "gemini_enabled";
+        public final static String API_KEY = "gemini_api_key";
+    }
+
     public final static class SCANNER {
 
       public final static String FRONT_CAM = "front_cam";
@@ -283,6 +289,11 @@ public final class Constants {
       public final static boolean DATE_KEYBOARD_INPUT = false;
       public final static boolean DATE_KEYBOARD_REVERSE = false;
       public final static int MESSAGE_DURATION = 10;
+    }
+
+    public final static class GEMINI {
+        public final static boolean ENABLED = false;
+        public final static String API_KEY = "";
     }
 
     public final static class SCANNER {

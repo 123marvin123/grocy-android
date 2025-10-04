@@ -1096,4 +1096,23 @@
   <string name="setting_notification_time_description">Quando a validação é feita</string>
   <string name="setting_keep_screen_on_recipes_description">Enquanto se vê uma receita</string>
 
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Conversa com Gemini</string>
+  <string name="hint_ask_gemini">Pergunte ao Gemini sobre os seus alimentos…</string>
+  <string name="action_open_gemini_chat">Conversar com o Google Gemini</string>
+  <string name="msg_gemini_welcome">Olá! Eu sou o Gemini. Posso ajudá-lo com informações sobre os seus alimentos. O que gostaria de saber?</string>
+  <string name="error_gemini_not_enabled">O Gemini não está activado. Por favor, configure-o nas definições.</string>
+  <string name="error_gemini_no_api_key">A chave API do Gemini não está configurada. Por favor, adicione-a nas definições.</string>
+  <string name="error_gemini_failed">Falha ao comunicar com o Gemini</string>
+  <string name="setting_gemini_enabled">Activar conversação com Gemini</string>
+  <string name="setting_gemini_enabled_description">Permitir conversar com o Google Gemini AI sobre os seus alimentos</string>
+  <string name="setting_gemini_api_key">Chave API do Gemini</string>
+  <string name="setting_gemini_api_key_description">A sua chave API do Google Gemini (veja https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Introduza a sua chave API pessoal do Gemini</string>
+  <string name="sender_you">Você</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini AI</string>
+  <string name="setting_gemini_switch">Activar conversação com Gemini</string>
+  <string name="setting_gemini_switch_description">Conversar com o Google Gemini AI sobre os seus alimentos</string>
+
   </resources>

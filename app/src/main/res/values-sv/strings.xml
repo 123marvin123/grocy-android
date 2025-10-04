@@ -1067,4 +1067,23 @@
   <string name="settings_synchronized">Dessa inställningar är synkroniserade med servern.</string>
   <string name="setting_message_duration">Visningstid för meddelanden</string>
   <string name="setting_message_duration_description">Gäller bara transaktions meddelanden</string>
+
+  <!-- Gemini Integration -->
+  <string name="title_gemini_chat">Chatt med Gemini</string>
+  <string name="hint_ask_gemini">Fråga Gemini om dina matvaror…</string>
+  <string name="action_open_gemini_chat">Chatta med Google Gemini</string>
+  <string name="msg_gemini_welcome">Hej! Jag är Gemini. Jag kan hjälpa dig med information om dina matvaror. Vad vill du veta?</string>
+  <string name="error_gemini_not_enabled">Gemini är inte aktiverad. Konfigurera den i inställningarna.</string>
+  <string name="error_gemini_no_api_key">Gemini API-nyckel är inte konfigurerad. Lägg till den i inställningarna.</string>
+  <string name="error_gemini_failed">Det gick inte att kommunicera med Gemini</string>
+  <string name="setting_gemini_enabled">Aktivera Gemini-chatt</string>
+  <string name="setting_gemini_enabled_description">Tillåt att chatta med Google Gemini AI om dina matvaror</string>
+  <string name="setting_gemini_api_key">Gemini API-nyckel</string>
+  <string name="setting_gemini_api_key_description">Din Google Gemini API-nyckel (se https://aistudio.google.com/api-keys)</string>
+  <string name="hint_gemini_api_key">Ange din personliga Gemini API-nyckel</string>
+  <string name="sender_you">Du</string>
+  <string name="sender_gemini">Gemini</string>
+  <string name="setting_gemini_title">Google Gemini AI</string>
+  <string name="setting_gemini_switch">Aktivera Gemini-chatt</string>
+  <string name="setting_gemini_switch_description">Chatta med Google Gemini AI om dina matvaror</string>
   </resources>
