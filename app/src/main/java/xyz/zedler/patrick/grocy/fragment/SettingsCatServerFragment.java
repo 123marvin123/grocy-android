@@ -58,6 +58,7 @@ public class SettingsCatServerFragment extends BaseFragment {
   private MainActivity activity;
   private SettingsViewModel viewModel;
   private AlertDialog dialogRestart, dialogLogout;
+  private ClickUtil clickUtil;
 
   @Override
   public View onCreateView(
@@ -83,7 +84,8 @@ public class SettingsCatServerFragment extends BaseFragment {
     binding.setFragment(this);
     binding.setViewModel(viewModel);
     binding.setSharedPrefs(PreferenceManager.getDefaultSharedPreferences(activity));
-    binding.setClickUtil(new ClickUtil());
+    clickUtil = new ClickUtil();
+    binding.setClickUtil(clickUtil);
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
     SystemBarBehavior systemBarBehavior = new SystemBarBehavior(activity);
@@ -96,6 +98,18 @@ public class SettingsCatServerFragment extends BaseFragment {
     binding.toolbar.setNavigationOnClickListener(v -> activity.navUtil.navigateUp());
 
     binding.swipe.setEnabled(false);
+
+    // Setup Gemini switch
+    binding.switchGeminiEnabled.setChecked(
+        PreferenceManager.getDefaultSharedPreferences(activity)
+            .getBoolean(Constants.PREF.GEMINI_ENABLED, false)
+    );
+    binding.switchGeminiEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      PreferenceManager.getDefaultSharedPreferences(activity)
+          .edit()
+          .putBoolean(Constants.PREF.GEMINI_ENABLED, isChecked)
+          .apply();
+    });
 
     binding.textCompatible.setTextColor(
         ResUtil.getColor(
@@ -200,5 +214,31 @@ public class SettingsCatServerFragment extends BaseFragment {
         .setOnCancelListener(dialog -> performHapticClick())
         .create();
     dialogLogout.show();
+  }
+
+  public void showGeminiApiKeyDialog() {
+    if (clickUtil.isDisabled()) {
+      return;
+    }
+    Bundle bundle = new Bundle();
+    bundle.putString(Constants.ARGUMENT.HINT, getString(R.string.hint_gemini_api_key));
+    bundle.putString(Constants.ARGUMENT.TEXT, PreferenceManager
+        .getDefaultSharedPreferences(activity)
+        .getString(Constants.PREF.GEMINI_API_KEY, ""));
+    activity.showBottomSheet(new xyz.zedler.patrick.grocy.fragment.bottomSheetDialog.TextEditBottomSheet(), bundle);
+    // Listen for the result
+    activity.getCurrentFragment().getParentFragmentManager().setFragmentResultListener(
+        Constants.ARGUMENT.TEXT,
+        getViewLifecycleOwner(),
+        (requestKey, result) -> {
+          String apiKey = result.getString(Constants.ARGUMENT.TEXT);
+          if (apiKey != null) {
+            PreferenceManager.getDefaultSharedPreferences(activity)
+                .edit()
+                .putString(Constants.PREF.GEMINI_API_KEY, apiKey.trim())
+                .apply();
+          }
+        }
+    );
   }
 }
