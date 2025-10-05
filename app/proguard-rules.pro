@@ -62,10 +62,6 @@
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
 -dontwarn org.apache.harmony.xnet.provider.jsse.SSLParametersImpl
 
-# Google Gemini AI SDK
--keep class com.google.genai.** { *; }
--keep class com.google.ai.client.generativeai.** { *; }
--keepclassmembers class com.google.genai.** { *; }
 
 # Jackson for Gemini AI
 -keep class com.fasterxml.jackson.** { *; }
@@ -99,20 +95,26 @@
 
 # Kotlin metadata for Jackson Kotlin support
 -keep class kotlin.Metadata { *; }
--keep class kotlin.reflect.** { *; }
 
 -keep class io.swagger.** { *; }
 -keep class com.fasterxml.jackson.** { *; }
 
-# Suppress warnings for optional dependencies
+# Suppress warnings for compile-time only classes and classes not available on Android
+-dontwarn java.beans.**
+-dontwarn java.lang.reflect.AnnotatedParameterizedType
+-dontwarn java.lang.reflect.AnnotatedType
+-dontwarn javax.lang.model.**
+-dontwarn javax.mail.**
 -dontwarn javax.naming.**
+-dontwarn javax.script.**
 -dontwarn javax.servlet.**
--dontwarn org.apache.avalon.framework.**
+-dontwarn javax.tools.**
+-dontwarn org.apache.avalon.**
 -dontwarn org.apache.log.**
 -dontwarn org.apache.log4j.**
 -dontwarn org.commonmark.ext.gfm.strikethrough.**
 -dontwarn org.ietf.jgss.**
--dontwarn org.apache.http.**
--dontwarn org.apache.commons.logging.**
--dontwarn io.swagger.**
--dontwarn com.fasterxml.jackson.**
+-dontwarn org.joda.convert.**
+-dontwarn java.awt.**
+-dontwarn javax.swing.**
+-dontwarn com.sun.activation.**

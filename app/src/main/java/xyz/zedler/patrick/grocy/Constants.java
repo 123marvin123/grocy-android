@@ -182,11 +182,10 @@ public final class Constants {
     }
 
     public final static class GEMINI {
-        public final static String ENABLED = "gemini_enabled";
-        public final static String API_KEY = "gemini_api_key";
-        public final static String CHAT_HISTORY = "gemini_chat_history";
+      public final static String ENABLED = "gemini_enabled";
+      public final static String API_KEY = "gemini_api_key";
+      public final static String CHAT_HISTORY = "gemini_chat_history";
     }
-
     public final static class SCANNER {
 
       public final static String FRONT_CAM = "front_cam";

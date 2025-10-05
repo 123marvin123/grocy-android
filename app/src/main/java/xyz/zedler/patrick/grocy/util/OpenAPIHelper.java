@@ -79,7 +79,7 @@ public class OpenAPIHelper {
                 Schema<?> resolvedProp = resolveSchemaReference(property.get$ref());
                 return resolvedProp != null ? resolvedProp.getType() : null;
             }
-            if(!property.getTypes().isEmpty())
+            if(property.getTypes() != null && !property.getTypes().isEmpty())
                 return property.getTypes().iterator().next();
             else
                 return property.getType();
@@ -191,7 +191,7 @@ public class OpenAPIHelper {
 
         // Check if parameter has a schema
         if (parameter.getSchema() != null) {
-            if(!parameter.getSchema().getTypes().isEmpty())
+            if(parameter.getSchema().getTypes() != null && !parameter.getSchema().getTypes().isEmpty())
                 return parameter.getSchema().getTypes().iterator().next().toString();
             else
                 return parameter.getSchema().getType();

@@ -25,14 +25,14 @@ plugins {
 
 android {
     namespace 'xyz.zedler.patrick.grocy'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "xyz.zedler.patrick.grocy"
         minSdk 24
         targetSdk 35
         versionCode 63
-        versionName "3.10.0"
+        versionName "3.10.1"
         resourceConfigurations += ['ca', 'cs', 'de', 'en', 'es', 'et', 'fr', 'hu', 'it', 'iw', 'ja',
                                    'nb', 'nl', 'pl', 'pt-rBR', 'pt-rPT', 'ru', 'sk', 'sv', 'uk',
                                    'zh-rCN', 'zh-rTW']
@@ -157,10 +157,7 @@ dependencies {
     implementation libs.markwon.ext.tables
     implementation libs.markwon.html
 
-    implementation libs.swagger.parser
-}
-
-configurations.configureEach {
-    exclude group: 'com.google.auto.value', module: 'auto-value'
-    exclude group: 'javax.validation', module: 'validation-api'
+    implementation(libs.swagger.parser) {
+        exclude group: 'javax.validation', module: 'validation-api'
+    }
 }
