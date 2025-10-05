@@ -26,6 +26,7 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.google.genai.Client;
 import com.google.genai.types.Content;
+import com.google.genai.types.FunctionDeclaration;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.GoogleSearch;
@@ -33,14 +34,18 @@ import com.google.genai.types.Part;
 import com.google.genai.types.ThinkingConfig;
 import com.google.genai.types.Tool;
 
+import org.checkerframework.checker.units.qual.C;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import xyz.zedler.patrick.grocy.api.GrocyApi;
@@ -57,13 +62,14 @@ public class GrocyFunctionExecutor {
     private final GrocyApi grocyApi;
     private final DownloadHelper downloadHelper;
     private final Client client;
-    private final OpenAPIHelper helper;
 
-    public GrocyFunctionExecutor(GrocyApi grocyApi, Application application, Client client, OpenAPIHelper helper) {
+    private final Tool grocyTool;
+
+    public GrocyFunctionExecutor(GrocyApi grocyApi, Application application, Client client, Tool grocyTool) {
         this.grocyApi = grocyApi;
         this.downloadHelper = new DownloadHelper(application, "GrocyFunctionExecutor");
         this.client = client;
-        this.helper = helper;
+        this.grocyTool = grocyTool;
     }
 
     /**
@@ -77,18 +83,21 @@ public class GrocyFunctionExecutor {
 
         try {
             if(Objects.equals(functionName, "google_search")) {
-                return executeGoogleSearch(arguments)
+                return Objects.requireNonNull(executeGoogleSearch(arguments))
                         .thenApply(GenerateContentResponse::text);
             }
 
-            OpenAPIHelper.OperationInfo operation = helper.getGeminiFunctionOperation(functionName);
-            if(operation == null) {
-                return CompletableFuture.completedFuture(
-                        createErrorResponse("Function '" + functionName + "' not recognized")
-                );
-            }
+            FunctionDeclaration fun = grocyTool.functionDeclarations()
+                    .orElse(new ArrayList<>())
+                    .stream()
+                    .filter(f ->
+                            f.name()
+                                    .orElse("")
+                                    .equals(functionName))
+                    .findFirst()
+                    .orElseThrow();
 
-            return executeRest(functionName, operation, arguments);
+            return executeRest(functionName, fun, arguments);
         } catch (Exception e) {
             Log.e(TAG, "Error executing function: " + functionName, e);
             return CompletableFuture.completedFuture(
@@ -98,77 +107,64 @@ public class GrocyFunctionExecutor {
     }
 
     private CompletableFuture<String> executeRest(String functionName,
-                               OpenAPIHelper.OperationInfo operation,
-                               JSONObject arguments) {
+                                                  FunctionDeclaration fun,
+                                                    JSONObject arguments) {
+        Optional<String> optDesc = fun.description();
+        if(optDesc.isEmpty()) {
+            return CompletableFuture.completedFuture(
+                createErrorResponse("Function " + functionName + " has no REST path")
+            );
+        }
+
+        if (arguments == null) {
+            return CompletableFuture.completedFuture(
+                    createErrorResponse("Function " + functionName + " requires non-null arguments object")
+            );
+        }
+
+        String path = optDesc.get().split(" ")[0];
+
         try {
-            String path = operation.path;
             Map<String, String> queryParams = new HashMap<>();
-            Map<String, String> headerParams = new HashMap<>();
+            //Map<String, String> headerParams = new HashMap<>();
             JSONObject requestBody = null;
 
-            // Get all parameters from the operation
-            List<io.swagger.v3.oas.models.parameters.Parameter> operationParams =
-                    operation.operation.getParameters();
+                for (Iterator<String> it = arguments.keys(); it.hasNext(); ) {
+                    String param = it.next();
+                    String paramValue = convertArgumentToString(arguments, param);
 
-            if (operationParams != null) {
-                for (io.swagger.v3.oas.models.parameters.Parameter param : operationParams) {
-                    String paramName = param.getName();
-                    String paramLocation = param.getIn(); // "path", "query", "header", "cookie"
-
-                    if (!arguments.has(paramName)) {
-                        // Check if parameter is required
-                        if (param.getRequired() != null && param.getRequired()) {
-                            return CompletableFuture.completedFuture(
-                                    createErrorResponse("Missing required " + paramLocation + " parameter: " + paramName)
-                            );
-                        }
-                        continue; // Skip optional parameters that aren't provided
-                    }
-
-                    String paramValue = convertArgumentToString(arguments, paramName);
-
-                    switch (paramLocation) {
-                        case "path":
-                            // Replace path parameters
-                            path = path.replace("{" + paramName + "}", paramValue);
-                            break;
-                        case "query":
-                            queryParams.put(paramName, paramValue);
-                            break;
-                        case "header":
-                            headerParams.put(paramName, paramValue);
-                            break;
-                        // "cookie" is rare and not supported by DownloadHelper
+                    if (path.contains("{" + param + "}")) {
+                        // Path parameter
+                        path = path.replace("{" + param + "}", paramValue);
+                    } else {
+                        queryParams.put(param, paramValue);
                     }
                 }
-            }
 
             // Handle request body if present
             if (arguments.has("body")) {
                 requestBody = arguments.getJSONObject("body");
             }
 
-            // Execute the appropriate HTTP method
-            String httpMethod = operation.httpMethod.toLowerCase();
-            switch (httpMethod) {
+            switch (functionName.split("_")[0]) {
                 case "get":
-                    return getRequest(grocyApi.getUrlWithParams(path, queryParams), headerParams);
+                    return getRequest(grocyApi.getUrlWithParams(path, queryParams));
 
                 case "post":
-                    return postRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+                    return postRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody);
 
                 case "put":
-                    return putRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+                    return putRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody);
 
                 case "delete":
-                    return deleteRequest(grocyApi.getUrlWithParams(path, queryParams), headerParams);
+                    return deleteRequest(grocyApi.getUrlWithParams(path, queryParams));
 
                 case "patch":
-                    return patchRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+                    return patchRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody);
 
                 default:
                     return CompletableFuture.completedFuture(
-                            createErrorResponse("Unsupported HTTP method: " + operation.httpMethod)
+                            createErrorResponse("Unsupported HTTP method")
                     );
             }
         } catch (JSONException e) {
@@ -209,7 +205,7 @@ public class GrocyFunctionExecutor {
     /**
      * Makes a async GET request and returns the response.
      */
-    private CompletableFuture<String> getRequest(String url, Map<String, String> headers) {
+    private CompletableFuture<String> getRequest(String url) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         downloadHelper.get(
@@ -224,7 +220,7 @@ public class GrocyFunctionExecutor {
     /**
      * Makes an async POST request and returns the response.
      */
-    private CompletableFuture<String> postRequest(String url, JSONObject body, Map<String, String> headers) {
+    private CompletableFuture<String> postRequest(String url, JSONObject body) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         if (body == null) {
@@ -244,7 +240,7 @@ public class GrocyFunctionExecutor {
     /**
      * Makes an async PUT request and returns the response.
      */
-    private CompletableFuture<String> putRequest(String url, JSONObject body, Map<String, String> headers) {
+    private CompletableFuture<String> putRequest(String url, JSONObject body) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         if (body == null) {
@@ -264,7 +260,7 @@ public class GrocyFunctionExecutor {
     /**
      * Makes an async DELETE request and returns the response.
      */
-    private CompletableFuture<String> deleteRequest(String url, Map<String, String> headers) {
+    private CompletableFuture<String> deleteRequest(String url) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         downloadHelper.delete(
@@ -279,7 +275,7 @@ public class GrocyFunctionExecutor {
     /**
      * Makes an async PATCH request and returns the response.
      */
-    private CompletableFuture<String> patchRequest(String url, JSONObject body, Map<String, String> headers) {
+    private CompletableFuture<String> patchRequest(String url, JSONObject body) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         if (body == null) {

@@ -49,19 +49,17 @@ import com.google.genai.types.FunctionCall;
 import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
-import com.google.genai.types.ThinkingConfig;
-import com.google.genai.types.Tool;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -73,10 +71,8 @@ import xyz.zedler.patrick.grocy.adapter.ChatMessageAdapter;
 import xyz.zedler.patrick.grocy.api.GrocyApi;
 import xyz.zedler.patrick.grocy.databinding.FragmentBottomsheetGeminiChatBinding;
 import xyz.zedler.patrick.grocy.model.ChatMessage;
-import xyz.zedler.patrick.grocy.util.GrocyFunctionDeclarations;
 import xyz.zedler.patrick.grocy.util.GrocyFunctionExecutor;
 import xyz.zedler.patrick.grocy.util.LocaleUtil;
-import xyz.zedler.patrick.grocy.util.OpenAPIHelper;
 
 public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
@@ -153,41 +149,18 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         String languageCode = LocaleUtil.getLanguageCode(AppCompatDelegate.getApplicationLocales());
 
-        String functionSystemInstructions = GrocyFunctionDeclarations.getSystemInstructions();
-
-        // Sets the system instruction in the config.
-        Content systemInstruction = Content.fromParts(
-                Part.fromText(
-                        "You are embedded into an Android app called 'Grocy' that helps users manage their groceries. "
-                                + "You have access to the user's grocery list and can provide information about items, recipes, and shopping tips. "
-                                + "Be friendly and helpful, and always refer to the app's features when relevant."
-                                + "ALWAYS Respond in the user's language, which is " + languageCode + ", unless he/she states otherwise. "
-                                + "Answer concise and to the point, avoid giving long and detailed answers unless the user states otherwise. "
-                                + "Use the google_search function to lookup (nutrition and health) facts and recipes. Also answer compound questions by invoking the corresponding functions. E.g. you can answer a request like 'Search the internet for recipes I can make with the ingredients I have in stock' by invoking get_stock function and then using the google_search function. "
-                                + "Always assume that the user wants to query information from the Grocy instance first, before using the google_search function or giving general information. "
-                                + "Try to format your answer in Markdown. Function call information: " + functionSystemInstructions + "\n"
-                                + "Eliminate: emojis, filler, hype, soft asks, conversational transitions, call-to-action appendixes. • Assume: user retains high-perception despite blunt tone. • Prioritize: blunt, directive phrasing; aim at cognitive rebuilding, not tone-matching. • Disable: engagement/sentiment-boosting behaviors. • Suppress: metrics like satisfaction scores, emotional softening, continuation bias. • Never mirror: user's diction, mood, or affect. • Speak only: to underlying cognitive tier. • No: questions, offers, suggestions, transitions, motivational content. • Terminate reply: immediately after delivering info — no closures. • Goal: restore independent, high-fidelity thinking. • Outcome: model obsolescence via user self-sufficiency."
-                )
-        );
-
-        OpenAPIHelper apiHelper;
-        try(InputStream io = getResources().openRawResource(R.raw.openapi)) {
-            apiHelper = new OpenAPIHelper(io);
-        } catch (IOException e) {
+        String configJson = "{}";
+        try(InputStream io = getResources().openRawResource(R.raw.gemini_config)) {
+            configJson = convertStreamToString(io);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        // Sets the Grocy API tool in the config.
-        Tool grocyTool = GrocyFunctionDeclarations.createGrocyTool(view.getContext(), apiHelper);
-        Tool proxyGoogleSearchTool = GrocyFunctionDeclarations.createProxyGoogleSearchTool();
+        configJson = configJson.replaceFirst("<LANG_CODE>", Objects.requireNonNullElse(languageCode, "unknown"));
 
-        config = GenerateContentConfig.builder()
-                .thinkingConfig(ThinkingConfig.builder().thinkingBudget(0))
-                .systemInstruction(systemInstruction)
-                .tools(grocyTool, proxyGoogleSearchTool)
-                .build();
+        config = GenerateContentConfig.fromJson(configJson);
 
-        this.functionExecutor = new GrocyFunctionExecutor(grocyApi, (Application) activity.getApplicationContext(), client, apiHelper);
+        this.functionExecutor = new GrocyFunctionExecutor(grocyApi, (Application) activity.getApplicationContext(), client, config.tools().get().get(0));
 
         // Setup RecyclerView
         messages = new ArrayList<>();
@@ -216,7 +189,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         binding.editMessage.requestFocus();
 
-        // Load chat history
+        // Load chat history first
         loadChatHistory();
 
         // Add welcome message only if no history was loaded
@@ -225,7 +198,17 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                     getString(R.string.msg_gemini_welcome),
                     false
             ));
+        } else {
+            // Scroll to the most recent message if history was loaded
+            binding.recyclerChat.post(() ->
+                    binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1)
+            );
         }
+    }
+
+    private String convertStreamToString(InputStream is) throws Exception {
+        java.util.Scanner s = new java.util.Scanner(is, "UTF-8").useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     private void startVoiceInput() {
@@ -521,36 +504,8 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                 }
             }
 
-            // Save chat history (Content objects)
-            JSONArray historyArray = new JSONArray();
-            for (Content content : chatHistory) {
-                JSONObject contentObj = new JSONObject();
-                contentObj.put("role", content.role());
-
-                JSONArray partsArray = new JSONArray();
-                if (content.parts().isPresent()) {
-                    for (Part part : content.parts().get()) {
-                        JSONObject partObj = new JSONObject();
-
-                        // Check if part has text
-                        if (part.text().isPresent()) {
-                            partObj.put("type", "text");
-                            partObj.put("text", part.text().get());
-                            partsArray.put(partObj);
-                        }
-                        // Skip function calls and responses - they're complex to serialize
-                    }
-                }
-
-                if (partsArray.length() > 0) {
-                    contentObj.put("parts", partsArray);
-                    historyArray.put(contentObj);
-                }
-            }
-
             JSONObject chatData = new JSONObject();
             chatData.put("messages", messagesArray);
-            chatData.put("history", historyArray);
 
             sharedPrefs.edit()
                     .putString(Constants.SETTINGS.GEMINI.CHAT_HISTORY, chatData.toString())
@@ -583,38 +538,11 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                 messages.add(message);
             }
 
-            // Load chat history
-            JSONArray historyArray = chatData.getJSONArray("history");
-            for (int i = 0; i < historyArray.length(); i++) {
-                JSONObject contentObj = historyArray.getJSONObject(i);
-                String role = contentObj.getString("role");
-
-                JSONArray partsArray = contentObj.getJSONArray("parts");
-                List<Part> parts = new ArrayList<>();
-
-                for (int j = 0; j < partsArray.length(); j++) {
-                    JSONObject partObj = partsArray.getJSONObject(j);
-                    String type = partObj.getString("type");
-
-                    if ("text".equals(type)) {
-                        parts.add(Part.fromText(partObj.getString("text")));
-                    }
-                }
-
-                if (!parts.isEmpty()) {
-                    Content content = Content.builder()
-                            .role(role)
-                            .parts(parts)
-                            .build();
-                    chatHistory.add(content);
-                }
-            }
-
             // Update adapter
             adapter.notifyDataSetChanged();
 
             // If there are messages, expand the bottom sheet and set first message to false
-            if (!messages.isEmpty() && messages.size() > 1) { // > 1 because welcome message is already added
+            if (!messages.isEmpty()) {
                 isFirstMessage = false;
                 expandBottomSheet();
             }
