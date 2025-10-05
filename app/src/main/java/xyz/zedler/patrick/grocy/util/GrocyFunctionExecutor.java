@@ -38,11 +38,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import xyz.zedler.patrick.grocy.api.GrocyApi;
 import xyz.zedler.patrick.grocy.helper.DownloadHelper;
@@ -55,211 +54,129 @@ public class GrocyFunctionExecutor {
 
     private static final String TAG = GrocyFunctionExecutor.class.getSimpleName();
     private static final int REQUEST_TIMEOUT_SECONDS = 10;
-    
     private final GrocyApi grocyApi;
     private final DownloadHelper downloadHelper;
-
     private final Client client;
+    private final OpenAPIHelper helper;
 
-    public GrocyFunctionExecutor(GrocyApi grocyApi, Application application, Client client) {
+    public GrocyFunctionExecutor(GrocyApi grocyApi, Application application, Client client, OpenAPIHelper helper) {
         this.grocyApi = grocyApi;
         this.downloadHelper = new DownloadHelper(application, "GrocyFunctionExecutor");
         this.client = client;
+        this.helper = helper;
     }
 
     /**
      * Executes a function call from Gemini.
      * @param functionName Name of the function to execute
      * @param arguments JSON object containing function arguments
-     * @return JSON string with the result
+     * @return CompletableFuture with JSON string result
      */
-    public String executeFunction(String functionName, JSONObject arguments) {
+    public CompletableFuture<String> executeFunction(String functionName, JSONObject arguments) {
         Log.d(TAG, "Executing function: " + functionName + " with args: " + arguments);
 
         try {
-            switch (functionName) {
-                // Stock Management Functions
-                case "get_stock":
-                    return executeGetStock();
-                case "get_stock_volatile":
-                    return executeGetStockVolatile(arguments);
-                case "get_product_entries":
-                    return executeGetProductEntries(arguments);
-                case "get_stock_by_location":
-                    return executeGetStockByLocation(arguments);
-                case "purchase_product":
-                    return executePurchaseProduct(arguments);
-                case "consume_product":
-                    return executeConsumeProduct(arguments);
-                case "inventory_product":
-                    return executeInventoryProduct(arguments);
-                case "open_product":
-                    return executeOpenProduct(arguments);
-                case "transfer_product":
-                    return executeTransferProduct(arguments);
-                case "get_price_history":
-                    return executeGetPriceHistory(arguments);
-
-                // Shopping List Functions
-                case "get_shopping_list":
-                    return executeGetShoppingList();
-                case "add_shopping_list_item":
-                    return executeAddShoppingListItem(arguments);
-                case "remove_shopping_list_item":
-                    return executeRemoveShoppingListItem(arguments);
-
-                // Recipe Functions
-                case "get_recipes":
-                    return executeGetRecipes();
-                case "get_recipe_fulfillment":
-                    return executeGetRecipeFulfillment(arguments);
-                case "get_recipes_fulfillment":
-                    return executeGetRecipesFulfillment();
-                case "add_recipe_products_to_shopping_list":
-                    return executeAddRecipeProductsToShoppingList(arguments);
-                case "consume_recipe":
-                    return executeConsumeRecipe(arguments);
-                case "add_recipe_to_meal_plan":
-                    return executeAddRecipeToMealPlan(arguments);
-
-                // Chore Functions
-                case "get_chores":
-                    return executeGetChores();
-                case "track_chore_execution":
-                    return executeTrackChoreExecution(arguments);
-
-                // Task Functions
-                case "get_tasks":
-                    return executeGetTasks();
-                case "complete_task":
-                    return executeCompleteTask(arguments);
-
-                // Battery Functions
-                case "get_batteries":
-                    return executeGetBatteries();
-                case "charge_battery":
-                    return executeChargeBattery(arguments);
-
-                // Location Functions
-                case "get_locations":
-                    return executeGetLocations();
-                case "get_shopping_locations":
-                    return executeGetShoppingLocations();
-
-                // Product Information Functions
-                case "get_products":
-                    return executeGetProducts();
-                case "get_product_groups":
-                    return executeGetProductGroups();
-                case "get_quantity_units":
-                    return executeGetQuantityUnits();
-
-                // Meal Plan Functions
-                case "get_meal_plan":
-                    return executeGetMealPlan(arguments);
-
-                // Equipment Functions
-                case "get_equipment":
-                    return executeGetEquipment();
-
-                // User Functions
-                case "get_users":
-                    return executeGetUsers();
-
-                // Utility Functions
-                case "undo_action":
-                    return executeUndoAction(arguments);
-
-                // System Functions
-                case "get_system_config":
-                    return executeSystemConfig();
-
-                case "get_system_info":
-                    return executeSystemInfo();
-
-                // Generic object functions
-                case "query_products":
-                    return executeQueryEntities("products", arguments);
-
-                case "query_product_barcodes":
-                    return executeQueryEntities("product_barcodes", arguments);
-
-                case "query_stock":
-                    return executeQueryEntities("stock", arguments);
-
-                case "query_shopping_list":
-                    return executeQueryEntities("shopping_list", arguments);
-
-                case "query_chores":
-                    return executeQueryEntities("chores", arguments);
-
-                case "query_batteries":
-                    return executeQueryEntities("batteries", arguments);
-
-                case "query_locations":
-                    return executeQueryEntities("locations", arguments);
-
-                case "query_quantity_units":
-                    return executeQueryEntities("quantity_units", arguments);
-
-                case "google_search":
-                    return executeGoogleSearch(arguments).join().text();
-                default:
-                    return createErrorResponse("Unknown function: " + functionName);
+            if(Objects.equals(functionName, "google_search")) {
+                return executeGoogleSearch(arguments)
+                        .thenApply(GenerateContentResponse::text);
             }
+
+            OpenAPIHelper.OperationInfo operation = helper.getGeminiFunctionOperation(functionName);
+            if(operation == null) {
+                return CompletableFuture.completedFuture(
+                        createErrorResponse("Function '" + functionName + "' not recognized")
+                );
+            }
+
+            return executeRest(functionName, operation, arguments);
         } catch (Exception e) {
             Log.e(TAG, "Error executing function: " + functionName, e);
-            return createErrorResponse("Error executing " + functionName + ": " + e.getMessage());
+            return CompletableFuture.completedFuture(
+                    createErrorResponse("Error executing " + functionName + ": " + e.getMessage())
+            );
         }
     }
 
-    private String executeQueryEntities(String entity, JSONObject arguments) {
-        if (entity == null || entity.isEmpty()) { return createErrorResponse("Entity not specified"); }
+    private CompletableFuture<String> executeRest(String functionName,
+                               OpenAPIHelper.OperationInfo operation,
+                               JSONObject arguments) {
+        try {
+            String path = operation.path;
+            Map<String, String> queryParams = new HashMap<>();
+            Map<String, String> headerParams = new HashMap<>();
+            JSONObject requestBody = null;
 
-        Map<String, String> params = new HashMap<>();
+            // Get all parameters from the operation
+            List<io.swagger.v3.oas.models.parameters.Parameter> operationParams =
+                    operation.operation.getParameters();
 
-        JSONArray filters = getArrayArg(arguments, "filters");
-        StringBuilder filterString = new StringBuilder();
-        if (filters != null && filters.length() > 0) {
-            filterString.append("query[]=[");
-            for (int i = 0; i < filters.length(); i++) {
-                if (i > 0) { filterString.append(","); }
-                try {
-                    JSONObject filterItem = filters.getJSONObject(i);
-                    filterString.append(filterItem.getString("field"));
-                    filterString.append(filterItem.getString("operator"));
-                    filterString.append(filterItem.getString("value"));
-                } catch (JSONException e) {
-                    return createErrorResponse("Invalid filter format");
+            if (operationParams != null) {
+                for (io.swagger.v3.oas.models.parameters.Parameter param : operationParams) {
+                    String paramName = param.getName();
+                    String paramLocation = param.getIn(); // "path", "query", "header", "cookie"
+
+                    if (!arguments.has(paramName)) {
+                        // Check if parameter is required
+                        if (param.getRequired() != null && param.getRequired()) {
+                            return CompletableFuture.completedFuture(
+                                    createErrorResponse("Missing required " + paramLocation + " parameter: " + paramName)
+                            );
+                        }
+                        continue; // Skip optional parameters that aren't provided
+                    }
+
+                    String paramValue = convertArgumentToString(arguments, paramName);
+
+                    switch (paramLocation) {
+                        case "path":
+                            // Replace path parameters
+                            path = path.replace("{" + paramName + "}", paramValue);
+                            break;
+                        case "query":
+                            queryParams.put(paramName, paramValue);
+                            break;
+                        case "header":
+                            headerParams.put(paramName, paramValue);
+                            break;
+                        // "cookie" is rare and not supported by DownloadHelper
+                    }
                 }
             }
-            filterString.append("]");
-            params.put("query[]", filterString.toString());
-        }
 
-        String orderBy = getStringArg(arguments, "orderBy", "");
-        if(!orderBy.isEmpty()) {
-            String sortOrder = getStringArg(arguments, "sortOrder", "");
-            if(!sortOrder.isEmpty()) {
-                params.put("order", orderBy + ":" + sortOrder);
-            } else {
-                params.put("order", orderBy);
+            // Handle request body if present
+            if (arguments.has("body")) {
+                requestBody = arguments.getJSONObject("body");
             }
 
+            // Execute the appropriate HTTP method
+            String httpMethod = operation.httpMethod.toLowerCase();
+            switch (httpMethod) {
+                case "get":
+                    return getRequest(grocyApi.getUrlWithParams(path, queryParams), headerParams);
+
+                case "post":
+                    return postRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+
+                case "put":
+                    return putRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+
+                case "delete":
+                    return deleteRequest(grocyApi.getUrlWithParams(path, queryParams), headerParams);
+
+                case "patch":
+                    return patchRequest(grocyApi.getUrlWithParams(path, queryParams), requestBody, headerParams);
+
+                default:
+                    return CompletableFuture.completedFuture(
+                            createErrorResponse("Unsupported HTTP method: " + operation.httpMethod)
+                    );
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing arguments for " + functionName, e);
+            return CompletableFuture.completedFuture(
+                    createErrorResponse("Error parsing arguments: " + e.getMessage())
+            );
         }
-
-        params.put("limit", String.valueOf(getIntArg(arguments, "limit", -1)));
-        params.put("offset", String.valueOf(getIntArg(arguments, "offset", -1)));
-
-        return getRequest(grocyApi.getUrlWithParams("/objects/" + entity, params));
-    }
-
-    private String executeSystemInfo() {
-        return getRequest(grocyApi.getSystemInfo());
-    }
-
-    private String executeSystemConfig() {
-        return getRequest(grocyApi.getSystemConfig());
     }
 
     private CompletableFuture<GenerateContentResponse> executeGoogleSearch(JSONObject arguments) {
@@ -290,75 +207,98 @@ public class GrocyFunctionExecutor {
     // Helper methods
 
     /**
-     * Makes a synchronous GET request and returns the response.
+     * Makes a async GET request and returns the response.
      */
-    private String getRequest(String url) {
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<String> result = new AtomicReference<>();
-        AtomicReference<String> error = new AtomicReference<>();
+    private CompletableFuture<String> getRequest(String url, Map<String, String> headers) {
+        CompletableFuture<String> future = new CompletableFuture<>();
 
         downloadHelper.get(
                 url,
-                response -> {
-                    result.set(response);
-                    latch.countDown();
-                },
-                volleyError -> {
-                    error.set(getErrorMessage(volleyError));
-                    latch.countDown();
-                }
+                future::complete,
+                volleyError -> future.complete(createErrorResponse(getErrorMessage(volleyError)))
         );
 
-        try {
-            latch.await(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            return createErrorResponse("Request interrupted: " + e.getMessage());
-        }
-
-        if (error.get() != null) {
-            return createErrorResponse(error.get());
-        }
-
-        return result.get() != null ? result.get() : createErrorResponse("Empty response");
+        return future;
     }
 
     /**
-     * Makes a synchronous POST request and returns the response.
+     * Makes an async POST request and returns the response.
      */
-    private String postRequest(String url, JSONObject body) {
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<String> result = new AtomicReference<>();
-        AtomicReference<String> error = new AtomicReference<>();
+    private CompletableFuture<String> postRequest(String url, JSONObject body, Map<String, String> headers) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        if (body == null) {
+            body = new JSONObject();
+        }
 
         downloadHelper.post(
                 url,
                 body,
-                response -> {
-                    result.set(response.toString());
-                    latch.countDown();
-                },
-                volleyError -> {
-                    error.set(getErrorMessage(volleyError));
-                    latch.countDown();
-                }
+                response -> future.complete(response.toString()),
+                volleyError -> future.complete(createErrorResponse(getErrorMessage(volleyError)))
         );
 
-        try {
-            latch.await(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            return createErrorResponse("Request interrupted: " + e.getMessage());
+        return future;
+    }
+
+    /**
+     * Makes an async PUT request and returns the response.
+     */
+    private CompletableFuture<String> putRequest(String url, JSONObject body, Map<String, String> headers) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        if (body == null) {
+            body = new JSONObject();
         }
 
-        if (error.get() != null) {
-            return createErrorResponse(error.get());
+        downloadHelper.put(
+                url,
+                body,
+                response -> future.complete(response.toString()),
+                volleyError -> future.complete(createErrorResponse(getErrorMessage(volleyError)))
+        );
+
+        return future;
+    }
+
+    /**
+     * Makes an async DELETE request and returns the response.
+     */
+    private CompletableFuture<String> deleteRequest(String url, Map<String, String> headers) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        downloadHelper.delete(
+                url,
+                future::complete,
+                volleyError -> future.complete(createErrorResponse(getErrorMessage(volleyError)))
+        );
+
+        return future;
+    }
+
+    /**
+     * Makes an async PATCH request and returns the response.
+     */
+    private CompletableFuture<String> patchRequest(String url, JSONObject body, Map<String, String> headers) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        if (body == null) {
+            body = new JSONObject();
         }
 
-        return result.get() != null ? result.get() : createErrorResponse("Empty response");
+        downloadHelper.patch(
+                url,
+                body,
+                response -> future.complete(response.toString()),
+                volleyError -> future.complete(createErrorResponse(getErrorMessage(volleyError)))
+        );
+
+        return future;
     }
 
     private String getErrorMessage(VolleyError error) {
         if (error.networkResponse != null) {
-            return "HTTP " + error.networkResponse.statusCode + ": " + 
+            return "HTTP " + error.networkResponse.statusCode + ": " +
                    new String(error.networkResponse.data);
         }
         return error.getMessage() != null ? error.getMessage() : "Network error";
@@ -384,390 +324,6 @@ public class GrocyFunctionExecutor {
         return args.optJSONArray(key);
     }
 
-    // Stock Management Function Implementations
-
-    private String executeGetStock() {
-        return getRequest(grocyApi.getStock());
-    }
-
-    private String executeGetStockVolatile(JSONObject args) {
-        return getRequest(grocyApi.getStockVolatile());
-    }
-
-    private String executeGetProductEntries(JSONObject args) {
-        int productId = getIntArg(args, "productId", 0);
-        return getRequest(grocyApi.getStockEntriesFromProduct(productId));
-    }
-
-    private String executeGetStockByLocation(JSONObject args) {
-        int locationId = getIntArg(args, "locationId", 0);
-        return getRequest(grocyApi.getStockLocationsFromProduct(locationId));
-    }
-
-    private String executePurchaseProduct(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double amount = getDoubleArg(args, "amount", 1.0);
-            String bestBeforeDate = getStringArg(args, "bestBeforeDate", "");
-            double price = getDoubleArg(args, "price", 0.0);
-            
-            JSONObject body = new JSONObject();
-            body.put("amount", amount);
-            if (!bestBeforeDate.isEmpty()) {
-                body.put("best_before_date", bestBeforeDate);
-            }
-            if (price > 0) {
-                body.put("price", price);
-            }
-            if (args.has("storeId")) {
-                body.put("shopping_location_id", getIntArg(args, "storeId", 0));
-            }
-            if (args.has("locationId")) {
-                body.put("location_id", getIntArg(args, "locationId", 0));
-            }
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/products/" + productId + "/add");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error creating purchase request: " + e.getMessage());
-        }
-    }
-
-    private String executeConsumeProduct(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double amount = getDoubleArg(args, "amount", 1.0);
-            boolean spoiled = getBooleanArg(args, "spoiled", false);
-            
-            JSONObject body = new JSONObject();
-            body.put("amount", amount);
-            body.put("spoiled", spoiled);
-            if (args.has("recipeId")) {
-                body.put("recipe_id", getIntArg(args, "recipeId", 0));
-            }
-            if (args.has("locationId")) {
-                body.put("location_id", getIntArg(args, "locationId", 0));
-            }
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/products/" + productId + "/consume");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error creating consume request: " + e.getMessage());
-        }
-    }
-
-    private String executeInventoryProduct(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double newAmount = getDoubleArg(args, "newAmount", 0.0);
-            
-            JSONObject body = new JSONObject();
-            body.put("new_amount", newAmount);
-            if (args.has("bestBeforeDate")) {
-                body.put("best_before_date", getStringArg(args, "bestBeforeDate", ""));
-            }
-            if (args.has("locationId")) {
-                body.put("location_id", getIntArg(args, "locationId", 0));
-            }
-            if (args.has("price")) {
-                body.put("price", getDoubleArg(args, "price", 0.0));
-            }
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/products/" + productId + "/inventory");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error creating inventory request: " + e.getMessage());
-        }
-    }
-
-    private String executeOpenProduct(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double amount = getDoubleArg(args, "amount", 1.0);
-            
-            JSONObject body = new JSONObject();
-            body.put("amount", amount);
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/products/" + productId + "/open");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error creating open product request: " + e.getMessage());
-        }
-    }
-
-    private String executeTransferProduct(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double amount = getDoubleArg(args, "amount", 1.0);
-            int locationIdFrom = getIntArg(args, "locationIdFrom", 0);
-            int locationIdTo = getIntArg(args, "locationIdTo", 0);
-            
-            JSONObject body = new JSONObject();
-            body.put("amount", amount);
-            body.put("location_id_from", locationIdFrom);
-            body.put("location_id_to", locationIdTo);
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/products/" + productId + "/transfer");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error creating transfer request: " + e.getMessage());
-        }
-    }
-
-    private String executeGetPriceHistory(JSONObject args) {
-        int productId = getIntArg(args, "productId", 0);
-        return getRequest(grocyApi.getPriceHistory(productId));
-    }
-
-    // Shopping List Function Implementations
-
-    private String executeGetShoppingList() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.SHOPPING_LIST));
-    }
-
-    private String executeAddShoppingListItem(JSONObject args) {
-        try {
-            int productId = getIntArg(args, "productId", 0);
-            double amount = getDoubleArg(args, "amount", 1.0);
-            int shoppingListId = getIntArg(args, "shoppingListId", 1);
-            
-            JSONObject body = new JSONObject();
-            body.put("product_id", productId);
-            body.put("amount", amount);
-            body.put("shopping_list_id", shoppingListId);
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/stock/shoppinglist/add-product");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error adding shopping list item: " + e.getMessage());
-        }
-    }
-
-    private String executeRemoveShoppingListItem(JSONObject args) {
-        int itemId = getIntArg(args, "shoppingListItemId", 0);
-        String url = grocyApi.getObject(GrocyApi.ENTITY.SHOPPING_LIST, itemId);
-        // Note: Would need DELETE request support in DownloadHelper
-        return createErrorResponse("DELETE not yet supported in DownloadHelper");
-    }
-
-    // Recipe Function Implementations
-
-    private String executeGetRecipes() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.RECIPES));
-    }
-
-    private String executeGetRecipeFulfillment(JSONObject args) {
-        int recipeId = getIntArg(args, "recipeId", 0);
-        String url = grocyApi.getUrl("/recipes/" + recipeId + "/fulfillment");
-        return getRequest(url);
-    }
-
-    private String executeGetRecipesFulfillment() {
-        String url = grocyApi.getUrl("/recipes/fulfillment");
-        return getRequest(url);
-    }
-
-    private String executeAddRecipeProductsToShoppingList(JSONObject args) {
-        int recipeId = getIntArg(args, "recipeId", 0);
-        String url = grocyApi.getUrl("/recipes/" + recipeId + "/add-not-fulfilled-products-to-shoppinglist");
-        return postRequest(url, new JSONObject());
-    }
-
-    private String executeConsumeRecipe(JSONObject args) {
-        try {
-            int recipeId = getIntArg(args, "recipeId", 0);
-            int servings = getIntArg(args, "servings", 1);
-            
-            JSONObject body = new JSONObject();
-            body.put("servings", servings);
-            
-            String url = grocyApi.getUrl("/recipes/" + recipeId + "/consume");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error consuming recipe: " + e.getMessage());
-        }
-    }
-
-    private String executeAddRecipeToMealPlan(JSONObject args) {
-        try {
-            int recipeId = getIntArg(args, "recipeId", 0);
-            String day = getStringArg(args, "day", "");
-            int servings = getIntArg(args, "servings", 1);
-            
-            JSONObject body = new JSONObject();
-            body.put("recipe_id", recipeId);
-            body.put("servings", servings);
-            if (!day.isEmpty()) {
-                body.put("day", day);
-            }
-            
-            String url = grocyApi.getUrl("/objects/" + GrocyApi.ENTITY.MEAL_PLAN);
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error adding recipe to meal plan: " + e.getMessage());
-        }
-    }
-
-    // Chore Function Implementations
-
-    private String executeGetChores() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.CHORES));
-    }
-
-    private String executeTrackChoreExecution(JSONObject args) {
-        try {
-            int choreId = getIntArg(args, "choreId", 0);
-            
-            JSONObject body = new JSONObject();
-            if (args.has("executedBy")) {
-                body.put("done_by", getIntArg(args, "executedBy", 0));
-            }
-            if (args.has("trackedTime")) {
-                body.put("tracked_time", getStringArg(args, "trackedTime", ""));
-            }
-            
-            String url = grocyApi.getUrl("/chores/" + choreId + "/execute");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error tracking chore: " + e.getMessage());
-        }
-    }
-
-    // Task Function Implementations
-
-    private String executeGetTasks() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.TASKS));
-    }
-
-    private String executeCompleteTask(JSONObject args) {
-        try {
-            int taskId = getIntArg(args, "taskId", 0);
-            
-            JSONObject body = new JSONObject();
-            if (args.has("note")) {
-                body.put("note", getStringArg(args, "note", ""));
-            }
-            
-            String url = grocyApi.getUrl("/tasks/" + taskId + "/complete");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error completing task: " + e.getMessage());
-        }
-    }
-
-    // Battery Function Implementations
-
-    private String executeGetBatteries() {
-        String url = grocyApi.getUrl("/batteries");
-        return getRequest(url);
-    }
-
-    private String executeChargeBattery(JSONObject args) {
-        try {
-            int batteryId = getIntArg(args, "batteryId", 0);
-            
-            JSONObject body = new JSONObject();
-            if (args.has("trackedTime")) {
-                body.put("tracked_time", getStringArg(args, "trackedTime", ""));
-            }
-            
-            String url = grocyApi.getUrl("/batteries/" + batteryId + "/charge");
-            return postRequest(url, body);
-        } catch (Exception e) {
-            return createErrorResponse("Error charging battery: " + e.getMessage());
-        }
-    }
-
-    // Location Function Implementations
-
-    private String executeGetLocations() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.LOCATIONS));
-    }
-
-    private String executeGetShoppingLocations() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.STORES));
-    }
-
-    // Product Information Function Implementations
-
-    private String executeGetProducts() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.PRODUCTS));
-    }
-
-    private String executeGetProductGroups() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.PRODUCT_GROUPS));
-    }
-
-    private String executeGetQuantityUnits() {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.QUANTITY_UNITS));
-    }
-
-    // Meal Plan Function Implementations
-
-    private String executeGetMealPlan(JSONObject args) {
-        return getRequest(grocyApi.getObjects(GrocyApi.ENTITY.MEAL_PLAN));
-    }
-
-    // Equipment Function Implementations
-
-    private String executeGetEquipment() {
-        String url = grocyApi.getUrl("/objects/equipment");
-        return getRequest(url);
-    }
-
-    // User Function Implementations
-
-    private String executeGetUsers() {
-        return getRequest(grocyApi.getUsers());
-    }
-
-    // Utility Function Implementations
-
-    private String executeUndoAction(JSONObject args) {
-        try {
-            String entityType = getStringArg(args, "entityType", "");
-            String id = getStringArg(args, "id", "");
-            
-            String endpoint;
-            switch (entityType.toLowerCase()) {
-                case "chores":
-                    endpoint = "/chores/executions/" + id + "/undo";
-                    break;
-                case "batteries":
-                    endpoint = "/batteries/charge-cycles/" + id + "/undo";
-                    break;
-                case "tasks":
-                    endpoint = "/tasks/" + id + "/undo";
-                    break;
-                default:
-                    return createErrorResponse("Unknown entity type: " + entityType);
-            }
-            
-            String url = grocyApi.getUrl(endpoint);
-            return postRequest(url, new JSONObject());
-        } catch (Exception e) {
-            return createErrorResponse("Error undoing action: " + e.getMessage());
-        }
-    }
-
     // Helper methods for creating responses
 
     private String createErrorResponse(String error) {
@@ -779,5 +335,29 @@ public class GrocyFunctionExecutor {
         } catch (Exception e) {
             return "{\"error\":\"" + error + "\"}";
         }
+    }
+
+    /**
+     * Convert a JSON argument to a string, handling different types
+     */
+    private String convertArgumentToString(JSONObject arguments, String key) throws JSONException {
+        Object value = arguments.get(key);
+
+        if (value == null || value == JSONObject.NULL) {
+            return "";
+        }
+
+        // Handle arrays
+        if (value instanceof JSONArray) {
+            JSONArray array = (JSONArray) value;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < array.length(); i++) {
+                if (i > 0) sb.append(",");
+                sb.append(array.get(i).toString());
+            }
+            return sb.toString();
+        }
+
+        return value.toString();
     }
 }

@@ -1512,13 +1512,13 @@
 									}
 								},
 								"example": {
-									"id": "2",
-									"amount": "1",
+									"id": 2,
+									"amount": 1,
 									"best_before_date": "2021-07-19",
 									"purchased_date": "2020-01-01",
-									"price": "22.03",
+									"price": 22.03,
 									"open": false,
-									"location_id": "4"
+									"location_id": 4
 								}
 							}
 						}
@@ -1921,7 +1921,7 @@
 									"amount": 1,
 									"best_before_date": "2019-01-19",
 									"transaction_type": "purchase",
-									"price": "1.99"
+									"price": 1.99
 								}
 							}
 						}
@@ -2454,7 +2454,7 @@
 									"amount": 1,
 									"best_before_date": "2019-01-19",
 									"transaction_type": "purchase",
-									"price": "1.99"
+									"price": 1.99
 								}
 							}
 						}
@@ -5129,11 +5129,11 @@
 				},
 				"example": {
 					"battery": {
-						"id": "1",
+						"id": 1,
 						"name": "Battery1",
 						"description": "Warranty ends 2023",
 						"used_in": "TV remote control",
-						"charge_interval_days": "0",
+						"charge_interval_days": 0,
 						"row_created_timestamp": "2019-05-02 20:12:26"
 					},
 					"last_charged": "2019-03-13T18:12:28Z",
@@ -5550,7 +5550,7 @@
 					}
 				},
 				"example": {
-					"id": "1",
+					"id": 1,
 					"user_id": 1,
 					"user_display_name": "Demo User",
 					"product_name": "Chocolate",

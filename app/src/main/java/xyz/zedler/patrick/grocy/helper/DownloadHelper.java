@@ -396,6 +396,28 @@ public class DownloadHelper {
     delete(url, uuidHelper, onResponse, onError);
   }
 
+  public void patch(
+      String url,
+      JSONObject json,
+      OnJSONResponseListener onResponse,
+      OnErrorListener onError
+  ) {
+    String sessionKey = sharedPrefs
+        .getString(Constants.PREF.HOME_ASSISTANT_INGRESS_SESSION_KEY, null);
+    CustomJsonObjectRequest request = new CustomJsonObjectRequest(
+        Request.Method.PATCH,
+        url,
+        apiKey,
+        sessionKey,
+        json,
+        onResponse::onResponse,
+        onError::onError,
+        timeoutSeconds,
+        uuidHelper
+    );
+    requestQueue.add(request);
+  }
+
   public void getTimeDbChanged(
       OnStringResponseListener onResponseListener,
       OnMultiTypeErrorListener onErrorListener

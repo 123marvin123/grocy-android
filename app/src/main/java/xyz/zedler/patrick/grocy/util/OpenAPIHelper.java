@@ -1,5 +1,10 @@
 package xyz.zedler.patrick.grocy.util;
 
+import android.util.Log;
+import android.util.Pair;
+
+import com.google.genai.types.FunctionDeclaration;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -11,12 +16,16 @@ import io.swagger.v3.parser.core.models.ParseOptions;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class OpenAPIHelper {
 
-    private OpenAPI openAPI;
+    private final OpenAPI openAPI;
+
+    private final Map<String, OperationInfo> geminiFunctionMap = new HashMap<>();
 
     /**
      * Load OpenAPI spec from a file in assets folder or resources
@@ -35,7 +44,7 @@ public class OpenAPIHelper {
 
             this.openAPI = new OpenAPIV3Parser().readContents(spec, null, options).getOpenAPI();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("OpenAPIHelper", "Failed to load OpenAPI specification", e);
             throw new RuntimeException("Failed to load OpenAPI specification", e);
         }
     }
@@ -55,40 +64,39 @@ public class OpenAPIHelper {
     }
 
     /**
-     * Get all property names from a schema
-     */
-    public List<String> getSchemaPropertyNames(String schemaName) {
-        Schema<?> schema = getSchema(schemaName);
-        if (schema == null || schema.getProperties() == null) {
-            return new ArrayList<>();
-        }
-
-        return new ArrayList<>(schema.getProperties().keySet());
-    }
-
-    /**
      * Get property type from a schema
      */
-    public String getPropertyType(String schemaName, String propertyName) {
-        Schema<?> schema = getSchema(schemaName);
-        if (schema == null || schema.getProperties() == null) {
+    public String getPropertyType(Schema<?> schema, String propertyName) {
+        Schema<?> resolved = resolveSchema(schema);
+        if (resolved == null || resolved.getProperties() == null) {
             return null;
         }
 
-        Schema<?> property = (Schema<?>) schema.getProperties().get(propertyName);
-        return property != null ? property.getType() : null;
+        Schema<?> property = (Schema<?>) resolved.getProperties().get(propertyName);
+        if (property != null) {
+            // If the property itself has a $ref, resolve it
+            if (property.get$ref() != null) {
+                Schema<?> resolvedProp = resolveSchemaReference(property.get$ref());
+                return resolvedProp != null ? resolvedProp.getType() : null;
+            }
+            if(!property.getTypes().isEmpty())
+                return property.getTypes().iterator().next();
+            else
+                return property.getType();
+        }
+        return null;
     }
 
     /**
      * Get property description from a schema
      */
-    public String getPropertyDescription(String schemaName, String propertyName) {
-        Schema<?> schema = getSchema(schemaName);
-        if (schema == null || schema.getProperties() == null) {
+    public String getPropertyDescription(Schema<?> schema, String propertyName) {
+        Schema<?> resolved = resolveSchema(schema);
+        if (resolved == null || resolved.getProperties() == null) {
             return null;
         }
 
-        Schema<?> property = (Schema<?>) schema.getProperties().get(propertyName);
+        Schema<?> property = (Schema<?>) resolved.getProperties().get(propertyName);
         return property != null ? property.getDescription() : null;
     }
 
@@ -108,13 +116,13 @@ public class OpenAPIHelper {
     /**
      * Get enum values for a property (if it's an enum)
      */
-    public List<String> getPropertyEnumValues(String schemaName, String propertyName) {
-        Schema<?> schema = getSchema(schemaName);
-        if (schema == null || schema.getProperties() == null) {
+    public List<String> getPropertyEnumValues(Schema<?> schema, String propertyName) {
+        Schema<?> resolved = resolveSchema(schema);
+        if (resolved == null || resolved.getProperties() == null) {
             return new ArrayList<>();
         }
 
-        Schema<?> property = (Schema<?>) schema.getProperties().get(propertyName);
+        Schema<?> property = (Schema<?>) resolved.getProperties().get(propertyName);
         if (property == null || property.getEnum() == null) {
             return new ArrayList<>();
         }
@@ -183,7 +191,10 @@ public class OpenAPIHelper {
 
         // Check if parameter has a schema
         if (parameter.getSchema() != null) {
-            return parameter.getSchema().getType();
+            if(!parameter.getSchema().getTypes().isEmpty())
+                return parameter.getSchema().getTypes().iterator().next().toString();
+            else
+                return parameter.getSchema().getType();
         }
 
         return null;
@@ -440,7 +451,64 @@ public class OpenAPIHelper {
     }
 
     /**
-     * Get response schema for an operation
+     * Resolve a schema reference
+     * @param ref The reference string (e.g., "#/components/schemas/users_body")
+     * @return The resolved schema, or null if not found
+     */
+    public Schema<?> resolveSchemaReference(String ref) {
+        if (ref == null || !ref.startsWith("#/components/schemas/")) {
+            return null;
+        }
+
+        // Extract schema name from reference
+        // "#/components/schemas/users_body" -> "users_body"
+        String schemaName = ref.substring("#/components/schemas/".length());
+
+        return getSchema(schemaName);
+    }
+
+    /**
+     * Resolve a schema, following $ref if present
+     * @param schema The schema that might contain a $ref
+     * @return The resolved schema
+     */
+    public Schema<?> resolveSchema(Schema<?> schema) {
+        if (schema == null) {
+            return null;
+        }
+
+        // If the schema has a $ref, resolve it
+        if (schema.get$ref() != null) {
+            return resolveSchemaReference(schema.get$ref());
+        }
+
+        return schema;
+    }
+
+    /**
+     * Get request body schema for an operation (with reference resolution)
+     */
+    public Schema<?> getRequestBodySchema(String path, String method) {
+        Operation operation = getOperation(path, method);
+        if (operation == null || operation.getRequestBody() == null ||
+                operation.getRequestBody().getContent() == null) {
+            return null;
+        }
+
+        // Usually JSON request
+        io.swagger.v3.oas.models.media.MediaType mediaType =
+                operation.getRequestBody().getContent().get("application/json");
+
+        if (mediaType == null || mediaType.getSchema() == null) {
+            return null;
+        }
+
+        // Resolve the schema if it has a $ref
+        return resolveSchema(mediaType.getSchema());
+    }
+
+    /**
+     * Get response schema for an operation (with reference resolution)
      * @param path The path
      * @param method HTTP method
      * @param statusCode Status code (e.g., "200", "400")
@@ -464,28 +532,79 @@ public class OpenAPIHelper {
             return null;
         }
 
-        return mediaType.getSchema();
+        // Resolve the schema if it has a $ref
+        return resolveSchema(mediaType.getSchema());
     }
 
     /**
-     * Get request body schema for an operation
+     * Get property names from a schema, resolving references if needed
      */
-    public Schema<?> getRequestBodySchema(String path, String method) {
-        Operation operation = getOperation(path, method);
-        if (operation == null || operation.getRequestBody() == null ||
-                operation.getRequestBody().getContent() == null) {
-            return null;
+    public List<String> getSchemaPropertyNames(Schema<?> schema) {
+        Schema<?> resolved = resolveSchema(schema);
+        if (resolved == null || resolved.getProperties() == null) {
+            return new ArrayList<>();
         }
 
-        // Usually JSON request
-        io.swagger.v3.oas.models.media.MediaType mediaType =
-                operation.getRequestBody().getContent().get("application/json");
+        return new ArrayList<>(resolved.getProperties().keySet());
+    }
 
-        if (mediaType == null || mediaType.getSchema() == null) {
-            return null;
+    /**
+     * Get property names from a schema by name (overload)
+     */
+    public List<String> getSchemaPropertyNames(String schemaName) {
+        Schema<?> schema = getSchema(schemaName);
+        return getSchemaPropertyNames(schema);
+    }
+
+    /**
+     * Get all schema references used in the specification
+     */
+    public List<String> getAllSchemaReferences() {
+        List<String> refs = new ArrayList<>();
+
+        if (openAPI == null || openAPI.getPaths() == null) {
+            return refs;
         }
 
-        return mediaType.getSchema();
+        // Scan all operations for schema references
+        for (Map.Entry<String, PathItem> pathEntry : openAPI.getPaths().entrySet()) {
+            PathItem pathItem = pathEntry.getValue();
+
+            List<Operation> operations = new ArrayList<>();
+            if (pathItem.getGet() != null) operations.add(pathItem.getGet());
+            if (pathItem.getPost() != null) operations.add(pathItem.getPost());
+            if (pathItem.getPut() != null) operations.add(pathItem.getPut());
+            if (pathItem.getDelete() != null) operations.add(pathItem.getDelete());
+            if (pathItem.getPatch() != null) operations.add(pathItem.getPatch());
+
+            for (Operation op : operations) {
+                // Check request body
+                if (op.getRequestBody() != null && op.getRequestBody().getContent() != null) {
+                    io.swagger.v3.oas.models.media.MediaType mediaType =
+                            op.getRequestBody().getContent().get("application/json");
+                    if (mediaType != null && mediaType.getSchema() != null &&
+                            mediaType.getSchema().get$ref() != null) {
+                        refs.add(mediaType.getSchema().get$ref());
+                    }
+                }
+
+                // Check responses
+                if (op.getResponses() != null) {
+                    for (ApiResponse response : op.getResponses().values()) {
+                        if (response.getContent() != null) {
+                            io.swagger.v3.oas.models.media.MediaType mediaType =
+                                    response.getContent().get("application/json");
+                            if (mediaType != null && mediaType.getSchema() != null &&
+                                    mediaType.getSchema().get$ref() != null) {
+                                refs.add(mediaType.getSchema().get$ref());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return refs;
     }
 
     // ========== UTILITY METHODS ==========
@@ -536,6 +655,332 @@ public class OpenAPIHelper {
         return s.hasNext() ? s.next() : "";
     }
 
+    public String makeFunctionDeclarationName(String path, String type) {
+        return type + path.replaceAll("[{}]", "").replace("/", "_").replace("-", "_");
+    }
+
+    public FunctionDeclaration createFunctionDeclaration(String path, String type, Operation op) {
+        String functionName = makeFunctionDeclarationName(path, type);
+        String description = getOperationDescription(path, type);
+        String summary = getOperationSummary(path, type);
+
+        Map<String, com.google.genai.types.Schema> paramsMap = new HashMap<>();
+        List<String> requiredParams = new ArrayList<>();
+
+        // Process URL/query parameters
+        if (op.getParameters() != null) {
+            for (Parameter param : op.getParameters()) {
+                processParameter(param, paramsMap, requiredParams);
+            }
+        }
+
+        // Process request body
+        if (op.getRequestBody() != null && op.getRequestBody().getContent() != null) {
+            Schema<?> requestBodySchema = getRequestBodySchema(path, type);
+            if (requestBodySchema != null) {
+                processRequestBody(requestBodySchema, paramsMap, requiredParams, op.getRequestBody().getRequired());
+            }
+        }
+
+        com.google.genai.types.Schema params = com.google.genai.types.Schema.builder()
+                .properties(paramsMap)
+                .required(requiredParams)
+                .type("object")
+                .build();
+
+        geminiFunctionMap.put(functionName, new OperationInfo(type, path, op));
+
+        return FunctionDeclaration.builder()
+                .name(functionName)
+                .description((path + ' ' + buildDescription(summary, description)).trim())
+                .parameters(params)
+                .build();
+    }
+
+    public OperationInfo getGeminiFunctionOperation(String functionName) {
+        return geminiFunctionMap.getOrDefault(functionName, null);
+    }
+
+    /**
+     * Process a single parameter and add it to the params map
+     */
+    private void processParameter(Parameter param,
+                                  Map<String, com.google.genai.types.Schema> paramsMap,
+                                  List<String> requiredParams) {
+        String parameterName = param.getName();
+        String parameterType = getParameterType(param);
+        String parameterDescription = getParameterDescription(param);
+
+        com.google.genai.types.Schema.Builder paramSchema = com.google.genai.types.Schema.builder()
+                .type(Objects.requireNonNullElse(parameterType, "UNKNOWN"))
+                .description(Objects.requireNonNullElse(parameterDescription, ""));
+
+        // Add example if available
+        if (param.getExample() != null) {
+            paramSchema.example(param.getExample());
+        }
+
+        // Mark as required if needed
+        if (isParameterRequired(param)) {
+            requiredParams.add(parameterName);
+        }
+
+        // Handle enum values
+        List<String> enumValues = getParameterEnumValues(param);
+        if (!enumValues.isEmpty()) {
+            paramSchema.format("enum").enum_(enumValues);
+        }
+
+        // Handle schema-specific properties
+        if (param.getSchema() != null) {
+            Schema<?> schema = param.getSchema();
+            if (schema.getTitle() != null) {
+                paramSchema.title(schema.getTitle());
+            }
+            if (schema.getDefault() != null) {
+                paramSchema.default_(schema.getDefault().toString());
+            }
+            if(schema.getItems() != null) {
+                paramSchema.items(convertSchema(schema.getItems()));
+            }
+        }
+
+        paramsMap.put(parameterName, paramSchema.build());
+    }
+
+    /**
+     * Process request body and add it to the params map
+     */
+    private void processRequestBody(Schema<?> requestBodySchema,
+                                    Map<String, com.google.genai.types.Schema> paramsMap,
+                                    List<String> requiredParams, boolean isRequired) {
+        if (isRequired) {
+            requiredParams.add("body");
+        }
+
+        Object example = Objects.requireNonNullElse(requestBodySchema.getExample(), "");
+
+        // Handle oneOf/anyOf schemas
+        if (requestBodySchema.getOneOf() != null) {
+            List<com.google.genai.types.Schema> possibleSchemas = new ArrayList<>();
+            for (Schema<?> schema : requestBodySchema.getOneOf()) {
+                possibleSchemas.add(convertSchema(schema));
+            }
+
+            paramsMap.put("body", com.google.genai.types.Schema.builder()
+                    .type("object")
+                    .description("Request body (one of the possible schemas)")
+                            .example(example)
+                    .anyOf(possibleSchemas)
+                    .build());
+            return;
+        }
+
+        if (requestBodySchema.getAnyOf() != null) {
+            List<com.google.genai.types.Schema> possibleSchemas = new ArrayList<>();
+            for (Schema<?> schema : requestBodySchema.getAnyOf()) {
+                possibleSchemas.add(convertSchema(schema));
+            }
+            paramsMap.put("body", com.google.genai.types.Schema.builder()
+                    .type("object")
+                    .description("Request body (any of the possible schemas)")
+                            .example(example)
+                    .anyOf(possibleSchemas)
+                    .build());
+            return;
+        }
+
+        // Handle allOf schemas
+        if (requestBodySchema.getAllOf() != null) {
+            // Merge all schemas in allOf
+            Schema<?> mergedSchema = mergeAllOfSchemas(requestBodySchema.getAllOf());
+            com.google.genai.types.Schema bodySchema = convertSchema(mergedSchema);
+
+            paramsMap.put("body", bodySchema.toBuilder().example(example).build());
+            return;
+        }
+
+        // Handle regular object schema
+        com.google.genai.types.Schema bodySchema = convertSchema(requestBodySchema);
+        paramsMap.put("body", bodySchema.toBuilder().example(example).build());
+    }
+
+    /**
+     * Recursively convert an OpenAPI schema to a Gemini schema
+     */
+    private com.google.genai.types.Schema convertSchema(Schema<?> openApiSchema) {
+        if (openApiSchema == null) {
+            return com.google.genai.types.Schema.builder()
+                    .type("UNKNOWN")
+                    .build();
+        }
+
+        // Resolve references
+        Schema<?> resolved = resolveSchema(openApiSchema);
+        if (resolved == null) {
+            resolved = openApiSchema;
+        }
+
+        com.google.genai.types.Schema.Builder builder = com.google.genai.types.Schema.builder();
+
+        // Set basic properties
+        String type = getSchemaType(resolved);
+        builder.type(type);
+
+        if (resolved.getDescription() != null) {
+            builder.description(resolved.getDescription());
+        }
+
+        if (resolved.getTitle() != null) {
+            builder.title(resolved.getTitle());
+        }
+
+        if (resolved.getDefault() != null) {
+            builder.default_(resolved.getDefault().toString());
+        }
+
+        // Handle enum
+        if (resolved.getEnum() != null && !resolved.getEnum().isEmpty()) {
+            List<String> enumValues = new ArrayList<>();
+            for (Object enumValue : resolved.getEnum()) {
+                enumValues.add(String.valueOf(enumValue));
+            }
+            builder.format("enum").enum_(enumValues);
+        }
+
+        // Handle array type
+        if ("array".equalsIgnoreCase(type) && resolved.getItems() != null) {
+            com.google.genai.types.Schema itemSchema = convertSchema(resolved.getItems());
+            builder.items(itemSchema);
+        }
+
+        // Handle object type with properties
+        if ("object".equalsIgnoreCase(type) && resolved.getProperties() != null) {
+            Map<String, com.google.genai.types.Schema> properties = new HashMap<>();
+
+            for (Map.Entry<String, Schema> entry : resolved.getProperties().entrySet()) {
+                String propName = entry.getKey();
+                Schema<?> propSchema = entry.getValue();
+
+                // Recursive call to handle nested objects
+                properties.put(propName, convertSchema(propSchema));
+            }
+
+            builder.properties(properties);
+
+            // Set required fields for this object
+            if (resolved.getRequired() != null && !resolved.getRequired().isEmpty()) {
+                builder.required(resolved.getRequired());
+            }
+        }
+
+        // Handle oneOf
+        if (resolved.getOneOf() != null) {
+            List<com.google.genai.types.Schema> oneOfSchemas = new ArrayList<>();
+            for (Schema<?> schema : resolved.getOneOf()) {
+                oneOfSchemas.add(convertSchema(schema));
+            }
+            builder.anyOf(oneOfSchemas); // Gemini uses anyOf for oneOf
+        }
+
+        // Handle anyOf
+        if (resolved.getAnyOf() != null) {
+            List<com.google.genai.types.Schema> anyOfSchemas = new ArrayList<>();
+            for (Schema<?> schema : resolved.getAnyOf()) {
+                anyOfSchemas.add(convertSchema(schema));
+            }
+            builder.anyOf(anyOfSchemas);
+        }
+
+        // Handle format
+        if (resolved.getFormat() != null) {
+            builder.format(resolved.getFormat());
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Get the type of a schema, handling both old and new OpenAPI versions
+     */
+    private String getSchemaType(Schema<?> schema) {
+        if (schema == null) {
+            return "UNKNOWN";
+        }
+
+        // Try new API first (OpenAPI 3.1+)
+        if (schema.getTypes() != null && !schema.getTypes().isEmpty()) {
+            return schema.getTypes().iterator().next();
+        }
+
+        // Fall back to old API (OpenAPI 3.0)
+        if (schema.getType() != null) {
+            return schema.getType();
+        }
+
+        return "object"; // Default to object if type is not specified
+    }
+
+    /**
+     * Merge multiple schemas from allOf into a single schema
+     */
+    private Schema<?> mergeAllOfSchemas(List<Schema> schemas) {
+        Schema<?> merged = new Schema<>();
+        Map<String, Schema> allProperties = new HashMap<>();
+        List<String> allRequired = new ArrayList<>();
+
+        for (Schema<?> schema : schemas) {
+            Schema<?> resolved = resolveSchema(schema);
+            if (resolved == null) {
+                resolved = schema;
+            }
+
+            // Merge properties
+            if (resolved.getProperties() != null) {
+                allProperties.putAll(resolved.getProperties());
+            }
+
+            // Merge required fields
+            if (resolved.getRequired() != null) {
+                allRequired.addAll(resolved.getRequired());
+            }
+
+            // Use description from first schema that has one
+            if (merged.getDescription() == null && resolved.getDescription() != null) {
+                merged.setDescription(resolved.getDescription());
+            }
+
+            // Use title from first schema that has one
+            if (merged.getTitle() == null && resolved.getTitle() != null) {
+                merged.setTitle(resolved.getTitle());
+            }
+        }
+
+        merged.setProperties(allProperties);
+        merged.setRequired(allRequired);
+        merged.setType("object");
+
+        return merged;
+    }
+
+    /**
+     * Build a clean description from summary and description
+     */
+    private String buildDescription(String summary, String description) {
+        String summaryPart = Objects.requireNonNullElse(summary, "").trim();
+        String descriptionPart = Objects.requireNonNullElse(description, "").trim();
+
+        if (summaryPart.isEmpty()) {
+            return descriptionPart;
+        }
+        if (descriptionPart.isEmpty()) {
+            return summaryPart;
+        }
+
+        // Combine them with proper spacing
+        return summaryPart + ". " + descriptionPart;
+    }
+
     // ========== INNER CLASSES ==========
 
     /**
@@ -559,6 +1004,18 @@ public class OpenAPIHelper {
                     ", location='" + location + '\'' +
                     ", enumValues=" + enumValues +
                     '}';
+        }
+    }
+
+    public static class OperationInfo {
+        public final String httpMethod;
+        public final String path;
+        public final Operation operation;
+
+        public OperationInfo(String httpMethod, String path, Operation operation) {
+            this.httpMethod = httpMethod;
+            this.path = path;
+            this.operation = operation;
         }
     }
 }

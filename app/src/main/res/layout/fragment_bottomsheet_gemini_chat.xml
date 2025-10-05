@@ -28,7 +28,18 @@
   <com.google.android.material.appbar.MaterialToolbar
     android:id="@+id/toolbar_gemini"
     style="@style/Widget.Grocy.Toolbar"
-    app:title="@string/title_gemini_chat" />
+    app:title="@string/title_gemini_chat">
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/button_clear_chat"
+      style="@style/Widget.Grocy.Button.IconButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end"
+      android:contentDescription="@string/action_clear"
+      app:icon="@drawable/ic_round_delete_anim" />
+
+  </com.google.android.material.appbar.MaterialToolbar>
 
   <com.google.android.material.divider.MaterialDivider
     android:layout_width="match_parent"

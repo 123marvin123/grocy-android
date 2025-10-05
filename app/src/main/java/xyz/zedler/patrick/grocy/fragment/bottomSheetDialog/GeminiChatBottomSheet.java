@@ -52,8 +52,12 @@ import com.google.genai.types.Part;
 import com.google.genai.types.ThinkingConfig;
 import com.google.genai.types.Tool;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +76,7 @@ import xyz.zedler.patrick.grocy.model.ChatMessage;
 import xyz.zedler.patrick.grocy.util.GrocyFunctionDeclarations;
 import xyz.zedler.patrick.grocy.util.GrocyFunctionExecutor;
 import xyz.zedler.patrick.grocy.util.LocaleUtil;
+import xyz.zedler.patrick.grocy.util.OpenAPIHelper;
 
 public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
@@ -165,8 +170,15 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                 )
         );
 
+        OpenAPIHelper apiHelper;
+        try(InputStream io = getResources().openRawResource(R.raw.openapi)) {
+            apiHelper = new OpenAPIHelper(io);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         // Sets the Grocy API tool in the config.
-        Tool grocyTool = GrocyFunctionDeclarations.createGrocyTool(view.getContext());
+        Tool grocyTool = GrocyFunctionDeclarations.createGrocyTool(view.getContext(), apiHelper);
         Tool proxyGoogleSearchTool = GrocyFunctionDeclarations.createProxyGoogleSearchTool();
 
         config = GenerateContentConfig.builder()
@@ -175,19 +187,13 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                 .tools(grocyTool, proxyGoogleSearchTool)
                 .build();
 
-        this.functionExecutor = new GrocyFunctionExecutor(grocyApi, (Application) activity.getApplicationContext(), client);
+        this.functionExecutor = new GrocyFunctionExecutor(grocyApi, (Application) activity.getApplicationContext(), client, apiHelper);
 
         // Setup RecyclerView
         messages = new ArrayList<>();
         adapter = new ChatMessageAdapter(requireContext(), messages);
         binding.recyclerChat.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerChat.setAdapter(adapter);
-
-        // Add initial welcome message
-        adapter.addMessage(new ChatMessage(
-                getString(R.string.msg_gemini_welcome),
-                false
-        ));
 
         // Setup input
         binding.buttonSend.setOnClickListener(v -> sendMessage());
@@ -205,7 +211,21 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         binding.toolbarGemini.setNavigationOnClickListener(v -> dismiss());
         binding.toolbarGemini.setNavigationIcon(R.drawable.ic_round_close);
 
+        // Setup clear chat button
+        binding.buttonClearChat.setOnClickListener(v -> clearChat());
+
         binding.editMessage.requestFocus();
+
+        // Load chat history
+        loadChatHistory();
+
+        // Add welcome message only if no history was loaded
+        if (messages.isEmpty()) {
+            adapter.addMessage(new ChatMessage(
+                    getString(R.string.msg_gemini_welcome),
+                    false
+            ));
+        }
     }
 
     private void startVoiceInput() {
@@ -271,18 +291,22 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                     handleResponse(response);
                 } catch (Exception e) {
                     Log.e(TAG, "Error processing response", e);
-                    requireActivity().runOnUiThread(() -> {
-                        adapter.updateLastMessage("Sorry, I encountered an error processing the response.");
-                        binding.buttonSend.setEnabled(true);
-                    });
+                    if (isAdded() && getActivity() != null) {
+                        requireActivity().runOnUiThread(() -> {
+                            adapter.updateLastMessage("Sorry, I encountered an error processing the response.");
+                            binding.buttonSend.setEnabled(true);
+                        });
+                    }
                 }
             });
         }).exceptionally(throwable -> {
             Log.e(TAG, "Error getting response", throwable);
-            requireActivity().runOnUiThread(() -> {
-                adapter.updateLastMessage("Sorry, I couldn't connect to Gemini: " + throwable.getMessage());
-                binding.buttonSend.setEnabled(true);
-            });
+            if (isAdded() && getActivity() != null) {
+                requireActivity().runOnUiThread(() -> {
+                    adapter.updateLastMessage("Sorry, I couldn't connect to Gemini: " + throwable.getMessage());
+                    binding.buttonSend.setEnabled(true);
+                });
+            }
             return null;
         });
     }
@@ -309,17 +333,22 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                         .build());
 
                 // Update UI
-                requireActivity().runOnUiThread(() -> {
-                    adapter.updateLastMessage(responseText);
-                    binding.buttonSend.setEnabled(true);
-                    binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
-                });
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        adapter.updateLastMessage(responseText);
+                        binding.buttonSend.setEnabled(true);
+                        binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
+                        saveChatHistory();
+                    });
+                }
             } else {
                 // Empty response
-                requireActivity().runOnUiThread(() -> {
-                    adapter.updateLastMessage("I don't have a response for that.");
-                    binding.buttonSend.setEnabled(true);
-                });
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        adapter.updateLastMessage("I don't have a response for that.");
+                        binding.buttonSend.setEnabled(true);
+                    });
+                }
             }
         }
     }
@@ -328,9 +357,9 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
      * Executes function calls and sends results back to Gemini.
      */
     private void handleFunctionCalls(List<FunctionCall> functionCalls) {
-        List<Part> functionResponseParts = new ArrayList<>();
+        List<CompletableFuture<Part>> futureResponses = new ArrayList<>();
 
-        // Execute all function calls
+        // Execute all function calls asynchronously
         for (FunctionCall functionCall : functionCalls) {
             String functionName = functionCall.name().orElse("unknown");
             Map<String, Object> argsMap = functionCall.args().orElse(new HashMap<>());
@@ -338,73 +367,104 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
             // Convert Map to JSONObject for executor
             JSONObject args = new JSONObject(argsMap);
 
-            Log.d(TAG, "Executing function: " + functionName + " with args: " + args);
+            // Execute the function and create a future for the Part
+            CompletableFuture<Part> futurePart = functionExecutor.executeFunction(functionName, args)
+                    .thenApply(result -> {
+                        Log.d(TAG, "Function " + functionName + " returned: " + result);
 
-            // Execute the function
-            String result = functionExecutor.executeFunction(functionName, args);
+                        // Create function response as Map
+                        Map<String, Object> responseMap = new HashMap<>();
+                        responseMap.put("result", result);
 
-            Log.d(TAG, "Function " + functionName + " returned: " + result);
+                        return Part.fromFunctionResponse(functionName, responseMap);
+                    });
 
-            // Create function response as Map
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("result", result);
-
-            functionResponseParts.add(Part.fromFunctionResponse(functionName, responseMap));
+            futureResponses.add(futurePart);
         }
 
-        // Add function responses to chat history
-        Content functionResponseContent = Content.builder()
-                .role("function")
-                .parts(functionResponseParts)
-                .build();
+        // Wait for all function calls to complete
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(
+                futureResponses.toArray(new CompletableFuture[0])
+        );
 
-        chatHistory.add(functionResponseContent);
-
-        // Get final response from Gemini with function results
-        CompletableFuture<GenerateContentResponse> finalResponseFuture =
-                client.async.models.generateContent("gemini-2.5-flash", chatHistory, config);
-
-        finalResponseFuture.thenAccept(finalResponse -> {
+        allFutures.thenAccept(v -> {
             executor.execute(() -> {
                 try {
-                    // Get the text response after function execution
-                    String responseText = finalResponse.text();
+                    // Collect all the Part results
+                    List<Part> functionResponseParts = new ArrayList<>();
+                    for (CompletableFuture<Part> futurePart : futureResponses) {
+                        functionResponseParts.add(futurePart.join());
+                    }
 
-                    if (responseText != null && !responseText.isEmpty()) {
-                        // Add final response to chat history
-                        chatHistory.add(Content.builder()
-                                .role("model")
-                                .parts(Part.fromText(responseText))
-                                .build());
+                    // Add function responses to chat history
+                    Content functionResponseContent = Content.builder()
+                            .role("function")
+                            .parts(functionResponseParts)
+                            .build();
 
-                        // Update UI with final response
-                        requireActivity().runOnUiThread(() -> {
-                            adapter.updateLastMessage(responseText);
-                            binding.buttonSend.setEnabled(true);
-                            binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
-                        });
-                    } else {
-                        requireActivity().runOnUiThread(() -> {
-                            if (finalResponse.functionCalls() != null && !finalResponse.functionCalls().isEmpty()) {
-                                handleFunctionCalls(finalResponse.functionCalls());
-                            } else {
-                                adapter.updateLastMessage("OK.");
-                                binding.buttonSend.setEnabled(true);
+                    chatHistory.add(functionResponseContent);
+
+                    // Get final response from Gemini with function results
+                    CompletableFuture<GenerateContentResponse> finalResponseFuture =
+                            client.async.models.generateContent("gemini-2.5-flash", chatHistory, config);
+
+                    finalResponseFuture.thenAccept(finalResponse -> {
+                        executor.execute(() -> {
+                            try {
+                                // Get the text response after function execution
+                                String responseText = finalResponse.text();
+
+                                if (responseText != null && !responseText.isEmpty()) {
+                                    // Add final response to chat history
+                                    chatHistory.add(Content.builder()
+                                            .role("model")
+                                            .parts(Part.fromText(responseText))
+                                            .build());
+
+                                    // Update UI with final response
+                                    requireActivity().runOnUiThread(() -> {
+                                        adapter.updateLastMessage(responseText);
+                                        binding.buttonSend.setEnabled(true);
+                                        binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
+                                    });
+                                } else {
+                                    requireActivity().runOnUiThread(() -> {
+                                        if (finalResponse.functionCalls() != null && !finalResponse.functionCalls().isEmpty()) {
+                                            handleFunctionCalls(finalResponse.functionCalls());
+                                        } else {
+                                            adapter.updateLastMessage("OK.");
+                                            binding.buttonSend.setEnabled(true);
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error processing final response", e);
+                                requireActivity().runOnUiThread(() -> {
+                                    adapter.updateLastMessage("Sorry, I encountered an error processing the final response.");
+                                    binding.buttonSend.setEnabled(true);
+                                });
                             }
                         });
-                    }
+                    }).exceptionally(throwable -> {
+                        Log.e(TAG, "Error getting final response", throwable);
+                        requireActivity().runOnUiThread(() -> {
+                            adapter.updateLastMessage("Sorry, I couldn't get a final response: " + throwable.getMessage());
+                            binding.buttonSend.setEnabled(true);
+                        });
+                        return null;
+                    });
                 } catch (Exception e) {
-                    Log.e(TAG, "Error processing final response", e);
+                    Log.e(TAG, "Error collecting function results", e);
                     requireActivity().runOnUiThread(() -> {
-                        adapter.updateLastMessage("Sorry, I encountered an error processing the final response.");
+                        adapter.updateLastMessage("Sorry, I encountered an error collecting function results.");
                         binding.buttonSend.setEnabled(true);
                     });
                 }
             });
         }).exceptionally(throwable -> {
-            Log.e(TAG, "Error getting final response", throwable);
+            Log.e(TAG, "Error executing function calls", throwable);
             requireActivity().runOnUiThread(() -> {
-                adapter.updateLastMessage("Sorry, I couldn't get a final response: " + throwable.getMessage());
+                adapter.updateLastMessage("Sorry, I couldn't execute the function calls: " + throwable.getMessage());
                 binding.buttonSend.setEnabled(true);
             });
             return null;
@@ -425,9 +485,151 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         }
     }
 
+    private void clearChat() {
+        // Clear messages
+        messages.clear();
+        chatHistory.clear();
+
+        // Add welcome message back
+        adapter.addMessage(new ChatMessage(
+                getString(R.string.msg_gemini_welcome),
+                false
+        ));
+
+        // Save empty chat history
+        saveChatHistory();
+
+        // Reset first message flag
+        isFirstMessage = true;
+
+        // Notify adapter
+        adapter.notifyDataSetChanged();
+    }
+
+    private void saveChatHistory() {
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+
+            // Save messages
+            JSONArray messagesArray = new JSONArray();
+            for (ChatMessage message : messages) {
+                if (!message.isLoading()) { // Don't save loading messages
+                    JSONObject messageObj = new JSONObject();
+                    messageObj.put("message", message.getMessage());
+                    messageObj.put("isUser", message.isUser());
+                    messagesArray.put(messageObj);
+                }
+            }
+
+            // Save chat history (Content objects)
+            JSONArray historyArray = new JSONArray();
+            for (Content content : chatHistory) {
+                JSONObject contentObj = new JSONObject();
+                contentObj.put("role", content.role());
+
+                JSONArray partsArray = new JSONArray();
+                if (content.parts().isPresent()) {
+                    for (Part part : content.parts().get()) {
+                        JSONObject partObj = new JSONObject();
+
+                        // Check if part has text
+                        if (part.text().isPresent()) {
+                            partObj.put("type", "text");
+                            partObj.put("text", part.text().get());
+                            partsArray.put(partObj);
+                        }
+                        // Skip function calls and responses - they're complex to serialize
+                    }
+                }
+
+                if (partsArray.length() > 0) {
+                    contentObj.put("parts", partsArray);
+                    historyArray.put(contentObj);
+                }
+            }
+
+            JSONObject chatData = new JSONObject();
+            chatData.put("messages", messagesArray);
+            chatData.put("history", historyArray);
+
+            sharedPrefs.edit()
+                    .putString(Constants.SETTINGS.GEMINI.CHAT_HISTORY, chatData.toString())
+                    .apply();
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error saving chat history", e);
+        }
+    }
+
+    private void loadChatHistory() {
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+            String chatDataStr = sharedPrefs.getString(Constants.SETTINGS.GEMINI.CHAT_HISTORY, "");
+
+            if (chatDataStr.isEmpty()) {
+                return;
+            }
+
+            JSONObject chatData = new JSONObject(chatDataStr);
+
+            // Load messages
+            JSONArray messagesArray = chatData.getJSONArray("messages");
+            for (int i = 0; i < messagesArray.length(); i++) {
+                JSONObject messageObj = messagesArray.getJSONObject(i);
+                ChatMessage message = new ChatMessage(
+                        messageObj.getString("message"),
+                        messageObj.getBoolean("isUser")
+                );
+                messages.add(message);
+            }
+
+            // Load chat history
+            JSONArray historyArray = chatData.getJSONArray("history");
+            for (int i = 0; i < historyArray.length(); i++) {
+                JSONObject contentObj = historyArray.getJSONObject(i);
+                String role = contentObj.getString("role");
+
+                JSONArray partsArray = contentObj.getJSONArray("parts");
+                List<Part> parts = new ArrayList<>();
+
+                for (int j = 0; j < partsArray.length(); j++) {
+                    JSONObject partObj = partsArray.getJSONObject(j);
+                    String type = partObj.getString("type");
+
+                    if ("text".equals(type)) {
+                        parts.add(Part.fromText(partObj.getString("text")));
+                    }
+                }
+
+                if (!parts.isEmpty()) {
+                    Content content = Content.builder()
+                            .role(role)
+                            .parts(parts)
+                            .build();
+                    chatHistory.add(content);
+                }
+            }
+
+            // Update adapter
+            adapter.notifyDataSetChanged();
+
+            // If there are messages, expand the bottom sheet and set first message to false
+            if (!messages.isEmpty() && messages.size() > 1) { // > 1 because welcome message is already added
+                isFirstMessage = false;
+                expandBottomSheet();
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error loading chat history", e);
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (binding != null) {
+            saveChatHistory();
+        }
         binding = null;
     }
 
@@ -449,3 +651,4 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         return TAG;
     }
 }
+
