@@ -20,15 +20,22 @@
 
 package xyz.zedler.patrick.grocy.util;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.google.genai.types.FunctionDeclaration;
-import com.google.genai.types.GoogleSearch;
 import com.google.genai.types.Schema;
 import com.google.genai.types.Tool;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.swagger.v3.oas.models.Operation;
+import xyz.zedler.patrick.grocy.R;
 
 /**
  * Provides Grocy API function declarations for Google Generative AI SDK.
@@ -36,11 +43,33 @@ import java.util.Map;
  */
 public class GrocyFunctionDeclarations {
 
+    private static OpenAPIHelper apiHelper;
     /**
      * Creates all Grocy function declarations for use with Gemini.
      * @return List of FunctionDeclaration objects
      */
-    public static List<FunctionDeclaration> createFunctionDeclarations() {
+    public static List<FunctionDeclaration> createFunctionDeclarations(Context context) {
+        try(InputStream io = context.getResources().openRawResource(R.raw.openapi)) {
+            apiHelper = new OpenAPIHelper(io);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<OpenAPIHelper.ParameterInfo> paramDetails =
+                apiHelper.getOperationParameterDetails("/objects/{entity}", "GET");
+
+        for (OpenAPIHelper.ParameterInfo info : paramDetails) {
+            System.out.println("Parameter: " + info.name);
+            System.out.println("  Type: " + info.type);
+            System.out.println("  Description: " + info.description);
+            System.out.println("  Required: " + info.required);
+            System.out.println("  Location: " + info.location);
+            if (!info.enumValues.isEmpty()) {
+                System.out.println("  Enum values: " + info.enumValues);
+            }
+        }
+
+
         List<FunctionDeclaration> functions = new ArrayList<>();
 
         // Stock Management Functions
@@ -105,6 +134,16 @@ public class GrocyFunctionDeclarations {
         functions.add(createSystemInfoFunction());
         functions.add(createSystemConfigFunction());
 
+        // Object Entity Functions
+        functions.add(createQueryProductsFunction());
+        functions.add(createQueryProductBarcodesFunction());
+        functions.add(createQueryStockFunction());
+        functions.add(createQueryShoppingListFunction());
+        functions.add(createQueryChoresFunction());
+        functions.add(createQueryBatteriesFunction());
+        functions.add(createQueryLocationsFunction());
+        functions.add(createQueryQuantityUnitsFunction());
+
         return functions;
     }
 
@@ -126,9 +165,9 @@ public class GrocyFunctionDeclarations {
      * Creates a Tool containing all Grocy function declarations.
      * @return Tool object for registration with GenerativeModel
      */
-    public static Tool createGrocyTool() {
+    public static Tool createGrocyTool(Context c) {
         return Tool.builder()
-                .functionDeclarations(createFunctionDeclarations())
+                .functionDeclarations(createFunctionDeclarations(c))
                 .build();
     }
 
@@ -788,9 +827,13 @@ public class GrocyFunctionDeclarations {
         enumValues.add("chores");
         enumValues.add("batteries");
         enumValues.add("tasks");
-        
+
+        //TODO: this is not working yet because api is different
+
         properties.put("entityType", Schema.builder()
                 .type("STRING")
+                .format("enum")
+                        .enum_(enumValues)
                 .description("Type of entity (chores, batteries, tasks)")
                 .build());
         properties.put("id", Schema.builder()
@@ -810,6 +853,237 @@ public class GrocyFunctionDeclarations {
                         .properties(properties)
                         .required(required)
                         .build())
+                .build();
+    }
+
+    private static FunctionDeclaration.Builder createQueryObjectFunctionBuilder(List<String> filterFields) {
+        Map<String, Schema> properties = new HashMap<>();
+
+        List<String> operators = new ArrayList<>();
+        operators.add("=");
+        operators.add("!=");
+        operators.add("<");
+        operators.add(">");
+        operators.add("<=");
+        operators.add(">=");
+        operators.add("~");  // LIKE operator
+
+        Map<String, Schema> filterObjectProperties = new HashMap<>();
+        filterObjectProperties.put("field", Schema.builder()
+                .type("STRING")
+                .format("enum")
+                .enum_(filterFields)
+                .description("Field to filter by")
+                .build());
+        filterObjectProperties.put("operator", Schema.builder()
+                .type("STRING")
+                .format("enum")
+                .enum_(operators)
+                .description("Comparison operator")
+                .build());
+        filterObjectProperties.put("value", Schema.builder()
+                .type("OBJECT")
+                .description("Value to filter by")
+                .build());
+
+        properties.put("filter", Schema.builder()
+                .type("ARRAY")
+                .items(Schema.builder()
+                        .type("OBJECT")
+                        .properties(filterObjectProperties)
+                        .required("field", "operator", "value")
+                        .build())
+                .description("Fields to filter by")
+                .build());
+
+        List<String> orderByFields = new ArrayList<>(filterFields);
+
+        properties.put("orderBy", Schema.builder()
+                .type("STRING")
+                .format("enum")
+                .enum_(orderByFields)
+                .description("Field to order results by")
+                .build());
+
+        properties.put("sortOrder", Schema.builder()
+                .type("STRING")
+                .format("enum")
+                .enum_("asc", "desc")
+                .description("Sort order (default: asc)")
+                .build());
+
+        properties.put("limit", Schema.builder()
+                .type("INTEGER")
+                .description("Maximum number of results to return")
+                .build());
+
+        properties.put("offset", Schema.builder()
+                .type("INTEGER")
+                .description("Number of results to skip")
+                .build());
+
+        return FunctionDeclaration.builder()
+                .parameters(Schema.builder()
+                        .type("OBJECT")
+                        .properties(properties)
+                        .build());
+    }
+    // Products Query Function
+    private static FunctionDeclaration createQueryProductsFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("name");
+        filterFields.add("description");
+        filterFields.add("location_id");
+        filterFields.add("product_group_id");
+        filterFields.add("qu_id_purchase");
+        filterFields.add("qu_id_stock");
+        filterFields.add("min_stock_amount");
+        filterFields.add("default_best_before_days");
+        filterFields.add("active");
+        filterFields.add("parent_product_id");
+        filterFields.add("calories");
+        filterFields.add("cumulate_min_stock_amount_of_sub_products");
+        filterFields.add("due_type");
+        filterFields.add("quick_consume_amount");
+        filterFields.add("enable_tare_weight_handling");
+        filterFields.add("tare_weight");
+        filterFields.add("not_check_stock_fulfillment_for_recipes");
+        filterFields.add("picture_file_name");
+        filterFields.add("default_print_stock_label");
+        filterFields.add("allow_label_per_unit");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_products")
+                .description("Query products with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Product Barcodes Query Function
+    private static FunctionDeclaration createQueryProductBarcodesFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("product_id");
+        filterFields.add("barcode");
+        filterFields.add("amount");
+        filterFields.add("qu_id");
+        filterFields.add("shopping_location_id");
+        filterFields.add("last_price");
+        filterFields.add("note");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_product_barcodes")
+                .description("Query product barcodes with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Stock Query Function
+    private static FunctionDeclaration createQueryStockFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("product_id");
+        filterFields.add("amount");
+        filterFields.add("best_before_date");
+        filterFields.add("purchased_date");
+        filterFields.add("stock_id");
+        filterFields.add("price");
+        filterFields.add("open");
+        filterFields.add("opened_date");
+        filterFields.add("location_id");
+        filterFields.add("shopping_location_id");
+        filterFields.add("note");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_stock")
+                .description("Query stock entries with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Shopping List Query Function
+    private static FunctionDeclaration createQueryShoppingListFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("product_id");
+        filterFields.add("note");
+        filterFields.add("amount");
+        filterFields.add("shopping_list_id");
+        filterFields.add("done");
+        filterFields.add("qu_id");
+        filterFields.add("shopping_location_id");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_shopping_list")
+                .description("Query shopping list items with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Chores Query Function
+    private static FunctionDeclaration createQueryChoresFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("name");
+        filterFields.add("description");
+        filterFields.add("period_type");
+        filterFields.add("period_config");
+        filterFields.add("period_days");
+        filterFields.add("active");
+        filterFields.add("track_date_only");
+        filterFields.add("rollover");
+        filterFields.add("assignment_type");
+        filterFields.add("assignment_config");
+        filterFields.add("next_execution_assigned_to_user_id");
+        filterFields.add("consume_product_on_execution");
+        filterFields.add("product_id");
+        filterFields.add("product_amount");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_chores")
+                .description("Query chores with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Batteries Query Function
+    private static FunctionDeclaration createQueryBatteriesFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("name");
+        filterFields.add("description");
+        filterFields.add("used_in");
+        filterFields.add("charge_interval_days");
+        filterFields.add("active");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_batteries")
+                .description("Query batteries with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Locations Query Function
+    private static FunctionDeclaration createQueryLocationsFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("name");
+        filterFields.add("description");
+        filterFields.add("is_freezer");
+        filterFields.add("active");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_locations")
+                .description("Query storage locations with optional filtering, ordering, and pagination.")
+                .build();
+    }
+
+    // Quantity Units Query Function
+    private static FunctionDeclaration createQueryQuantityUnitsFunction() {
+        List<String> filterFields = new ArrayList<>();
+        filterFields.add("id");
+        filterFields.add("name");
+        filterFields.add("name_plural");
+        filterFields.add("description");
+        filterFields.add("active");
+
+        return createQueryObjectFunctionBuilder(filterFields)
+                .name("query_quantity_units")
+                .description("Query quantity units with optional filtering, ordering, and pagination.")
                 .build();
     }
 

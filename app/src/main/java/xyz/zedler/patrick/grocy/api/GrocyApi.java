@@ -26,6 +26,8 @@ import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 import xyz.zedler.patrick.grocy.R;
 import xyz.zedler.patrick.grocy.Constants;
 import xyz.zedler.patrick.grocy.Constants.SETTINGS.STOCK;
@@ -147,6 +149,24 @@ public class GrocyApi {
       url.deleteCharAt(url.length() - 1);
     }
 
+    return url.toString();
+  }
+
+  public String getUrlWithParams(String command, Map<String, String> params) {
+    StringBuilder url = new StringBuilder(getUrl(command));
+    if (!params.isEmpty()) {
+      url.append("?");
+    }
+    int idx = 0;
+    for (Map.Entry<String, String> param : params.entrySet()) {
+        url.append(param.getKey());
+        url.append('=');
+        url.append(param.getValue());
+
+      if (idx++ < params.size() - 1) {
+        url.append("&");
+      }
+    }
     return url.toString();
   }
 

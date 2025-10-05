@@ -34,6 +34,7 @@ import com.google.genai.types.ThinkingConfig;
 import com.google.genai.types.Tool;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -176,6 +177,31 @@ public class GrocyFunctionExecutor {
                 case "get_system_info":
                     return executeSystemInfo();
 
+                // Generic object functions
+                case "query_products":
+                    return executeQueryEntities("products", arguments);
+
+                case "query_product_barcodes":
+                    return executeQueryEntities("product_barcodes", arguments);
+
+                case "query_stock":
+                    return executeQueryEntities("stock", arguments);
+
+                case "query_shopping_list":
+                    return executeQueryEntities("shopping_list", arguments);
+
+                case "query_chores":
+                    return executeQueryEntities("chores", arguments);
+
+                case "query_batteries":
+                    return executeQueryEntities("batteries", arguments);
+
+                case "query_locations":
+                    return executeQueryEntities("locations", arguments);
+
+                case "query_quantity_units":
+                    return executeQueryEntities("quantity_units", arguments);
+
                 case "google_search":
                     return executeGoogleSearch(arguments).join().text();
                 default:
@@ -185,6 +211,47 @@ public class GrocyFunctionExecutor {
             Log.e(TAG, "Error executing function: " + functionName, e);
             return createErrorResponse("Error executing " + functionName + ": " + e.getMessage());
         }
+    }
+
+    private String executeQueryEntities(String entity, JSONObject arguments) {
+        if (entity == null || entity.isEmpty()) { return createErrorResponse("Entity not specified"); }
+
+        Map<String, String> params = new HashMap<>();
+
+        JSONArray filters = getArrayArg(arguments, "filters");
+        StringBuilder filterString = new StringBuilder();
+        if (filters != null && filters.length() > 0) {
+            filterString.append("query[]=[");
+            for (int i = 0; i < filters.length(); i++) {
+                if (i > 0) { filterString.append(","); }
+                try {
+                    JSONObject filterItem = filters.getJSONObject(i);
+                    filterString.append(filterItem.getString("field"));
+                    filterString.append(filterItem.getString("operator"));
+                    filterString.append(filterItem.getString("value"));
+                } catch (JSONException e) {
+                    return createErrorResponse("Invalid filter format");
+                }
+            }
+            filterString.append("]");
+            params.put("query[]", filterString.toString());
+        }
+
+        String orderBy = getStringArg(arguments, "orderBy", "");
+        if(!orderBy.isEmpty()) {
+            String sortOrder = getStringArg(arguments, "sortOrder", "");
+            if(!sortOrder.isEmpty()) {
+                params.put("order", orderBy + ":" + sortOrder);
+            } else {
+                params.put("order", orderBy);
+            }
+
+        }
+
+        params.put("limit", String.valueOf(getIntArg(arguments, "limit", -1)));
+        params.put("offset", String.valueOf(getIntArg(arguments, "offset", -1)));
+
+        return getRequest(grocyApi.getUrlWithParams("/objects/" + entity, params));
     }
 
     private String executeSystemInfo() {
@@ -311,6 +378,10 @@ public class GrocyFunctionExecutor {
 
     private boolean getBooleanArg(JSONObject args, String key, boolean defaultValue) {
         return args.optBoolean(key, defaultValue);
+    }
+
+    private JSONArray getArrayArg(JSONObject args, String key) {
+        return args.optJSONArray(key);
     }
 
     // Stock Management Function Implementations

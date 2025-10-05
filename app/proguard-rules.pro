@@ -101,6 +101,9 @@
 -keep class kotlin.Metadata { *; }
 -keep class kotlin.reflect.** { *; }
 
+-keep class io.swagger.** { *; }
+-keep class com.fasterxml.jackson.** { *; }
+
 # Suppress warnings for optional dependencies
 -dontwarn javax.naming.**
 -dontwarn javax.servlet.**
@@ -111,3 +114,5 @@
 -dontwarn org.ietf.jgss.**
 -dontwarn org.apache.http.**
 -dontwarn org.apache.commons.logging.**
+-dontwarn io.swagger.**
+-dontwarn com.fasterxml.jackson.**

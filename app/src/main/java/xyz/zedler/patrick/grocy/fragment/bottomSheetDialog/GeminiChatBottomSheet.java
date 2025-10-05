@@ -166,7 +166,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         );
 
         // Sets the Grocy API tool in the config.
-        Tool grocyTool = GrocyFunctionDeclarations.createGrocyTool();
+        Tool grocyTool = GrocyFunctionDeclarations.createGrocyTool(view.getContext());
         Tool proxyGoogleSearchTool = GrocyFunctionDeclarations.createProxyGoogleSearchTool();
 
         config = GenerateContentConfig.builder()
