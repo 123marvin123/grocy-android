@@ -42,10 +42,16 @@
       android:padding="12dp">
 
       <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/image_sender"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null" />
 
         <TextView
           android:id="@+id/text_sender"
@@ -53,23 +59,14 @@
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:textStyle="bold"
-          android:textSize="12sp"
-          android:layout_marginBottom="4dp" />
-      </LinearLayout>
+          android:textSize="14sp"
+          android:layout_marginStart="12dp" />
 
-      <TextView
-        android:id="@+id/text_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textIsSelectable="true" />
-
-      <com.google.android.material.button.MaterialButton
+        <com.google.android.material.button.MaterialButton
           android:id="@+id/button_copy"
           style="@style/Widget.Material3.Button.IconButton"
           android:layout_width="32dp"
           android:layout_height="32dp"
-            android:layout_gravity="end"
           android:visibility="gone"
           app:icon="@drawable/ic_round_content_copy"
           app:iconSize="18dp"
@@ -77,6 +74,23 @@
           android:insetTop="0dp"
           android:insetBottom="0dp"
           android:padding="0dp" />
+      </LinearLayout>
+
+      <ProgressBar
+        android:id="@+id/progress_loading"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        android:indeterminate="true" />
+
+      <TextView
+        android:id="@+id/text_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textSize="14sp"
+        android:textIsSelectable="true" />
 
     </LinearLayout>
 

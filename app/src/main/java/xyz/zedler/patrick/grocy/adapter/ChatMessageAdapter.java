@@ -27,7 +27,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -70,27 +72,42 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
   @Override
   public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
     ChatMessage message = messages.get(position);
-    // Use Markwon to render markdown text
-    markwon.setMarkdown(holder.textMessage, message.getMessage());
+    
+    // Handle loading state
+    if (message.isLoading()) {
+      holder.progressLoading.setVisibility(View.VISIBLE);
+      holder.textMessage.setVisibility(View.GONE);
+      holder.buttonCopy.setVisibility(View.GONE);
+    } else {
+      holder.progressLoading.setVisibility(View.GONE);
+      holder.textMessage.setVisibility(View.VISIBLE);
+      // Use Markwon to render markdown text
+      markwon.setMarkdown(holder.textMessage, message.getMessage());
+    }
 
     if (message.isUser()) {
+      holder.imageSender.setImageResource(R.drawable.ic_round_person_anim);
       holder.textSender.setText(R.string.sender_you);
       holder.buttonCopy.setVisibility(View.GONE);
       LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.cardMessage.getLayoutParams();
       params.gravity = Gravity.END;
       holder.cardMessage.setLayoutParams(params);
     } else {
+      holder.imageSender.setImageResource(R.drawable.ic_round_gemini);
       holder.textSender.setText(R.string.sender_gemini);
-      holder.buttonCopy.setVisibility(View.VISIBLE);
+      
+      if (!message.isLoading()) {
+        holder.buttonCopy.setVisibility(View.VISIBLE);
 
-      // Set up copy button click listener
-      holder.buttonCopy.setOnClickListener(v -> {
-        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Gemini Message", message.getMessage());
-        clipboard.setPrimaryClip(clip);
+        // Set up copy button click listener
+        holder.buttonCopy.setOnClickListener(v -> {
+          ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+          ClipData clip = ClipData.newPlainText("Gemini Message", message.getMessage());
+          clipboard.setPrimaryClip(clip);
 
-        Toast.makeText(context, R.string.msg_copied_clipboard, Toast.LENGTH_SHORT).show();
-      });
+          Toast.makeText(context, R.string.msg_copied_clipboard, Toast.LENGTH_SHORT).show();
+        });
+      }
 
       LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.cardMessage.getLayoutParams();
       params.gravity = Gravity.START;
@@ -112,6 +129,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     if (!messages.isEmpty()) {
       int lastIndex = messages.size() - 1;
       messages.get(lastIndex).setMessage(newText);
+      messages.get(lastIndex).setLoading(false);
       notifyItemChanged(lastIndex);
     }
   }
@@ -121,6 +139,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     TextView textSender;
     TextView textMessage;
     MaterialButton buttonCopy;
+    ImageView imageSender;
+    ProgressBar progressLoading;
 
     MessageViewHolder(@NonNull View itemView) {
       super(itemView);
@@ -128,6 +148,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
       textSender = itemView.findViewById(R.id.text_sender);
       textMessage = itemView.findViewById(R.id.text_message);
       buttonCopy = itemView.findViewById(R.id.button_copy);
+      imageSender = itemView.findViewById(R.id.image_sender);
+      progressLoading = itemView.findViewById(R.id.progress_loading);
     }
   }
 }

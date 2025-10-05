@@ -24,10 +24,12 @@ public class ChatMessage {
   
   private String message;
   private final boolean isUser;
+  private boolean isLoading;
   
   public ChatMessage(String message, boolean isUser) {
     this.message = message;
     this.isUser = isUser;
+    this.isLoading = false;
   }
   
   public String getMessage() {
@@ -40,5 +42,13 @@ public class ChatMessage {
 
   public boolean isUser() {
     return isUser;
+  }
+
+  public boolean isLoading() {
+    return isLoading;
+  }
+
+  public void setLoading(boolean loading) {
+    isLoading = loading;
   }
 }

@@ -62,9 +62,52 @@
 -dontwarn com.android.org.conscrypt.SSLParametersImpl
 -dontwarn org.apache.harmony.xnet.provider.jsse.SSLParametersImpl
 
-# Suppress warnings for missing Java Beans classes (not available on Android)
--dontwarn java.beans.ConstructorProperties
--dontwarn java.beans.Transient
+# Google Gemini AI SDK
+-keep class com.google.genai.** { *; }
+-keep class com.google.ai.client.generativeai.** { *; }
+-keepclassmembers class com.google.genai.** { *; }
 
-# Suppress warnings for CommonMark GFM extension classes
--dontwarn org.commonmark.ext.gfm.strikethrough.Strikethrough
+# Jackson for Gemini AI
+-keep class com.fasterxml.jackson.** { *; }
+-keep class org.codehaus.** { *; }
+-keepnames class com.fasterxml.jackson.** { *; }
+-dontwarn com.fasterxml.jackson.databind.**
+-keep class com.fasterxml.jackson.databind.ObjectMapper {
+    public <methods>;
+    protected <methods>;
+}
+-keep class com.fasterxml.jackson.databind.ObjectWriter {
+    public ** writeValueAsString(**);
+}
+-keepclassmembers public final enum com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility {
+    public static final com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility *;
+}
+
+# Keep Gemini types and builders
+-keep class com.google.genai.types.** { *; }
+-keepclassmembers class com.google.genai.types.**$Builder { *; }
+-keep class * extends com.google.genai.JsonSerializable { *; }
+
+# Keep all constructors and creators for Jackson deserialization
+-keepclassmembers class * {
+    @com.fasterxml.jackson.annotation.JsonCreator <init>(...);
+}
+-keep @com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }
+-keep class * {
+    @com.fasterxml.jackson.annotation.JsonProperty *;
+}
+
+# Kotlin metadata for Jackson Kotlin support
+-keep class kotlin.Metadata { *; }
+-keep class kotlin.reflect.** { *; }
+
+# Suppress warnings for optional dependencies
+-dontwarn javax.naming.**
+-dontwarn javax.servlet.**
+-dontwarn org.apache.avalon.framework.**
+-dontwarn org.apache.log.**
+-dontwarn org.apache.log4j.**
+-dontwarn org.commonmark.ext.gfm.strikethrough.**
+-dontwarn org.ietf.jgss.**
+-dontwarn org.apache.http.**
+-dontwarn org.apache.commons.logging.**

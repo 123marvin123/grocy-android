@@ -101,7 +101,25 @@ public class GrocyFunctionDeclarations {
         // Utility Functions
         functions.add(createUndoActionFunction());
 
+        // System Functions
+        functions.add(createSystemInfoFunction());
+        functions.add(createSystemConfigFunction());
+
         return functions;
+    }
+
+    private static FunctionDeclaration createSystemConfigFunction() {
+        return FunctionDeclaration.builder()
+                .name("get_system_config")
+                .description("Get Grocy backend settings such as currency, default locale, and enabled features.")
+                .build();
+    }
+
+    private static FunctionDeclaration createSystemInfoFunction() {
+        return FunctionDeclaration.builder()
+                .name("get_system_info")
+                .description("Get backend system information from the Grocy instance such as version and release date.")
+                .build();
     }
 
     /**
@@ -814,5 +832,266 @@ public class GrocyFunctionDeclarations {
                 )
                 .build();
 
+    }
+
+    public static String getSystemInstructions() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Make sure to always include the corresponding unit for quantities, e.g., '2 pieces of bread' or '1.5 kg of apples'. Functions like get_stock only return an 'amount' without the unit, but you can retrieve the actual unit by looking at the 'product'.'qu_id_stock' and then querying the existing units to match the id using 'get_quantity_units'.\n");
+        stringBuilder.append("When displaying dates, use the format that is appropriate for the user's locale, e.g., 'DD.MM.YYYY' for German or 'MM/DD/YYYY' for US English. The same holds true for floating point values, e.g. if the function call returns a value of 1.5 then this would be displayed as 1,5 if the locale is German.\n");
+        stringBuilder.append("Dates in the JSON requests and responses for function calls are always in the format YYYY-MM-DD or YYYY-MM-DD HH:MM:SS.\n\n");
+
+        stringBuilder.append("# Grocy API Data Relationships Guide\n" +
+                "\n" +
+                "This document describes how different API responses relate to each other, enabling intelligent navigation and data enrichment.\n" +
+                "\n" +
+                "## Entity Relationships Overview\n" +
+                "\n" +
+                "### Core Product & Stock Relationships\n" +
+                "\n" +
+                "#### Product → Quantity Unit\n" +
+                "- **Relationship**: Products reference quantity units via `qu_id_purchase` and `qu_id_stock`\n" +
+                "- **How to resolve**: \n" +
+                "  1. Get product from `get_products` or from stock data\n" +
+                "  2. Extract `qu_id_purchase` or `qu_id_stock`\n" +
+                "  3. Query `get_quantity_units` and find the unit where `id` matches\n" +
+                "  4. Use the `name` field for the unit name\n" +
+                "\n" +
+                "```json\n" +
+                "// Product has:\n" +
+                "{\n" +
+                "  \"qu_id_purchase\": 3,\n" +
+                "  \"qu_id_stock\": 2\n" +
+                "}\n" +
+                "// Resolve by finding in quantity_units where id = 3 or id = 2\n" +
+                "```\n" +
+                "\n" +
+                "#### Product → Location\n" +
+                "- **Relationship**: Products have a default location via `location_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get product data\n" +
+                "  2. Extract `location_id`\n" +
+                "  3. Query `get_locations` and find location where `id` matches\n" +
+                "  4. Use the `name` field for location name\n" +
+                "\n" +
+                "#### Product → Product Group\n" +
+                "- **Relationship**: Products belong to groups via `product_group_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get product data\n" +
+                "  2. Extract `product_group_id`\n" +
+                "  3. Query `get_product_groups` and find group where `id` matches\n" +
+                "  4. Use the `name` field for group name\n" +
+                "\n" +
+                "#### Stock Entry → Product\n" +
+                "- **Relationship**: Stock entries reference products via `product_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get stock data from `get_stock` or `get_product_entries`\n" +
+                "  2. Extract `product_id`\n" +
+                "  3. Query `get_products` and find product where `id` matches\n" +
+                "  4. Use product details for enrichment\n" +
+                "\n" +
+                "#### Stock Entry → Location\n" +
+                "- **Relationship**: Stock entries are stored at locations via `location_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get stock entry from `get_stock_by_location` or `get_product_entries`\n" +
+                "  2. Extract `location_id`\n" +
+                "  3. Query `get_locations` and find location where `id` matches\n" +
+                "\n" +
+                "### Shopping & Recipes\n" +
+                "\n" +
+                "#### Shopping List Item → Product\n" +
+                "- **Relationship**: Shopping list items reference products via `product_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get shopping list from `get_shopping_list`\n" +
+                "  2. Extract `product_id` from each item\n" +
+                "  3. Query `get_products` to get product details\n" +
+                "\n" +
+                "#### Shopping List Item → Shopping Location\n" +
+                "- **Relationship**: Shopping list items reference where to buy via `shopping_location_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get shopping list item\n" +
+                "  2. Extract `shopping_location_id`\n" +
+                "  3. Query `get_shopping_locations` and find location where `id` matches\n" +
+                "\n" +
+                "#### Recipe → Products (via recipe_pos)\n" +
+                "- **Relationship**: Recipes contain products as ingredients\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get recipe from `get_recipes`\n" +
+                "  2. Recipe contains nested ingredient information\n" +
+                "  3. Each ingredient references a `product_id`\n" +
+                "  4. Query `get_products` to enrich ingredient data\n" +
+                "\n" +
+                "#### Recipe Fulfillment → Stock\n" +
+                "- **Relationship**: Recipe fulfillment shows if enough stock exists\n" +
+                "- **How to resolve**:\n" +
+                "  1. Use `get_recipe_fulfillment` with recipe ID\n" +
+                "  2. Response shows which products are missing/sufficient\n" +
+                "  3. Cross-reference with `get_stock` for detailed stock info\n" +
+                "\n" +
+                "#### Meal Plan → Recipe\n" +
+                "- **Relationship**: Meal plan entries reference recipes via `recipe_id`\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get meal plan from `get_meal_plan`\n" +
+                "  2. Extract `recipe_id` from each entry\n" +
+                "  3. Query `get_recipes` to get recipe details\n" +
+                "\n" +
+                "### Chores & Batteries\n" +
+                "\n" +
+                "#### Chore → User\n" +
+                "- **Relationship**: Chores can be assigned to users via `assignment_config` or execution tracking\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get chore from `get_chores`\n" +
+                "  2. When tracking execution, user context may be involved\n" +
+                "  3. Query `get_users` for user details\n" +
+                "\n" +
+                "#### Battery → User (via tracking)\n" +
+                "- **Relationship**: Battery charge tracking may reference user who performed the action\n" +
+                "- **How to resolve**:\n" +
+                "  1. Get battery from `get_batteries`\n" +
+                "  2. Historical data may include user information\n" +
+                "  3. Query `get_users` for user details\n" +
+                "\n" +
+                "### User & Permissions\n" +
+                "\n" +
+                "#### Any Entity → User (Created/Modified)\n" +
+                "- **Relationship**: Most entities track `row_created_timestamp` and may track user\n" +
+                "- **How to resolve**:\n" +
+                "  1. Many entities have audit fields\n" +
+                "  2. Query `get_users` to resolve user information\n" +
+                "\n" +
+                "## Common Patterns for the AI\n" +
+                "\n" +
+                "### Pattern 1: Display Product Name with Unit\n" +
+                "**Question**: \"What's in stock?\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_stock`\n" +
+                "2. For each item, extract `product_id`\n" +
+                "3. Call `get_products`, find matching product\n" +
+                "4. Extract `qu_id_stock` from product\n" +
+                "5. Call `get_quantity_units`, find matching unit\n" +
+                "6. Display: \"{product.name}: {amount} {unit.name}\"\n" +
+                "\n" +
+                "### Pattern 2: Show Stock by Location Name\n" +
+                "**Question**: \"What's in the fridge?\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_locations`, find location where name contains \"fridge\"\n" +
+                "2. Extract location `id`\n" +
+                "3. Call `get_stock_by_location` with that `location_id`\n" +
+                "4. Enrich with product names using Pattern 1\n" +
+                "\n" +
+                "### Pattern 3: Check Recipe Availability\n" +
+                "**Question**: \"Can I make pizza?\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_recipes`, find recipe where name contains \"pizza\"\n" +
+                "2. Extract recipe `id`\n" +
+                "3. Call `get_recipe_fulfillment` with recipe ID\n" +
+                "4. Response shows ingredient availability\n" +
+                "5. Optionally call `get_stock` to show current amounts\n" +
+                "\n" +
+                "### Pattern 4: Add Missing Recipe Ingredients to Shopping List\n" +
+                "**Question**: \"Add missing ingredients for lasagna to shopping list\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_recipes`, find recipe for lasagna\n" +
+                "2. Extract recipe `id`\n" +
+                "3. Call `get_recipe_fulfillment` with recipe ID\n" +
+                "4. Identify missing ingredients\n" +
+                "5. Call `add_recipe_products_to_shopping_list` with recipe ID\n" +
+                "   - This automatically adds only missing items\n" +
+                "\n" +
+                "### Pattern 5: Product Search with Full Context\n" +
+                "**Question**: \"Tell me about milk\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_products`, filter for name containing \"milk\"\n" +
+                "2. Extract `location_id`, `product_group_id`, `qu_id_stock`\n" +
+                "3. Call `get_locations` to resolve location name\n" +
+                "4. Call `get_product_groups` to resolve group name\n" +
+                "5. Call `get_quantity_units` to resolve unit name\n" +
+                "6. Call `get_stock` filtered by product to show current stock\n" +
+                "7. Provide comprehensive answer with all context\n" +
+                "\n" +
+                "### Pattern 6: Shopping List with Locations\n" +
+                "**Question**: \"What do I need to buy at the grocery store?\"\n" +
+                "\n" +
+                "**Resolution Steps**:\n" +
+                "1. Call `get_shopping_locations`, find location matching \"grocery\"\n" +
+                "2. Extract location `id`\n" +
+                "3. Call `get_shopping_list`\n" +
+                "4. Filter items where `shopping_location_id` matches\n" +
+                "5. Enrich with product names from `get_products`\n" +
+                "\n" +
+                "## ID Field Reference Table\n" +
+                "\n" +
+                "| Entity | Primary Key | Common Foreign Keys |\n" +
+                "|--------|-------------|---------------------|\n" +
+                "| Products | `id` | `location_id`, `product_group_id`, `qu_id_purchase`, `qu_id_stock`, `parent_product_id` |\n" +
+                "| Stock Entries | `stock_id` | `product_id`, `location_id` |\n" +
+                "| Shopping List Items | `id` | `product_id`, `shopping_location_id` |\n" +
+                "| Recipes | `id` | None direct (uses recipe_pos table) |\n" +
+                "| Recipe Positions | `id` | `recipe_id`, `product_id` |\n" +
+                "| Chores | `id` | `assignment_config` (may reference users) |\n" +
+                "| Batteries | `id` | None direct |\n" +
+                "| Tasks | `id` | None direct |\n" +
+                "| Locations | `id` | None |\n" +
+                "| Shopping Locations | `id` | None |\n" +
+                "| Product Groups | `id` | None |\n" +
+                "| Quantity Units | `id` | None |\n" +
+                "| Users | `id` | None |\n" +
+                "| Meal Plan | `id` | `recipe_id` |\n" +
+                "| Equipment | `id` | None |\n" +
+                "\n" +
+                "## Special Considerations\n" +
+                "\n" +
+                "### Volatile Stock Data\n" +
+                "- Use `get_stock_volatile` for products that expire soon\n" +
+                "- References same product IDs as regular stock\n" +
+                "- Useful for \"what expires soon?\" queries\n" +
+                "\n" +
+                "### Price History\n" +
+                "- Use `get_price_history` with `product_id` to see pricing trends\n" +
+                "- Relates to purchase transactions\n" +
+                "\n" +
+                "### Barcode Support\n" +
+                "- Products can have multiple barcodes via `product_barcodes` entity\n" +
+                "- Use this for scanning operations\n" +
+                "\n" +
+                "### Transaction History & Undo\n" +
+                "- Most actions (consume, purchase, etc.) can be undone\n" +
+                "- `undo_action` requires the transaction ID returned from operations\n" +
+                "- Store transaction IDs if user might want to undo\n" +
+                "\n" +
+                "## Example Conversation Flows\n" +
+                "\n" +
+                "### Flow 1: \"What milk do I have?\"\n" +
+                "```\n" +
+                "1. get_products → filter name contains \"milk\" → extract product IDs\n" +
+                "2. get_stock → filter by product IDs → get amounts and location IDs\n" +
+                "3. get_locations → resolve location names\n" +
+                "4. get_quantity_units → resolve unit names\n" +
+                "Response: \"You have 2 liters of whole milk in the fridge and 500ml of almond milk in the pantry\"\n" +
+                "```\n" +
+                "\n" +
+                "### Flow 2: \"I want to make dinner with what I have\"\n" +
+                "```\n" +
+                "1. get_recipes_fulfillment → see which recipes can be made\n" +
+                "2. get_recipes → get details of fulfilled recipes\n" +
+                "3. Present options to user\n" +
+                "Response: \"You can make: Spaghetti Carbonara, Caesar Salad, or Chicken Stir Fry\"\n" +
+                "```\n" +
+                "\n" +
+                "### Flow 3: \"I bought 2 dozen eggs\"\n" +
+                "```\n" +
+                "1. get_products → find \"eggs\" → extract product ID and qu_id_purchase\n" +
+                "2. get_quantity_units → resolve unit (probably \"piece\" or \"dozen\")\n" +
+                "3. purchase_product → with product_id, amount=24 (or 2 if unit is dozen), price\n" +
+                "4. get_stock → confirm new stock level\n" +
+                "Response: \"Added 24 eggs to stock. You now have 30 eggs total\"\n" +
+                "```");
+
+        return stringBuilder.toString();
     }
 }

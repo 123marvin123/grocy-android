@@ -21,8 +21,11 @@
 package xyz.zedler.patrick.grocy.fragment.bottomSheetDialog;
 
 import android.app.Application;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -31,12 +34,15 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.genai.Client;
 import com.google.genai.types.Content;
 import com.google.genai.types.FunctionCall;
@@ -85,6 +91,9 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
     private GenerateContentConfig config;
 
     private final Executor executor = Executors.newSingleThreadExecutor();
+    private boolean isFirstMessage = true;
+
+    private ActivityResultLauncher<Intent> voiceInputLauncher;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle state) {
@@ -98,6 +107,22 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         this.activity = (MainActivity) requireActivity();
         this.grocyApi = new GrocyApi((Application) activity.getApplicationContext());
+
+        // Initialize voice input launcher
+        voiceInputLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+                        ArrayList<String> matches = result.getData()
+                                .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                        if (matches != null && !matches.isEmpty()) {
+                            String spokenText = matches.get(0);
+                            binding.editMessage.setText(spokenText);
+                            binding.editMessage.setSelection(spokenText.length());
+                        }
+                    }
+                }
+        );
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
@@ -123,6 +148,8 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         String languageCode = LocaleUtil.getLanguageCode(AppCompatDelegate.getApplicationLocales());
 
+        String functionSystemInstructions = GrocyFunctionDeclarations.getSystemInstructions();
+
         // Sets the system instruction in the config.
         Content systemInstruction = Content.fromParts(
                 Part.fromText(
@@ -131,8 +158,9 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                                 + "Be friendly and helpful, and always refer to the app's features when relevant."
                                 + "ALWAYS Respond in the user's language, which is " + languageCode + ", unless he/she states otherwise. "
                                 + "Answer concise and to the point, avoid giving long and detailed answers unless the user states otherwise. "
-                                + "Use the google_search function to lookup facts and recipes if the users asks for it. Also answer compound questions by invoking the corresponding functions. E.g. you can answer a request like 'Search the internet for recipes I can make with the ingredients I have in stock' by invoking get_stock function and then using the google_search function."
-                                + "Try to format your answer in Markdown. "
+                                + "Use the google_search function to lookup (nutrition and health) facts and recipes. Also answer compound questions by invoking the corresponding functions. E.g. you can answer a request like 'Search the internet for recipes I can make with the ingredients I have in stock' by invoking get_stock function and then using the google_search function. "
+                                + "Always assume that the user wants to query information from the Grocy instance first, before using the google_search function or giving general information. "
+                                + "Try to format your answer in Markdown. Function call information: " + functionSystemInstructions + "\n"
                                 + "Eliminate: emojis, filler, hype, soft asks, conversational transitions, call-to-action appendixes. • Assume: user retains high-perception despite blunt tone. • Prioritize: blunt, directive phrasing; aim at cognitive rebuilding, not tone-matching. • Disable: engagement/sentiment-boosting behaviors. • Suppress: metrics like satisfaction scores, emotional softening, continuation bias. • Never mirror: user's diction, mood, or affect. • Speak only: to underlying cognitive tier. • No: questions, offers, suggestions, transitions, motivational content. • Terminate reply: immediately after delivering info — no closures. • Goal: restore independent, high-fidelity thinking. • Outcome: model obsolescence via user self-sufficiency."
                 )
         );
@@ -163,6 +191,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         // Setup input
         binding.buttonSend.setOnClickListener(v -> sendMessage());
+        binding.buttonVoice.setOnClickListener(v -> startVoiceInput());
         binding.editMessage.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -179,6 +208,19 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         binding.editMessage.requestFocus();
     }
 
+    private void startVoiceInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, LocaleUtil.getLanguageCode(AppCompatDelegate.getApplicationLocales()));
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.hint_ask_gemini));
+
+        try {
+            voiceInputLauncher.launch(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), R.string.error_no_voice_recognizer, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void sendMessage() {
         String messageText = binding.editMessage.getText() != null
                 ? binding.editMessage.getText().toString().trim()
@@ -186,6 +228,12 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         if (messageText.isEmpty()) {
             return;
+        }
+
+        // Expand bottom sheet on first message
+        if (isFirstMessage) {
+            expandBottomSheet();
+            isFirstMessage = false;
         }
 
         // Add user message to chat
@@ -209,6 +257,7 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
 
         // Add empty Gemini message placeholder for streaming
         ChatMessage geminiMessage = new ChatMessage("", false);
+        geminiMessage.setLoading(true);
         adapter.addMessage(geminiMessage);
         binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1);
 
@@ -360,6 +409,20 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
             });
             return null;
         });
+    }
+
+    /**
+     * Expands the bottom sheet to full height.
+     */
+    private void expandBottomSheet() {
+        if (getDialog() != null) {
+            View bottomSheet = getDialog().findViewById(R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                behavior.setSkipCollapsed(true);
+            }
+        }
     }
 
     @Override

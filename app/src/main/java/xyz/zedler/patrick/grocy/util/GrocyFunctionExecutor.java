@@ -169,6 +169,13 @@ public class GrocyFunctionExecutor {
                 case "undo_action":
                     return executeUndoAction(arguments);
 
+                // System Functions
+                case "get_system_config":
+                    return executeSystemConfig();
+
+                case "get_system_info":
+                    return executeSystemInfo();
+
                 case "google_search":
                     return executeGoogleSearch(arguments).join().text();
                 default:
@@ -178,6 +185,14 @@ public class GrocyFunctionExecutor {
             Log.e(TAG, "Error executing function: " + functionName, e);
             return createErrorResponse("Error executing " + functionName + ": " + e.getMessage());
         }
+    }
+
+    private String executeSystemInfo() {
+        return getRequest(grocyApi.getSystemInfo());
+    }
+
+    private String executeSystemConfig() {
+        return getRequest(grocyApi.getSystemConfig());
     }
 
     private CompletableFuture<GenerateContentResponse> executeGoogleSearch(JSONObject arguments) {

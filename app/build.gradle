@@ -69,7 +69,7 @@ android {
                     'proguard-rules.pro'
                 }
             }
-            debuggable false
+            debuggable true
         }
         debug {
             applicationIdSuffix '.debug'

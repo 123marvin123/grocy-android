@@ -1416,5 +1416,6 @@
   <string name="setting_gemini_title">Google Gemini</string>
   <string name="setting_gemini_switch">Use Gemini Chat</string>
   <string name="setting_gemini_switch_description">Allows chatting with Gemini about your products, recipes and chores.</string>
+  <string name="error_no_voice_recognizer">No voice recognizer installed on this system.</string>
 
 </resources>
