@@ -96,7 +96,6 @@
 # Kotlin metadata for Jackson Kotlin support
 -keep class kotlin.Metadata { *; }
 
--keep class io.swagger.** { *; }
 -keep class com.fasterxml.jackson.** { *; }
 
 # Suppress warnings for compile-time only classes and classes not available on Android

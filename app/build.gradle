@@ -156,8 +156,4 @@ dependencies {
     implementation libs.markwon.linkify
     implementation libs.markwon.ext.tables
     implementation libs.markwon.html
-
-    implementation(libs.swagger.parser) {
-        exclude group: 'javax.validation', module: 'validation-api'
-    }
 }
