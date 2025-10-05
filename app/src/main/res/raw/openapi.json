@@ -4489,26 +4489,26 @@
 					}
 				},
 				"example": {
-					"id": "1",
+					"id": 1,
 					"name": "Cookies",
 					"description": null,
-					"location_id": "4",
-					"qu_id_purchase": "3",
-					"qu_id_stock": "3",
-					"min_stock_amount": "8",
-					"default_best_before_days": "0",
-					"row_created_timestamp": "2019-05-02 20:12:26",
-					"product_group_id": "1",
+					"location_id": 4,
+					"qu_id_purchase": 3,
+					"qu_id_stock": 3,
+					"min_stock_amount": 8.0,
+					"default_best_before_days": 0,
+					"row_created_timestamp": "2019-05-02T20:12:26Z",
+					"product_group_id": 1,
 					"picture_file_name": "cookies.jpg",
-					"default_best_before_days_after_open": "0",
-					"enable_tare_weight_handling": "0",
-					"tare_weight": "0.0",
-					"not_check_stock_fulfillment_for_recipes": "0",
+					"default_best_before_days_after_open": 0,
+					"enable_tare_weight_handling": 0,
+					"tare_weight": 0.0,
+					"not_check_stock_fulfillment_for_recipes": 0,
 					"shopping_location_id": null,
 					"userfields": null,
-					"should_not_be_frozen": "1",
-					"default_consume_location_id": "5",
-					"move_on_open": "1"
+					"should_not_be_frozen": 1,
+					"default_consume_location_id": 5,
+					"move_on_open": 1
 				}
 			},
 			"ProductWithoutUserfields": {
@@ -4589,26 +4589,26 @@
 					}
 				},
 				"example": {
-					"id": "1",
+					"id": 1,
 					"name": "Cookies",
 					"description": null,
-					"location_id": "4",
-					"qu_id_purchase": "3",
-					"qu_id_stock": "3",
-					"min_stock_amount": "8",
-					"default_best_before_days": "0",
-					"row_created_timestamp": "2019-05-02 20:12:26",
-					"product_group_id": "1",
+					"location_id": 4,
+					"qu_id_purchase": 3,
+					"qu_id_stock": 3,
+					"min_stock_amount": 8.0,
+					"default_best_before_days": 0,
+					"row_created_timestamp": "2019-05-02T20:12:26Z",
+					"product_group_id": 1,
 					"picture_file_name": "cookies.jpg",
-					"default_best_before_days_after_open": "0",
-					"enable_tare_weight_handling": "0",
-					"tare_weight": "0.0",
-					"not_check_stock_fulfillment_for_recipes": "0",
+					"default_best_before_days_after_open": 0,
+					"enable_tare_weight_handling": 0,
+					"tare_weight": 0.0,
+					"not_check_stock_fulfillment_for_recipes": 0,
 					"shopping_location_id": null,
 					"userfields": null,
-					"should_not_be_frozen": "1",
-					"default_consume_location_id": "5",
-					"move_on_open": "1"
+					"should_not_be_frozen": 1,
+					"default_consume_location_id": 5,
+					"move_on_open": 1
 				}
 			},
 			"QuantityUnit": {
@@ -4639,10 +4639,10 @@
 					}
 				},
 				"example": {
-					"id": "2",
+					"id": 2,
 					"name": "Piece",
 					"description": null,
-					"row_created_timestamp": "2019-05-02 20:12:25",
+					"row_created_timestamp": "2019-05-02T20:12:25Z",
 					"name_plural": "Pieces",
 					"plural_forms": null,
 					"userfields": null
@@ -4670,10 +4670,10 @@
 					}
 				},
 				"example": {
-					"id": "2",
+					"id": 2,
 					"name": "0",
 					"description": null,
-					"row_created_timestamp": "2019-05-02 20:12:25",
+					"row_created_timestamp": "2019-05-02T20:12:25Z",
 					"userfields": null
 				}
 			},
@@ -4699,10 +4699,10 @@
 					}
 				},
 				"example": {
-					"id": "2",
+					"id": 2,
 					"name": "0",
 					"description": null,
-					"row_created_timestamp": "2019-05-02 20:12:25",
+					"row_created_timestamp": "2019-05-02T20:12:25Z",
 					"userfields": null
 				}
 			},
@@ -4729,10 +4729,10 @@
 					}
 				},
 				"example": {
-					"id": "1",
-					"product_id": "3",
-					"amount": "2",
-					"location_id": "1",
+					"id": 1,
+					"product_id": 3,
+					"amount": 2.0,
+					"location_id": 1,
 					"name": "Fridge"
 				}
 			},
@@ -4785,17 +4785,17 @@
 					}
 				},
 				"example": {
-					"id": "77",
-					"product_id": "1",
-					"amount": "2",
+					"id": 77,
+					"product_id": 1,
+					"amount": 2.0,
 					"best_before_date": "2019-07-07",
 					"purchased_date": "2019-05-03",
 					"stock_id": "5ccc6b2421979",
 					"price": null,
-					"open": "0",
+					"open": 0,
 					"opened_date": null,
-					"row_created_timestamp": "2019-05-03 18:24:04",
-					"location_id": "4",
+					"row_created_timestamp": "2019-05-03T18:24:04Z",
+					"location_id": 4,
 					"shopping_location_id": null
 				}
 			},
@@ -4819,11 +4819,11 @@
 					}
 				},
 				"example": {
-					"recipe_id": "1",
-					"need_fulfilled": "0",
-					"need_fulfilled_with_shopping_list": "0",
-					"missing_products_count": "2",
-					"costs": "17.74"
+					"recipe_id": 1,
+					"need_fulfilled": false,
+					"need_fulfilled_with_shopping_list": false,
+					"missing_products_count": 2,
+					"costs": 17.74
 				}
 			},
 			"ProductDetailsResponse": {
@@ -4915,21 +4915,21 @@
 				},
 				"example": {
 					"product": {
-						"id": "1",
+						"id": 1,
 						"name": "Cookies",
 						"description": null,
-						"location_id": "4",
-						"qu_id_purchase": "3",
-						"qu_id_stock": "3",
-						"min_stock_amount": "8",
-						"default_best_before_days": "0",
-						"row_created_timestamp": "2019-05-02 20:12:26",
-						"product_group_id": "1",
+						"location_id": 4,
+						"qu_id_purchase": 3,
+						"qu_id_stock": 3,
+						"min_stock_amount": 8.0,
+						"default_best_before_days": 0,
+						"row_created_timestamp": "2019-05-02T20:12:26Z",
+						"product_group_id": 1,
 						"picture_file_name": "cookies.jpg",
-						"default_best_before_days_after_open": "0",
-						"enable_tare_weight_handling": "0",
-						"tare_weight": "0.0",
-						"not_check_stock_fulfillment_for_recipes": "0",
+						"default_best_before_days_after_open": 0,
+						"enable_tare_weight_handling": 0,
+						"tare_weight": 0.0,
+						"not_check_stock_fulfillment_for_recipes": 0,
 						"last_shopping_location_id": null
 					},
 					"product_barcodes": [
@@ -4944,29 +4944,29 @@
 					],
 					"last_purchased": null,
 					"last_used": null,
-					"stock_amount": "2",
+					"stock_amount": 2.0,
 					"stock_amount_opened": null,
 					"default_quantity_unit_purchase": {
-						"id": "3",
+						"id": 3,
 						"name": "Pack",
 						"description": null,
-						"row_created_timestamp": "2019-05-02 20:12:25",
+						"row_created_timestamp": "2019-05-02T20:12:25Z",
 						"name_plural": "Packs",
 						"plural_forms": null
 					},
 					"quantity_unit_stock": {
-						"id": "3",
+						"id": 3,
 						"name": "Pack",
 						"description": null,
-						"row_created_timestamp": "2019-05-02 20:12:25",
+						"row_created_timestamp": "2019-05-02T20:12:25Z",
 						"name_plural": "Packs",
 						"plural_forms": null
 					},
 					"quantity_unit_price": {
-						"id": "3",
+						"id": 3,
 						"name": "Pack",
 						"description": null,
-						"row_created_timestamp": "2019-05-02 20:12:25",
+						"row_created_timestamp": "2019-05-02T20:12:25Z",
 						"name_plural": "Packs",
 						"plural_forms": null
 					},
@@ -4976,10 +4976,10 @@
 					"last_shopping_location_id": null,
 					"next_due_date": "2019-07-07",
 					"location": {
-						"id": "4",
+						"id": 4,
 						"name": "Candy cupboard",
 						"description": null,
-						"row_created_timestamp": "2019-05-02 20:12:25"
+						"row_created_timestamp": "2019-05-02T20:12:25Z"
 					},
 					"average_shelf_life_days": -1,
 					"spoil_rate_percent": 0,
@@ -5136,9 +5136,9 @@
 						"charge_interval_days": "0",
 						"row_created_timestamp": "2019-05-02 20:12:26"
 					},
-					"last_charged": "2019-03-13 18:12:28",
+					"last_charged": "2019-03-13T18:12:28Z",
 					"charge_cycles_count": 4,
-					"next_estimated_charge_time": "2999-12-31 23:59:59"
+					"next_estimated_charge_time": "2999-12-31T23:59:59Z"
 				}
 			},
 			"Session": {
@@ -5461,7 +5461,8 @@
 				"type": "object",
 				"properties": {
 					"correlation_id": {
-						"type": "string"
+						"type": "string",
+						"nullable": true
 					},
 					"undone": {
 						"type": "integer"
@@ -5506,18 +5507,18 @@
 				"example": {
 					"id": "1",
 					"correlation_id": null,
-					"undone": "0",
+					"undone": 0,
 					"undone_timestamp": null,
 					"transaction_type": "purchase",
-					"spoiled": "0",
-					"amount": "1",
-					"location_id": "4",
+					"spoiled": false,
+					"amount": 1.0,
+					"location_id": 4,
 					"location_name": "Candy cupboard",
 					"product_name": "Gummy bears",
 					"qu_name": "Pack",
 					"qu_name_plural": "Packs",
 					"user_display_name": "Demo User",
-					"row_created_timestamp": "2020-11-14 16:42:21"
+					"row_created_timestamp": "2020-11-14T16:42:21Z"
 				}
 			},
 			"StockJournalSummary": {
@@ -5550,14 +5551,14 @@
 				},
 				"example": {
 					"id": "1",
-					"user_id": "1",
+					"user_id": 1,
 					"user_display_name": "Demo User",
 					"product_name": "Chocolate",
-					"product_id": "2",
+					"product_id": 2,
 					"transaction_type": "purchase",
 					"qu_name": "Pack",
 					"qu_name_plural": "Packs",
-					"amount": "1"
+					"amount": 1.0
 				}
 			},
 			"Error400": {
@@ -5950,8 +5951,7 @@
 				]
 			},
 			"ExposedEntityEditRequiresAdmin": {
-				"type": "string",
-				"enum": []
+				"type": "string"
 			},
 			"StockTransactionType": {
 				"type": "string",
@@ -5976,6 +5976,165 @@
 				"type": "string",
 				"enum": [
 					""
+				]
+			},
+			"ExposedEntity_NotIncludingNotListable": {
+				"type": "string",
+				"enum": [
+					"products",
+					"chores",
+					"product_barcodes",
+					"batteries",
+					"locations",
+					"quantity_units",
+					"quantity_unit_conversions",
+					"shopping_list",
+					"shopping_lists",
+					"shopping_locations",
+					"recipes",
+					"recipes_pos",
+					"recipes_nestings",
+					"tasks",
+					"task_categories",
+					"product_groups",
+					"equipment",
+					"userfields",
+					"userentities",
+					"userobjects",
+					"meal_plan",
+					"stock_log",
+					"stock",
+					"stock_current_locations",
+					"chores_log",
+					"meal_plan_sections",
+					"products_last_purchased",
+					"products_average_price",
+					"quantity_unit_conversions_resolved",
+					"recipes_pos_resolved",
+					"battery_charge_cycles",
+					"product_barcodes_view",
+					"permission_hierarchy"
+				]
+			},
+			"ExposedEntity_NotIncludingNotEditable": {
+				"type": "string",
+				"enum": [
+					"products",
+					"chores",
+					"product_barcodes",
+					"batteries",
+					"locations",
+					"quantity_units",
+					"quantity_unit_conversions",
+					"shopping_list",
+					"shopping_lists",
+					"shopping_locations",
+					"recipes",
+					"recipes_pos",
+					"recipes_nestings",
+					"tasks",
+					"task_categories",
+					"product_groups",
+					"equipment",
+					"userfields",
+					"userentities",
+					"userobjects",
+					"meal_plan",
+					"meal_plan_sections"
+				]
+			},
+			"ExposedEntity_NotIncludingNotDeletable": {
+				"type": "string",
+				"enum": [
+					"products",
+					"chores",
+					"product_barcodes",
+					"batteries",
+					"locations",
+					"quantity_units",
+					"quantity_unit_conversions",
+					"shopping_list",
+					"shopping_lists",
+					"shopping_locations",
+					"recipes",
+					"recipes_pos",
+					"recipes_nestings",
+					"tasks",
+					"task_categories",
+					"product_groups",
+					"equipment",
+					"api_keys",
+					"userfields",
+					"userentities",
+					"userobjects",
+					"meal_plan",
+					"meal_plan_sections"
+				]
+			},
+			"ExposedEntity_IncludingUserEntities": {
+				"type": "string",
+				"enum": [
+					"products",
+					"chores",
+					"product_barcodes",
+					"batteries",
+					"locations",
+					"quantity_units",
+					"quantity_unit_conversions",
+					"shopping_list",
+					"shopping_lists",
+					"shopping_locations",
+					"recipes",
+					"recipes_pos",
+					"recipes_nestings",
+					"tasks",
+					"task_categories",
+					"product_groups",
+					"equipment",
+					"api_keys",
+					"userfields",
+					"userentities",
+					"userobjects",
+					"meal_plan",
+					"stock_log",
+					"stock",
+					"stock_current_locations",
+					"chores_log",
+					"meal_plan_sections",
+					"products_last_purchased",
+					"products_average_price",
+					"quantity_unit_conversions_resolved",
+					"recipes_pos_resolved",
+					"battery_charge_cycles",
+					"product_barcodes_view",
+					"permission_hierarchy"
+				]
+			},
+			"ExposedEntity_IncludingUserEntities_NotIncludingNotEditable": {
+				"type": "string",
+				"enum": [
+					"products",
+					"chores",
+					"product_barcodes",
+					"batteries",
+					"locations",
+					"quantity_units",
+					"quantity_unit_conversions",
+					"shopping_list",
+					"shopping_lists",
+					"shopping_locations",
+					"recipes",
+					"recipes_pos",
+					"recipes_nestings",
+					"tasks",
+					"task_categories",
+					"product_groups",
+					"equipment",
+					"userfields",
+					"userentities",
+					"userobjects",
+					"meal_plan",
+					"meal_plan_sections"
 				]
 			}
 		},
