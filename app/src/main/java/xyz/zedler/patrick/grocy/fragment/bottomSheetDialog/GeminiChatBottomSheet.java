@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -204,6 +206,61 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                     binding.recyclerChat.smoothScrollToPosition(adapter.getItemCount() - 1)
             );
         }
+
+        // Add listener for input text
+        addListenerForInputText();
+    }
+
+    private void addListenerForInputText() {
+        binding.editMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0) {
+                    if (binding.buttonVoice.getVisibility() == View.VISIBLE) {
+                        // Animate out: fade out and scale down
+                        binding.buttonVoice.animate()
+                                .alpha(0f)
+                                .scaleX(0f)
+                                .scaleY(0f)
+                                .setDuration(150)
+                                .withEndAction(() -> binding.buttonVoice.setVisibility(View.GONE))
+                                .start();
+                    }
+                } else {
+                    if (binding.buttonVoice.getVisibility() == View.GONE) {
+                        // Animate in: fade in and scale up
+                        binding.buttonVoice.setVisibility(View.VISIBLE);
+                        binding.buttonVoice.setAlpha(0f);
+                        binding.buttonVoice.setScaleX(0f);
+                        binding.buttonVoice.setScaleY(0f);
+                        binding.buttonVoice.animate()
+                                .alpha(1f)
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(150)
+                                .start();
+                    }
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+        // Set initial visibility based on current text
+        if (binding.editMessage.getText() != null && binding.editMessage.getText().length() > 0) {
+            binding.buttonVoice.setVisibility(View.GONE);
+        } else {
+            // Ensure button is fully visible and scaled correctly initially
+            binding.buttonVoice.setAlpha(1f);
+            binding.buttonVoice.setScaleX(1f);
+            binding.buttonVoice.setScaleY(1f);
+        }
     }
 
     private String convertStreamToString(InputStream is) throws Exception {
@@ -360,6 +417,13 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
                         responseMap.put("result", result);
 
                         return Part.fromFunctionResponse(functionName, responseMap);
+                    }).exceptionally(throwable -> {
+                        Log.e(TAG, "Error executing function " + functionName, throwable);
+
+                        // On error, return a Part indicating the error
+                        Map<String, Object> errorMap = new HashMap<>();
+                        errorMap.put("error", "Function execution failed: " + throwable.getMessage());
+                        return Part.fromFunctionResponse(functionName, errorMap);
                     });
 
             futureResponses.add(futurePart);
@@ -579,4 +643,3 @@ public class GeminiChatBottomSheet extends BaseBottomSheetDialogFragment {
         return TAG;
     }
 }
-

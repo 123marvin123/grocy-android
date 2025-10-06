@@ -126,7 +126,6 @@ public class GrocyFunctionExecutor {
 
         try {
             Map<String, String> queryParams = new HashMap<>();
-            //Map<String, String> headerParams = new HashMap<>();
             JSONObject requestBody = null;
 
                 for (Iterator<String> it = arguments.keys(); it.hasNext(); ) {
@@ -194,10 +193,6 @@ public class GrocyFunctionExecutor {
                 .build();
 
         return client.async.models.generateContent("gemini-2.5-flash", "Perform a web search for: " + query, config);
-
-        /*if (generateContentResponse != null && generateContentResponse.text() != null) {
-            return "{ \"response\": " + JSONObject.quote(generateContentResponse.text()) + " }";
-        }*/
     }
 
     // Helper methods
@@ -227,7 +222,7 @@ public class GrocyFunctionExecutor {
             body = new JSONObject();
         }
 
-        downloadHelper.post(
+        downloadHelper.postPlain(
                 url,
                 body,
                 response -> future.complete(response.toString()),
@@ -346,10 +341,15 @@ public class GrocyFunctionExecutor {
         // Handle arrays
         if (value instanceof JSONArray) {
             JSONArray array = (JSONArray) value;
+
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < array.length(); i++) {
-                if (i > 0) sb.append(",");
+                sb.append(key).append("=[");
                 sb.append(array.get(i).toString());
+                sb.append("]");
+                if (i < array.length() - 1) {
+                    sb.append("&");
+                }
             }
             return sb.toString();
         }

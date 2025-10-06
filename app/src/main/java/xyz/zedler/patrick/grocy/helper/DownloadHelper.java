@@ -83,6 +83,7 @@ import xyz.zedler.patrick.grocy.util.PrefsUtil;
 import xyz.zedler.patrick.grocy.web.CustomByteArrayRequest;
 import xyz.zedler.patrick.grocy.web.CustomJsonArrayRequest;
 import xyz.zedler.patrick.grocy.web.CustomJsonObjectRequest;
+import xyz.zedler.patrick.grocy.web.CustomJsonStringRequest;
 import xyz.zedler.patrick.grocy.web.CustomStringRequest;
 import xyz.zedler.patrick.grocy.web.NetworkQueue;
 import xyz.zedler.patrick.grocy.web.NetworkQueue.OnQueueEmptyListener;
@@ -281,6 +282,28 @@ public class DownloadHelper {
         onError::onError,
         timeoutSeconds,
         uuidHelper
+    );
+    requestQueue.add(request);
+  }
+
+  public void postPlain(
+          String url,
+          JSONObject json,
+          OnStringResponseListener onResponse,
+          OnErrorListener onError
+  ) {
+    String sessionKey = sharedPrefs
+            .getString(Constants.PREF.HOME_ASSISTANT_INGRESS_SESSION_KEY, null);
+    CustomJsonStringRequest request = new CustomJsonStringRequest(
+            Request.Method.POST,
+            url,
+            apiKey,
+            sessionKey,
+            json,
+            onResponse::onResponse,
+            onError::onError,
+            timeoutSeconds,
+            uuidHelper
     );
     requestQueue.add(request);
   }

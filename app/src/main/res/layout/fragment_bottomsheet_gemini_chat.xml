@@ -80,8 +80,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_ask_gemini"
-        android:inputType="textCapSentences|textMultiLine"
-        android:maxLines="4"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:maxLines="1"
         android:imeOptions="actionSend" />
 
     </com.google.android.material.textfield.TextInputLayout>
